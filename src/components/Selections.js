@@ -4,10 +4,10 @@ import Select from 'react-select';
 import getGames from './../lib/get-games'
 import GameList from './GameList'
 
-const seasons = ['2019', '2018', '2017'].map(x => {
+const seasons = [2019, 2018, 2017].map(x => {
     return {value: x, label: x}
 })
-const weeks = ['1', '2', '3'].map(x => {
+const weeks = [1, 2, 3].map(x => {
     return {value: x, label: x}
 })
 
@@ -19,14 +19,16 @@ export default class Selections extends React.Component {
         this.state = {
             selectedSeason: selectedSeason,
             selectedWeek: selectedWeek,
-            allGames: {}
+            allGames: {},
+            gamesLoaded: false
         };
         this.refreshGames();
     }
 
     refreshGames(seasonSelection, weekSelection){
+        this.setState({gamesLoaded: false})
         getGames(seasonSelection, weekSelection, 2).then(allGames => {
-            this.setState({allGames: allGames})
+            this.setState({allGames: allGames, gamesLoaded: true})
         });
     }
 
@@ -41,6 +43,13 @@ export default class Selections extends React.Component {
     }
 
     render() {
+        console.log(this.state.gamesLoaded)
+        let gamesDisplay
+        if (this.state.gamesLoaded) {
+            gamesDisplay = <GameList allGames={this.state.allGames}/>
+        } else {
+            gamesDisplay = <h4>Loading game information...</h4>
+        }
         return <Row><Col xs='1'></Col><Col xs='10'><Row><Col xs='12' sm='6' md='4' lg='3' xl='2'>
             Season
             <Select
@@ -56,7 +65,7 @@ export default class Selections extends React.Component {
                 onChange={this.weekChange.bind(this)}
             />
         </Col></Row>
-            <GameList allGames={this.state.allGames}/>
-            </Col></Row>
+            {gamesDisplay}
+        </Col></Row>
     }
 }
