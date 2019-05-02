@@ -1,8 +1,8 @@
 import React from 'react';
-import { Row, Col } from 'reactstrap';
+import { Row, Col, Collapse, DropdownToggle } from 'reactstrap';
 import axios from 'axios';
-import UpcomingGame from './UpcomingGame'
-import CompletedGame from './CompletedGame'
+import UpcomingGame from './UpcomingGame';
+import CompletedGame from './CompletedGame';
 import moment from 'moment';
 
 export default class GameList extends React.Component {
@@ -10,8 +10,8 @@ export default class GameList extends React.Component {
         const allGames = this.props.allGames;
         const upcomingGames = allGames['Scheduled'] || [];
         const completedGames = allGames['Final'] || [];
-        const canceledGames = allGames['Canceled'] || [];
         const postponedGames = allGames['Postponed'] || [];
+        const canceledGames = allGames['Canceled'] || [];
         return <div>
             <SubList
                 componentType={UpcomingGame}
@@ -19,24 +19,53 @@ export default class GameList extends React.Component {
                 headerText={'Upcoming games'}
                 emptyText={'No upcoming games this week'}
                 subGroups={['gameDate', 'gameHour']}
+                indentLevel={0}
             />
             <SubList
                 componentType={CompletedGame}
                 games={completedGames}
                 headerText={'Completed games'}
                 emptyText={'No completed games this week'}
+                indentLevel={0}
+            />
+            <SubList
+                componentType={CompletedGame}
+                games={canceledGames}
+                headerText={'Canceled games'}
+                emptySkip={true}
+                indentLevel={0}
+            />
+            <SubList
+                componentType={CompletedGame}
+                games={postponedGames}
+                headerText={'Postponed games'}
+                emptySkip={true}
+                indentLevel={0}
             />
         </div>
     }
 }
 
 class SubList extends React.Component {
+    constructor(props){
+        super(props);
+        this.toggle = this.toggle.bind(this);
+        this.state = { collapse: true };
+    }
+
+    toggle() {
+        this.setState(state => ({ collapse: !state.collapse }));
+    }
+
     render() {
         const games = this.props.games;
         const subGroups = this.props.subGroups || [];
         let gameSectionRender;
         if (games.length == 0){
-                gameSectionRender = <p>{this.props.emptyText}</p>
+            if (this.props.emptySkip || false){
+                return <div></div>
+            }
+            gameSectionRender = <p>{this.props.emptyText}</p>
         } else {
             if (subGroups.length > 0){
                 const subGroup = subGroups[0];
@@ -56,6 +85,7 @@ class SubList extends React.Component {
                                 games={sub['games']}
                                 headerText={sub['name']}
                                 subGroups={subGroups.slice(1, subGroups.length)}
+                                indentLevel={this.props.indentLevel + 1}
                             />
                         })
                     }
@@ -70,15 +100,29 @@ class SubList extends React.Component {
                 </Row>
             }
         }
+        let indentText = '';
+        for (let i=0; i<this.props.indentLevel; i++){
+            indentText = indentText + '\u00A0\u00A0';
+        }
         return <div>
-            <Row><Col><h3>{this.props.headerText}</h3></Col></Row>
-            {gameSectionRender}
+            <Row><Col><h3>
+                {indentText + this.props.headerText}
+                <DropdownToggle
+                    caret
+                    className='shadow-none'
+                    onClick={this.toggle}
+                    color='black'
+                    style={this.state.collapse ? { transform: 'rotate(270deg)'} : { transform: 'rotate(0deg)' }}
+                ></DropdownToggle>
+            </h3></Col></Row>
+            <Collapse isOpen={this.state.collapse}>
+                {gameSectionRender}
+            </Collapse>
         </div>
     }
 }
 
 function filterByDay(games){
-    console.log(games)
     let allDates = games.map(game => {
         return getGameDay(game['date'], game['timeValid'])
     })
@@ -87,7 +131,7 @@ function filterByDay(games){
     const gamesByDate = allDates.map(d => {
         return {
             'key': d,
-            'name':moment(d).format('ddd. MMM D'),
+            'name':moment(d).format('ddd. MMM DD'),
             'games': games.filter(game => getGameDay(game['date'], game['timeValid']) == d)
         }
     })
@@ -98,8 +142,12 @@ function getGameDay(date, timeValid){
     if (timeValid){
         return moment(date).format('YYYY-MM-DD')
     } else {
-        const gameTime = new Date(date)
-        return gameTime.getUTCFullYear() + '-' + (gameTime.getUTCMonth() + 1) + '-' + gameTime.getUTCDate()
+        const gameTime = new Date(date);
+        let monthNum = gameTime.getUTCMonth() + 1;
+        monthNum = monthNum < 10 ? '0' + monthNum : monthNum;
+        let dayNum = gameTime.getUTCDate();
+        dayNum = dayNum < 10 ? '0' + dayNum : dayNum;
+        return gameTime.getUTCFullYear() + '-' + monthNum + '-' + dayNum
     }
 }
 

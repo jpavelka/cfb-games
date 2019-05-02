@@ -4,7 +4,6 @@ import moment from 'moment';
 
 export default class UpcomingGame extends React.Component {
     render(){
-        console.log(this.props.info)
         const styles = {
             'away': {
                 'paddingTop': '10px'
