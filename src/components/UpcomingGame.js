@@ -39,7 +39,7 @@ export default class UpcomingGame extends React.Component {
                     {
                         // game time
                         [this.props.info].map(info => {
-                            let formatString = 'ddd MMM DD';
+                            let formatString = 'ddd MMM D';
                             if (info['timeValid']){
                                 formatString = formatString + ', h:mm A';
                             }

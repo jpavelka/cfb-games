@@ -43,7 +43,6 @@ export default class Selections extends React.Component {
     }
 
     render() {
-        console.log(this.state.gamesLoaded)
         let gamesDisplay
         if (this.state.gamesLoaded) {
             gamesDisplay = <GameList allGames={this.state.allGames}/>
