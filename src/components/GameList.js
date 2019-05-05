@@ -3,21 +3,31 @@ import { Row, Col, Collapse, DropdownToggle } from 'reactstrap';
 import axios from 'axios';
 import UpcomingGame from './UpcomingGame';
 import CompletedGame from './CompletedGame';
+import CurrentGame from './CurrentGame';
 import moment from 'moment';
 
 export default class GameList extends React.Component {
     render() {
         const allGames = this.props.allGames;
+        const currentGames = allGames['In Progress'] || [];
         const upcomingGames = allGames['Scheduled'] || [];
         const completedGames = allGames['Final'] || [];
         const postponedGames = allGames['Postponed'] || [];
         const canceledGames = allGames['Canceled'] || [];
         return <div>
             <SubList
+                componentType={CurrentGame}
+                games={currentGames}
+                headerText={'Current games'}
+                emptySkip={true}
+                subGroups={[]}
+                indentLevel={0}
+            />
+            <SubList
                 componentType={UpcomingGame}
                 games={upcomingGames}
                 headerText={'Upcoming games'}
-                emptyText={'No upcoming games this week'}
+                emptyText={'No games remaining'}
                 subGroups={['gameDate', 'gameHour']}
                 indentLevel={0}
             />
@@ -25,7 +35,7 @@ export default class GameList extends React.Component {
                 componentType={CompletedGame}
                 games={completedGames}
                 headerText={'Completed games'}
-                emptyText={'No completed games this week'}
+                emptyText={'No completed games... yet'}
                 indentLevel={0}
             />
             <SubList
