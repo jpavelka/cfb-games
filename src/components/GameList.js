@@ -20,14 +20,13 @@ export default class GameList extends React.Component {
                 games={currentGames}
                 headerText={'Current games'}
                 emptySkip={true}
-                subGroups={[]}
                 indentLevel={0}
             />
             <SubList
                 componentType={UpcomingGame}
                 games={upcomingGames}
                 headerText={'Upcoming games'}
-                emptyText={'No games remaining'}
+                emptySkip={true}
                 subGroups={['gameDate', 'gameHour']}
                 indentLevel={0}
             />
@@ -35,7 +34,7 @@ export default class GameList extends React.Component {
                 componentType={CompletedGame}
                 games={completedGames}
                 headerText={'Completed games'}
-                emptyText={'No completed games... yet'}
+                emptySkip={true}
                 indentLevel={0}
             />
             <SubList
