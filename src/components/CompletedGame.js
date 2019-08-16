@@ -38,6 +38,7 @@ export default class UpcomingGame extends React.Component {
                         )
                     })
                 }
+                <Row><Col>{this.props.info['spreadStr'] || ''}</Col></Row>
             </div></Col>
         )
     }

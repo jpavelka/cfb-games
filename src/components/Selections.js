@@ -5,22 +5,14 @@ import getGames from './../lib/get-games'
 import GameList from './GameList'
 import { relativeTimeThreshold } from 'moment';
 
-const seasons = [2019, 2018, 2017].map(x => {
-    return {value: x, label: x}
-})
-const seasonWeeks = {
-    '2019': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 'Bowls'],
-    '2018': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 'Bowls']
-}
-const weeks = [1, 2, 3, 20].map(x => {
-    return {value: x, label: x}
-})
+let includeWeeks = true;
+let seasonWeeks = new Object;
 
 export default class Selections extends React.Component {
     constructor(props){
         super(props);
-        const selectedSeason = Object.keys(seasonWeeks).reduce((a, b) => a > b ? a : b);
-        const selectedWeek = seasonWeeks[selectedSeason][0];
+        const selectedSeason = undefined;
+        const selectedWeek = undefined;
         this.state = {
             selectedSeason: selectedSeason,
             selectedWeek: selectedWeek,
@@ -30,18 +22,26 @@ export default class Selections extends React.Component {
         this.refreshGames();
     }
 
-    refreshGames(seasonSelection, weekSelection){
+    refreshGames(){
+        let seasonSelection = this.state.selectedSeason;
+        let weekSelection = this.state.selectedWeek == undefined ? undefined : this.state.selectedWeek.value
+        let seasonType = this.state.selectedWeek == undefined ? undefined : this.state.selectedWeek.seasonType
         this.setState({gamesLoaded: false})
-        let seasonType
-        if (weekSelection == 'Bowls'){
-            weekSelection = 1;
-            seasonType = 3;
-        } else {
-            seasonType = 2;
-        }
-        getGames(seasonSelection, weekSelection, seasonType)
-            .then(allGames => {
-                this.setState({allGames: allGames, gamesLoaded: true});
+        getGames(seasonSelection, weekSelection, seasonType, includeWeeks)
+            .then(info => {
+                if (includeWeeks){
+                    includeWeeks = false;
+                    this.setState({selectedSeason: info.current.season, selectedWeek: info.current});
+                    info.weeks.map(x => {
+                        if (!Object.keys(seasonWeeks).includes(x.season)){
+                            seasonWeeks[x.season] = [];
+                        }
+                        seasonWeeks[x.season].push(x);
+                    })
+                }
+                return info
+            }).then(info => {
+                this.setState({allGames: info.games, gamesLoaded: true});
             })
             .catch(error => {
                 this.setState({allGames: {}, gamesLoaded: true});
@@ -49,17 +49,20 @@ export default class Selections extends React.Component {
     }
 
     seasonChange(seasonSelection) {
-        this.setState({selectedSeason: seasonSelection.value, allGames: {}});
-        this.refreshGames(seasonSelection.value, this.state.selectedWeek);
+        this.setState(
+            {selectedSeason: seasonSelection.value, allGames: {}},
+            () => this.refreshGames()
+        );
     }
 
     weekChange(weekSelection) {
-        this.setState({selectedWeek: weekSelection.value, allGames: {}});
-        this.refreshGames(this.state.selectedSeason, weekSelection.value);
+        this.setState(
+            {selectedWeek: weekSelection, allGames: {}},
+            () => this.refreshGames()
+        );
     }
 
     render() {
-        console.log(this.state)
         let gamesDisplay
         if (this.state.gamesLoaded) {
             if (Object.keys(this.state.allGames).length == 0){
@@ -70,23 +73,27 @@ export default class Selections extends React.Component {
         } else {
             gamesDisplay = <h4>Loading game information...</h4>
         }
-        return <Row><Col xs='1'></Col><Col xs='10'><Row><Col xs='12' sm='6' md='4' lg='3' xl='2'>
-            Season
-            <Select
-                options={Object.keys(seasonWeeks).sort().reverse().map(x => makeSelectOption(x))}
-                value={makeSelectOption(this.state.selectedSeason)}
-                onChange={this.seasonChange.bind(this)}
-            />
-        </Col><Col xs='12' sm='6' md='4' lg='3' xl='2'>
-            Week
-            <Select
-                options={seasonWeeks[this.state.selectedSeason].map(x => makeSelectOption(x))}
-                value={makeSelectOption(this.state.selectedWeek)}
-                onChange={this.weekChange.bind(this)}
-            />
-        </Col></Row>
-            {gamesDisplay}
-        </Col></Row>
+        if (Object.keys(seasonWeeks).length == 0){
+            return <h4>Loading season schedule information</h4>
+        } else {
+            return <Row><Col xs='1'></Col><Col xs='10'><Row><Col xs='12' sm='6' md='4' lg='3' xl='2'>
+                Season
+                <Select
+                    options={Object.keys(seasonWeeks).sort().reverse().map(x => makeSelectOption(x))}
+                    value={makeSelectOption(this.state.selectedSeason)}
+                    onChange={this.seasonChange.bind(this)}
+                />
+            </Col><Col xs='12' sm='6' md='4' lg='3' xl='2'>
+                Week
+                <Select
+                    options={seasonWeeks[this.state.selectedSeason]}
+                    value={this.state.selectedWeek}
+                    onChange={this.weekChange.bind(this)}
+                />
+            </Col></Row>
+                {gamesDisplay}
+            </Col></Row>
+        }
     }
 }
 

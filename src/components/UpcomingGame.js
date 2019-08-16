@@ -25,10 +25,13 @@ export default class UpcomingGame extends React.Component {
                     // team names and logos
                     ['away', 'home'].map(side => {
                         let sideInfo = this.props.info['teams'][side];
+                        console.log(sideInfo);
+                        let rankText = sideInfo['rank'] == 99 ? "" : sideInfo['rank']
                         return (
                             <Row key={side} style={styles[side]}>
                                 <Col>
                                     <img src={sideInfo['logo']} height='30px' alt=''/>
+                                    &nbsp;{rankText}
                                     &nbsp;{sideInfo['school']}
                                 </Col>
                             </Row>
