@@ -4,6 +4,7 @@ import axios from 'axios';
 import UpcomingGame from './UpcomingGame';
 import CompletedGame from './CompletedGame';
 import CurrentGame from './CurrentGame';
+import gameSort from './../lib/game-sort'
 import moment from 'moment';
 
 export default class GameList extends React.Component {
@@ -27,7 +28,8 @@ export default class GameList extends React.Component {
                 games={upcomingGames}
                 headerText={'Upcoming games'}
                 emptySkip={true}
-                subGroups={['gameDate', 'gameHour']}
+                // subGroups={['gameDate', 'gameHour']}
+                subGroups={['gameDate']}
                 indentLevel={0}
             />
             <SubList
@@ -102,7 +104,7 @@ class SubList extends React.Component {
             } else {
                 gameSectionRender = <Row>
                     {
-                        (games).map(gameInfo => {
+                        (gameSort(games)).map(gameInfo => {
                             return <this.props.componentType info={gameInfo} key={gameInfo['id']}/>
                         })
                     }

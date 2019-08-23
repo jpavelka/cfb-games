@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-export default function getGames(season, week, seasonType, includeWeeks=false) {
-    let info = axios({
+function getInfo(season, week, seasonType, includeWeeks){
+   return axios({
         method: 'get',
         url: 'http://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard',
         params: {
@@ -23,7 +23,7 @@ export default function getGames(season, week, seasonType, includeWeeks=false) {
                             label: ent.label,
                             value: ent.value,
                             seasonType: cal.value,
-                            season: response.data.season.year
+                            season: String(response.data.season.year)
                         })
                     })
                 }
@@ -56,7 +56,7 @@ export default function getGames(season, week, seasonType, includeWeeks=false) {
                     colors: [t.team.color, t.team.alternateColor],
                     logo: t.team.logo,
                     conferenceId: t.team.conferenceId,
-                    rank: t.curatedRank.current != 0 ? t.curatedRank.current : 99
+                    rank: t.curatedRank != 0 ? t.curatedRank.current : 99
                 }
             })
             return {
@@ -82,14 +82,52 @@ export default function getGames(season, week, seasonType, includeWeeks=false) {
         allStatuses.map(s => {sortedGames[s] = []});
         gameInfo.map(g => sortedGames[g.status].push(g));
         ret.games = sortedGames;
-        return ret;
-    })
-    return info;
+        return ret
+    }).catch(error => {
+        console.log('Trouble getting info')
+    	return {}
+  	})
 }
 
-let info = getGames(2019, 1, 2, true)
+function getLines(season, week, seasonType){
+  return axios({
+        method: 'get',
+        url: 'https://api.collegefootballdata.com/lines',
+        params: {
+            year: season,
+            week: week,
+            seasonType: seasonType == 2 ? 'regular' : 'postseason'
+        }
+    }).then(response => {
+        let ret = {};
+        response.data.map(x => {
+            ret[x.id] = x;
+        })
+        return ret;
+    }).catch(error => {
+        console.log('Trouble getting lines')
+    	return {}
+  	})
+}
+
+function combineInputs(info, lines){
+  for (let gameType in info.games){
+    info.games[gameType].map(x => {
+      x.lines = (lines[x.id] || {}).lines;
+    })
+  }
+  return info
+}
+
+async function getGames(season, week, seasonType, includeWeeks){
+  let info = await getInfo(season, week, seasonType, includeWeeks);
+  let lines = await getLines(season || info.current.season, week || info.current.week, seasonType || info.current.seasonType);
+  return combineInputs(info, lines);
+}
+
+let info = getGames(null, null, null, true)
             .then(x => {
-                console.log(x.games)
+                console.log(x.games.Scheduled[0].lines)
             })
             .catch(error => {
                 console.log(error)
