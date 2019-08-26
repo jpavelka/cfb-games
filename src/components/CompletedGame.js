@@ -1,35 +1,11 @@
 import React from 'react';
 import { Row, Col } from 'reactstrap';
 import moment from 'moment';
+import { styles } from './../lib/game-card-styles';
 
 export default class UpcomingGame extends React.Component {
     render(){
-        const styles = {
-            'away': {
-                'paddingTop': '10px'
-            },
-            'home': {
-
-            },
-            'bottomRow': {
-                'paddingBottom': '10px'
-            },
-            'card': {
-                'marginTop': '10px',
-                'marginBottom': '10px',
-                'background-color': '#eeeeee'
-            },
-            'winner':{
-                'font-weight': 'bold'
-            },
-            'loser':{
-
-            },
-            'upset':{
-                'background-color': '#fcc57c'
-            }
-        }
-        const cardStyle = this.props.info.upset ? Object.assign(styles.card, styles.upset) : styles.card
+        const cardStyle = this.props.info.upset ? styles.cardUpset : styles.card
         return (
             <Col xs='12' sm='6' md='4' lg='3'><div className='card' style={cardStyle}>
                 {
