@@ -16,7 +16,8 @@ export default class CanceledOrPostponedGame extends React.Component {
             },
             'card': {
                 'marginTop': '10px',
-                'marginBottom': '10px'
+                'marginBottom': '10px',
+                'background-color': '#eeeeee'
             }
         }
         return (
