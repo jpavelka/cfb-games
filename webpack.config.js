@@ -1,4 +1,5 @@
 const HtmlWebPackPlugin = require("html-webpack-plugin");
+const path = require("path");
 module.exports = {
   module: {
     rules: [
@@ -35,5 +36,8 @@ module.exports = {
     allowedHosts: [
       '.gitpod.io'
     ]
+  },
+  output: {
+    path: path.resolve(__dirname, 'docs')
   }
 };

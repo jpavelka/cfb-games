@@ -44,6 +44,13 @@ function getInfo(season, week, seasonType, includeWeeks){
         let allGames = response.data.events;
         let gameInfo = allGames.map(g => {
             let comp = g.competitions[0];
+            let sit = comp.situation || {};
+            let gameState = g.status.type.state;
+            if (gameState == ("post")){
+                if (!g.status.type.completed){
+                    gameState = g.status.type.description;
+                }
+            }
             let teams = comp.competitors.map(t => {
                 return {
                     homeAway: t.homeAway,
@@ -63,7 +70,17 @@ function getInfo(season, week, seasonType, includeWeeks){
                 id: g.id,
                 name: g.name,
                 status: g.status.type.description,
-                state: g.status.type.state,
+                state: gameState,
+                clock: g.status.clock,
+                displayClock: g.status.displayClock,
+                period: g.status.period,
+                periodClockStr: g.status.type.detail,
+                periodClockStrShort: g.status.type.shortDetail,
+                down: sit.down,
+                distance: sit.distance,
+                yardLine: sit.yardLine,
+                possession: sit.possession,
+                lastPlay: sit.lastPlay,
                 date: comp.date,
                 timeValid: comp.timeValid,
                 neutral: comp.neutralSite,
@@ -78,13 +95,14 @@ function getInfo(season, week, seasonType, includeWeeks){
             }
         })
         let sortedGames = {};
-        let allStatuses = Array.from(new Set(gameInfo.map(g => g.status)));
-        allStatuses.map(s => {sortedGames[s] = []});
-        gameInfo.map(g => sortedGames[g.status].push(g));
+        let allStates = Array.from(new Set(gameInfo.map(g => g.state)));
+        allStates.map(s => {sortedGames[s] = []});
+        gameInfo.map(g => sortedGames[g.state].push(g));
         ret.games = sortedGames;
         return ret
     }).catch(error => {
         console.log('Trouble getting info')
+        console.log(error)
     	return {}
   	})
 }
@@ -106,6 +124,7 @@ function getLines(season, week, seasonType){
         return ret;
     }).catch(error => {
         console.log('Trouble getting lines')
+        console.log(error)
     	return {}
   	})
 }
@@ -125,9 +144,9 @@ async function getGames(season, week, seasonType, includeWeeks){
   return combineInputs(info, lines);
 }
 
-let info = getGames(null, null, null, true)
+let info = getGames(2018, 1, 2, true)
             .then(x => {
-                console.log(x.games.Scheduled[0].lines)
+                console.log(x.games)
             })
             .catch(error => {
                 console.log(error)

@@ -2,7 +2,7 @@ import React from 'react';
 import { Row, Col } from 'reactstrap';
 import moment from 'moment';
 
-export default class UpcomingGame extends React.Component {
+export default class CanceledOrPostponedGame extends React.Component {
     render(){
         const styles = {
             'away': {
@@ -29,7 +29,7 @@ export default class UpcomingGame extends React.Component {
                         let favoredText = this.props.info.favored == side ? "(-" + this.props.info.spread + ")" : "";
                         return (
                             <Row key={side} style={styles[side]}>
-                                <Col>
+                                <Col xs='12'>
                                     <img src={sideInfo['logo']} height='30px' alt=''/>
                                     &nbsp;{rankText}
                                     &nbsp;{sideInfo['school']}
@@ -44,26 +44,8 @@ export default class UpcomingGame extends React.Component {
                         // game time
                         [this.props.info].map(info => {
                             let formatString = 'ddd MMM D';
-                            if (info['timeValid']){
-                                formatString = formatString + ', h:mm A';
-                            }
                             return (
                                 <Col xs='8'>{moment(info['date']).format(formatString)}</Col>
-                            )
-                        })
-                    }
-                    {
-                        // broadcasts
-                        [this.props.info].map(info => {
-                            let broadcastString = '';
-                            info['geoBroadcasts'].map(bc => {
-                                if (broadcastString != ''){
-                                    broadcastString = broadcastString + ', ';
-                                }
-                                broadcastString = broadcastString + bc['media']['shortName'];
-                            })
-                            return (
-                                <Col xs='4'>{broadcastString}</Col>
                             )
                         })
                     }

@@ -4,15 +4,16 @@ import axios from 'axios';
 import UpcomingGame from './UpcomingGame';
 import CompletedGame from './CompletedGame';
 import CurrentGame from './CurrentGame';
+import CanceledOrPostponedGame from './CanceledOrPostponedGame';
 import gameSort from './../lib/game-sort'
 import moment from 'moment';
 
 export default class GameList extends React.Component {
     render() {
         const allGames = this.props.allGames;
-        const currentGames = allGames['In Progress'] || [];
-        const upcomingGames = allGames['Scheduled'] || [];
-        const completedGames = allGames['Final'] || [];
+        const currentGames = allGames['in'] || [];
+        const upcomingGames = allGames['pre'] || [];
+        const completedGames = allGames['post'] || [];
         const postponedGames = allGames['Postponed'] || [];
         const canceledGames = allGames['Canceled'] || [];
         return <div>
@@ -40,16 +41,16 @@ export default class GameList extends React.Component {
                 indentLevel={0}
             />
             <SubList
-                componentType={CompletedGame}
-                games={canceledGames}
-                headerText={'Canceled games'}
+                componentType={CanceledOrPostponedGame}
+                games={postponedGames}
+                headerText={'Postponed games'}
                 emptySkip={true}
                 indentLevel={0}
             />
             <SubList
-                componentType={CompletedGame}
-                games={postponedGames}
-                headerText={'Postponed games'}
+                componentType={CanceledOrPostponedGame}
+                games={canceledGames}
+                headerText={'Canceled games'}
                 emptySkip={true}
                 indentLevel={0}
             />

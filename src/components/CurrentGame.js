@@ -25,11 +25,15 @@ export default class UpcomingGame extends React.Component {
                     // team names and logos
                     ['away', 'home'].map(side => {
                         let sideInfo = this.props.info['teams'][side];
+                        let rankText = sideInfo['rank'] == 99 ? "" : sideInfo['rank'];
+                        let possId = this.props.info['possession'];
                         return (
                             <Row key={side} style={styles[side]}>
                                 <Col xs='9'>
                                     <img src={sideInfo['logo']} height='30px' alt=''/>
+                                    &nbsp;{rankText}
                                     &nbsp;{sideInfo['school']}
+                                    &nbsp;{sideInfo['id'] == possId ? String.fromCharCode(9679) : ""}
                                 </Col>
                                 <Col xs='3'>
                                     {sideInfo['score']}
@@ -38,6 +42,31 @@ export default class UpcomingGame extends React.Component {
                         )
                     })
                 }
+                <Row style={styles['bottomRow']}>
+                    {
+                        // period/clock
+                        [this.props.info].map(info => {
+                            return (
+                                <Col xs='8'>{info.periodClockStr}</Col>
+                            )
+                        })
+                    }
+                    {
+                        // broadcasts
+                        [this.props.info].map(info => {
+                            let broadcastString = '';
+                            info['geoBroadcasts'].map(bc => {
+                                if (broadcastString != ''){
+                                    broadcastString = broadcastString + ', ';
+                                }
+                                broadcastString = broadcastString + bc['media']['shortName'];
+                            })
+                            return (
+                                <Col xs='4'>{broadcastString}</Col>
+                            )
+                        })
+                    }
+                </Row>
             </div></Col>
         )
     }
