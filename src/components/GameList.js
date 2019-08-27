@@ -1,5 +1,5 @@
 import React from 'react';
-import { Row, Col, Collapse, DropdownToggle } from 'reactstrap';
+import { Row, Col, Collapse, DropdownToggle, Label, CustomInput, Input } from 'reactstrap';
 import axios from 'axios';
 import UpcomingGame from './UpcomingGame';
 import CompletedGame from './CompletedGame';
@@ -7,6 +7,15 @@ import CurrentGame from './CurrentGame';
 import CanceledOrPostponedGame from './CanceledOrPostponedGame';
 import gameSort from './../lib/game-sort'
 import moment from 'moment';
+
+
+
+const styles = {
+    'away': {
+        'margin-top': '-10px'
+    },}
+
+
 
 export default class GameList extends React.Component {
     render() {
@@ -29,8 +38,7 @@ export default class GameList extends React.Component {
                 games={upcomingGames}
                 headerText={'Upcoming games'}
                 emptySkip={true}
-                // subGroups={['gameDate', 'gameHour']}
-                subGroups={['gameDate']}
+                potentialSubGroups={['Group by Date', 'Group by Hour']}
                 indentLevel={0}
             />
             <SubList
@@ -38,6 +46,7 @@ export default class GameList extends React.Component {
                 games={completedGames}
                 headerText={'Completed games'}
                 emptySkip={true}
+                potentialSubGroups={['Group by Date']}
                 indentLevel={0}
             />
             <SubList
@@ -62,7 +71,12 @@ class SubList extends React.Component {
     constructor(props){
         super(props);
         this.toggle = this.toggle.bind(this);
-        this.state = { collapse: true };
+        this.state = {
+            collapse: true,
+            subGroupChecked: initialSubGroupCheck(
+                this.props.componentType, this.props.potentialSubGroups, this.props.games
+            )
+        };
     }
 
     toggle() {
@@ -71,21 +85,44 @@ class SubList extends React.Component {
 
     render() {
         const games = this.props.games;
-        const subGroups = this.props.subGroups || [];
+        const potentialSubGroups = this.props.potentialSubGroups || [];
+        const indentLevel = this.props.indentLevel;
+        let subGroupSelectRender;
         let gameSectionRender;
+        let indentText = '';
+        let extraIndentText = '\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0';
+        for (let i=0; i<indentLevel; i++){
+            indentText = indentText + '\u00A0\u00A0';
+            extraIndentText = extraIndentText + '\u00A0\u00A0';
+        }
         if (games.length == 0){
             if (this.props.emptySkip || false){
                 return <div></div>
             }
             gameSectionRender = <p>{this.props.emptyText}</p>
         } else {
-            if (subGroups.length > 0){
-                const subGroup = subGroups[0];
+            let checkId = this.props.headerText + indentLevel;
+            if (potentialSubGroups.length > 0){
+                subGroupSelectRender = <Row><Col>
+                    {indentText + extraIndentText}
+                    <Label for={checkId}><Input
+                        type="checkbox"
+                        id={checkId}
+                        checked={this.state.subGroupChecked}
+                        onChange={e => this.setState({ subGroupChecked: e.target.checked })}
+                    />{potentialSubGroups[0]}</Label>
+                </Col></Row>
+            }
+
+            if (this.state.subGroupChecked && potentialSubGroups.length > 0){
+                const subGroup = potentialSubGroups[0];
                 let subLists;
-                if (subGroup == 'gameDate'){
+                if (subGroup == 'Group by Date'){
                     subLists = filterByDay(games);
-                } else if (subGroup == 'gameHour'){
+                } else if (subGroup == 'Group by Hour'){
                     subLists = filterByHour(games);
+                } else if (subGroup == 'Group by Minute'){
+                    subLists = filterByMinute(games);
                 } else {
                     throw 'Unrecognized sub-group style'
                 }
@@ -96,7 +133,7 @@ class SubList extends React.Component {
                                 componentType={this.props.componentType}
                                 games={sub['games']}
                                 headerText={sub['name']}
-                                subGroups={subGroups.slice(1, subGroups.length)}
+                                potentialSubGroups={potentialSubGroups.slice(1, potentialSubGroups.length)}
                                 indentLevel={this.props.indentLevel + 1}
                             />
                         })
@@ -112,10 +149,6 @@ class SubList extends React.Component {
                 </Row>
             }
         }
-        let indentText = '';
-        for (let i=0; i<this.props.indentLevel; i++){
-            indentText = indentText + '\u00A0\u00A0';
-        }
         return <div>
             <Row><Col><h3>
                 {indentText + this.props.headerText}
@@ -128,6 +161,7 @@ class SubList extends React.Component {
                 ></DropdownToggle>
             </h3></Col></Row>
             <Collapse isOpen={this.state.collapse}>
+                <div style={styles.away}>{subGroupSelectRender}</div>
                 {gameSectionRender}
             </Collapse>
         </div>
@@ -184,5 +218,51 @@ function getGameHour(date, timeValid){
         return moment(date).format('YYYY-MM-DD HH')
     } else {
         return '9999'
+    }
+}
+
+function filterByMinute(games){
+    let allMinutes = games.map(game => {
+        return getGameMinute(game['date'], game['timeValid'])
+    })
+    allMinutes = new Set(allMinutes)
+    allMinutes = Array.from(allMinutes).sort()
+    const gamesByMinute = allMinutes.map(m => {
+        return {
+            'key': m,
+            'name': m == '9999' ? 'Time TBD' : moment(m).format('h:mm A'),
+            'games': games.filter(game => getGameMinute(game['date'], game['timeValid']) == m)
+        }
+    })
+    return gamesByMinute
+}
+
+function getGameMinute(date, timeValid){
+    if (timeValid){
+        return moment(date).format('YYYY-MM-DD HH:mm')
+    } else {
+        return '9999'
+    }
+}
+
+function initialSubGroupCheck(componentType, potentialSubGroups, games){
+    let subGroup;
+    if (!potentialSubGroups){
+        return false;
+    }
+    if (potentialSubGroups.length > 0){
+        subGroup = potentialSubGroups[0];
+    } else {
+        return false;
+    }
+    if ([CurrentGame, CompletedGame, CanceledOrPostponedGame].includes(componentType)) {
+        return false;
+    } else if (componentType == UpcomingGame) {
+        if (subGroup == 'Group by Date'){
+            return true;
+        }
+        return false;
+    } else {
+        throw 'Unrecognized componentType'
     }
 }
