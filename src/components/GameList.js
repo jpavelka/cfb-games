@@ -1,5 +1,5 @@
 import React from 'react';
-import { Row, Col, Collapse, DropdownToggle, Label, CustomInput, Input } from 'reactstrap';
+import { Row, Col, Collapse, DropdownToggle, Label, Input } from 'reactstrap';
 import axios from 'axios';
 import UpcomingGame from './UpcomingGame';
 import CompletedGame from './CompletedGame';
@@ -149,16 +149,20 @@ class SubList extends React.Component {
                 </Row>
             }
         }
+        let toggleId = this.props.headerText + 'header';
         return <div>
             <Row><Col><h3>
-                {indentText + this.props.headerText}
-                <DropdownToggle
-                    caret
-                    className='shadow-none'
-                    onClick={this.toggle}
-                    color='black'
-                    style={this.state.collapse ? { transform: 'rotate(270deg)'} : { transform: 'rotate(0deg)' }}
-                ></DropdownToggle>
+                <Label for={toggleId}>
+                    {indentText + this.props.headerText}
+                    <DropdownToggle
+                        caret
+                        id={toggleId}
+                        className='shadow-none'
+                        onClick={this.toggle}
+                        color='black'
+                        style={this.state.collapse ? { transform: 'rotate(270deg)'} : { transform: 'rotate(0deg)' }}
+                    ></DropdownToggle>
+                </Label>
             </h3></Col></Row>
             <Collapse isOpen={this.state.collapse}>
                 <div style={styles.away}>{subGroupSelectRender}</div>
