@@ -11,17 +11,33 @@ export const styles = {
     'card': {
         'marginTop': '10px',
         'marginBottom': '10px',
-        'background-color': '#eeeeee'
+        'backgroundColor': '#eeeeee'
     },
     'cardUpset': {
         'marginTop': '10px',
         'marginBottom': '10px',
-        'background-color': '#fcc57c'
+        'backgroundColor': '#fcc57c'
     },
-    'winner':{
-        'font-weight': 'bold'
+    'winner': {
+        'fontWeight': 'bold'
     },
-    'loser':{
+    'loser': {
 
+    },
+    'moreLess': {
+        'marginTop': '-15px',
+        'color': 'blue'
+    },
+    'neutral': {
+        'fontStyle': 'italic',
+        'color': '#555555'
+    },
+    'upsetText': {
+        'fontStyle': 'italic',
+        'color': '#e64d35'
+    },
+    'noInfo': {
+        'fontStyle': 'italic',
+        'color': '#555555'
     },
 }

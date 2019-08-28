@@ -12,7 +12,7 @@ import moment from 'moment';
 
 const styles = {
     'away': {
-        'margin-top': '-10px'
+        'marginTop': '-20px'
     },}
 
 
@@ -130,9 +130,10 @@ class SubList extends React.Component {
                     {
                         subLists.map(sub => {
                             return <SubList
+                                key={sub.key}
                                 componentType={this.props.componentType}
-                                games={sub['games']}
-                                headerText={sub['name']}
+                                games={sub.games}
+                                headerText={sub.name}
                                 potentialSubGroups={potentialSubGroups.slice(1, potentialSubGroups.length)}
                                 indentLevel={this.props.indentLevel + 1}
                             />
@@ -143,7 +144,7 @@ class SubList extends React.Component {
                 gameSectionRender = <Row>
                     {
                         (gameSort(games)).map(gameInfo => {
-                            return <this.props.componentType info={gameInfo} key={gameInfo['id']}/>
+                            return <this.props.componentType info={gameInfo} key={gameInfo.id}/>
                         })
                     }
                 </Row>

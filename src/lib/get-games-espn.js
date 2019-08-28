@@ -46,6 +46,8 @@ function getInfo(season, week, seasonType, includeWeeks){
             let comp = g.competitions[0];
             let sit = comp.situation || {};
             let gameState = g.status.type.state;
+            let venue = comp.venue || {};
+            let address = venue.address || {};
             if (gameState == ("post")){
                 if (!g.status.type.completed){
                     gameState = g.status.type.description;
@@ -63,7 +65,7 @@ function getInfo(season, week, seasonType, includeWeeks){
                     colors: [t.team.color, t.team.alternateColor],
                     logo: t.team.logo,
                     conferenceId: t.team.conferenceId,
-                    rank: t.curatedRank != 0 ? t.curatedRank.current : 99
+                    rank: t.curatedRank != 0 ? t.curatedRank.current : 99,
                 }
             })
             return {
@@ -86,7 +88,9 @@ function getInfo(season, week, seasonType, includeWeeks){
                 neutral: comp.neutralSite,
                 conference: comp.conferenceCompetition,
                 recent: comp.recent,
-                venue: comp.venue,
+                venue: venue.fullName,
+                venueCity: address.city,
+                venueState: address.state,
                 geoBroadcasts: comp.geoBroadcasts,
                 teams: {
                     home: teams[0].homeAway == 'home' ? teams[0]: teams[1],
@@ -144,7 +148,7 @@ async function getGames(season, week, seasonType, includeWeeks){
   return combineInputs(info, lines);
 }
 
-let info = getGames(2018, 1, 2, true)
+let info = getGames(null, null, null, true)
             .then(x => {
                 console.log(x.games)
             })
