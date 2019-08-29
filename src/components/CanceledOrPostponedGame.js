@@ -5,38 +5,25 @@ import { styles } from './../lib/game-card-styles';
 
 export default class CanceledOrPostponedGame extends React.Component {
     render(){
-        return (
-            <Col xs='12' sm='6' md='4' lg='3'><div className='card' style={styles.card}>
-                {
-                    // team names and logos
-                    ['away', 'home'].map(side => {
-                        let sideInfo = this.props.info.teams[side];
-                        let rankText = sideInfo.rank == 99 ? "" : sideInfo.rank;
-                        let favoredText = this.props.info.favored == side ? "(-" + this.props.info.spread + ")" : "";
-                        return (
-                            <Row key={side} style={styles[side]}>
-                                <Col xs='12'>
-                                    <img src={sideInfo.logo} height='30px' alt=''/>
-                                    &nbsp;{rankText}
-                                    &nbsp;{sideInfo.school}
-                                    &nbsp;{favoredText}
-                                </Col>
-                            </Row>
-                        )
-                    })
-                }
-                <Row style={styles['bottomRow']}>
-                    {
-                        // game time
-                        [this.props.info].map(info => {
-                            let formatString = 'ddd MMM D';
-                            return (
-                                <Col xs='8'>{moment(info.date).format(formatString)}</Col>
-                            )
-                        })
-                    }
-                </Row>
-            </div></Col>
-        )
+        const teamDispOptions = {
+            includeSpread: false,
+            includeScore: false
+        };
+        const quickInfoOptions = [
+            {data: 'date', size: '12'}
+        ];
+        const collapseInfoOptions = [
+            'upset',
+            'neutral',
+            'location',
+            'hr',
+            'betting'
+        ];
+        const cardStyleAttr = ''
+        const dispInfo = getDisplayInfo(this.props.info, teamDispOptions, quickInfoOptions, collapseInfoOptions, cardStyleAttr);
+        return <GameTemplate
+            dispInfo = {dispInfo}
+            gameId = {this.props.info.id}
+        />
     }
 }

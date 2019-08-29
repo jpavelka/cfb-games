@@ -6,7 +6,7 @@ export const styles = {
 
     },
     'bottomRow': {
-        'paddingBottom': '10px'
+
     },
     'card': {
         'marginTop': '10px',
@@ -18,6 +18,11 @@ export const styles = {
         'marginBottom': '10px',
         'backgroundColor': '#fcc57c'
     },
+    'cardUpsetAlert': {
+        'marginTop': '10px',
+        'marginBottom': '10px',
+        'backgroundColor': '#fcc57c'
+    },
     'winner': {
         'fontWeight': 'bold'
     },
@@ -25,7 +30,7 @@ export const styles = {
 
     },
     'moreLess': {
-        'marginTop': '-15px',
+        'marginTop': '-5px',
         'color': 'blue'
     },
     'neutral': {
@@ -39,5 +44,5 @@ export const styles = {
     'noInfo': {
         'fontStyle': 'italic',
         'color': '#555555'
-    },
+    }
 }
