@@ -21,11 +21,11 @@ export default function gameSort(allGames) {
         x.spread = lineInfo.spread || 999;
         x.spreadPossessions = Math.floor((x.spread - 1) / 8) + 1;
         x.overUnder = lineInfo.overUnder;
+        x.clearFavorite = isClearFavorite(x);
     });
     let sortOrder
     if (gameState == 'in'){
         allGames.map(x => {
-            console.log(x);
             x.homeHasBall = x.possession == x.teams.home.id;
             x.awayHasBall = x.possession == x.teams.away.id;
             x.margin = Math.abs(x.teams.home.score - x.teams.away.score);
@@ -37,12 +37,6 @@ export default function gameSort(allGames) {
             x.behindHasBall = (x.homeHasBall && x.awayAhead) || (x.awayHasBall && x.homeAhead);
             x.potentialLeadChange = x.behindHasBall && x.margin <= 7;
             x.potentialTie = x.behindHasBall && x.margin == 8;
-            if (x.favored){
-                x.favoredAhead = x.teams[x.favored].score > x.teams[x.underdog].score;
-                x.underdogAhead = x.teams[x.underdog].score > x.teams[x.favored].score;
-                x.favoredHasBall = x.possession == x.teams[x.favored].id;
-                x.underdogHasBall = x.possession == x.teams[x.underdog].id;
-            }
             x.close = isGameClose(x);
             x.secondsRemaining = getSecondsRemaining(x.period, x.clock);
             x.under2 = x.secondsRemaining <= (2 * 60);
@@ -53,9 +47,19 @@ export default function gameSort(allGames) {
             x.under25 = x.secondsRemaining <= (25 * 60);
             x.winProbDiff = getWinProbDiff(x);
             x.tossup = x.winProbDiff < 20;
+            if (x.favored){
+                x.favoredAhead = x.teams[x.favored].score > x.teams[x.underdog].score;
+                x.underdogAhead = x.teams[x.underdog].score > x.teams[x.favored].score;
+                x.favoredHasBall = x.possession == x.teams[x.favored].id;
+                x.underdogHasBall = x.possession == x.teams[x.underdog].id;
+                x.upsetAlert = x.under20 && x.clearFavorite && (x.underdogAhead || x.marginPossesions == 1);
+            }
         });
         sortOrder = [
             { desc: x => x.close },
+            { desc: x => x.under5 * x.potentialLeadChange },
+            { desc: x => x.under5 * x.potentialTie },
+            { desc: x => x.under5 * (x.marginPossesions == 1) },
             { desc: x => x.close * x.under2 },
             { desc: x => x.close * x.under5 },
             { desc: x => x.numRanked },
@@ -79,7 +83,8 @@ export default function gameSort(allGames) {
         allGames.map(x => {
             x.winner = (x.teams.home.score > x.teams.away.score ? 'home' : 'away');
             x.loser = (x.winner == 'home' ? 'away' : 'home');
-            x.upset = isUpset(x);
+            x.FCSoverFBS = !isFBS(x.teams[x.winner]) && isFBS(x.teams[x.loser])
+            x.upset = x.clearFavorite && (x.winner == x.underdog);
         });
         sortOrder = [
             { desc: x => x.numRanked },
@@ -100,7 +105,8 @@ export default function gameSort(allGames) {
             { asc: x => x.overUnder },
         ]
     }
-    const sorted = sort(allGames).by(sortOrder)
+    const sorted = sort(allGames).by(sortOrder);
+    console.log(sorted);
     return sorted;
 }
 
@@ -134,32 +140,17 @@ function getSecondsRemaining(x){
     return secondsRemaining
 }
 
-function isUpset(game){
-    // ranked loses to unranked, FBS loses to non-FBS, or team favored by 10+ loses
+function isClearFavorite(game){
     if (game.favored === undefined){
-        if (game.numFBS == 1){
-            if (isFBS(game.teams[game.loser])){
-                return true;
-            } else {
-                return false;
-            }
-        }
         return;
-    }
-    if (game.state != 'post'){
-        return;
-    }
-    if (game.winner == game.favored){
-        return false;
-    }
-    if (game.teams[game.winner].rank < 99 && game.teams[game.winner].rank >= 99){
-        return true;
     }
     if (game.spread >= 10){
         return true;
-    } else {
-        return false;
     }
+    if (isRanked(game.teams[game.favored]) && !isRanked(game.teams[game.underdog])){
+        return true;
+    }
+    return false;
 }
 
 function getLineInfo(lines){
