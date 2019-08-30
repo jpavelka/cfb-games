@@ -1,9 +1,8 @@
 import React from 'react';
-import { Row, Col, Collapse, Label } from 'reactstrap';
-import moment from 'moment';
-import { styles } from './../lib/game-card-styles';
+import getDisplayInfo from './../lib/game-card-info';
+import GameTemplate from './GameTemplate'
 
-export default class UpcomingGame extends React.Component {
+export default class CurrentGame extends React.Component {
     render(){
         const teamDispOptions = {
             includeSpread: false,

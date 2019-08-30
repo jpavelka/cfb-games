@@ -17,14 +17,58 @@ export default function gameSort(allGames) {
         x.numFBS = numFBS(x);
         let lineInfo = getLineInfo(x.lines);
         x.favored = lineInfo.favored;
+        x.underdog = x.favored == 'home' ? 'away' : 'home';
         x.spread = lineInfo.spread || 999;
-        x.spreadPossessions = Math.floor(x.spread - 1) + 1;
+        x.spreadPossessions = Math.floor((x.spread - 1) / 8) + 1;
         x.overUnder = lineInfo.overUnder;
     });
     let sortOrder
     if (gameState == 'in'){
+        allGames.map(x => {
+            console.log(x);
+            x.homeHasBall = x.possession == x.teams.home.id;
+            x.awayHasBall = x.possession == x.teams.away.id;
+            x.margin = Math.abs(x.teams.home.score - x.teams.away.score);
+            x.marginPossesions = Math.floor((x.margin - 1) / 8) + 1;
+            x.tie = x.margin == 0;
+            x.homeAhead = x.teams.home.score > x.teams.away.score;
+            x.awayAhead = x.teams.away.score > x.teams.home.score;
+            x.aheadHasBall = (x.homeHasBall && x.homeAhead) || (x.awayHasBall && x.awayAhead);
+            x.behindHasBall = (x.homeHasBall && x.awayAhead) || (x.awayHasBall && x.homeAhead);
+            x.potentialLeadChange = x.behindHasBall && x.margin <= 7;
+            x.potentialTie = x.behindHasBall && x.margin == 8;
+            if (x.favored){
+                x.favoredAhead = x.teams[x.favored].score > x.teams[x.underdog].score;
+                x.underdogAhead = x.teams[x.underdog].score > x.teams[x.favored].score;
+                x.favoredHasBall = x.possession == x.teams[x.favored].id;
+                x.underdogHasBall = x.possession == x.teams[x.underdog].id;
+            }
+            x.close = isGameClose(x);
+            x.secondsRemaining = getSecondsRemaining(x.period, x.clock);
+            x.under2 = x.secondsRemaining <= (2 * 60);
+            x.under5 = x.secondsRemaining <= (5 * 60);
+            x.under8 = x.secondsRemaining <= (8 * 60);
+            x.under15 = x.secondsRemaining <= (15 * 60);
+            x.under20 = x.secondsRemaining <= (20 * 60);
+            x.under25 = x.secondsRemaining <= (25 * 60);
+            x.winProbDiff = 100 * Math.abs(x.lastPlay.homeWinPercentage - x.lastPlay.awayWinPercentage);
+            x.tossup = x.winProbDiff < 20;
+        });
         sortOrder = [
+            { desc: x => x.close },
+            { desc: x => x.close * x.under2 },
+            { desc: x => x.close * x.under5 },
+            { desc: x => x.close * x.under8 },
+            { desc: x => x.close * x.under15 },
+            { desc: x => x.close * x.under20 },
+            { desc: x => x.close * x.under25 },
+            { desc: x => x.close * x.period },
+            { asc: x => !x.close * x.period },
+            { desc: x => x.potentialLeadChange },
+            { desc: x => x.potentialTie },
+            { desc: x => x.tossup },
             { desc: x => x.numRanked },
+            { desc: x => x.winProbDiff },
             { desc: x => x.numPowerFive },
             { desc: x => x.numFBS },
             { asc: x => x.spreadPossessions },
@@ -58,6 +102,26 @@ export default function gameSort(allGames) {
     }
     const sorted = sort(allGames).by(sortOrder)
     return sorted;
+}
+
+function isGameClose(x){
+    let close;
+    if (x.period <= 2){
+        close = x.marginPossesions <= 3;
+    } else {
+        close = x.marginPossesions <= 2;
+    }
+    return close
+}
+
+function getSecondsRemaining(x){
+    let secondsRemaining;
+    if (x.period > 4){
+        secondsRemaining = 0;
+    } else {
+        secondsRemaining = (60 * 15) * (4 - x.period - 1) + x.clock;
+    }
+    return secondsRemaining
 }
 
 function isUpset(game){

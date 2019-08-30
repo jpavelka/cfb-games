@@ -1,7 +1,6 @@
 import React from 'react';
-import { Row, Col } from 'reactstrap';
-import moment from 'moment';
-import { styles } from './../lib/game-card-styles';
+import getDisplayInfo from './../lib/game-card-info';
+import GameTemplate from './GameTemplate'
 
 export default class CanceledOrPostponedGame extends React.Component {
     render(){
