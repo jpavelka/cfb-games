@@ -6,7 +6,8 @@ export default class CurrentGame extends React.Component {
     render(){
         const teamDispOptions = {
             includeSpread: false,
-            includeScore: true
+            includeScore: true,
+            possessionIndicator: true
         };
         const quickInfoOptions = [
             {data: 'periodClock', size: '8'},

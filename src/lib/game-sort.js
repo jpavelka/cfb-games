@@ -51,15 +51,17 @@ export default function gameSort(allGames) {
             x.under15 = x.secondsRemaining <= (15 * 60);
             x.under20 = x.secondsRemaining <= (20 * 60);
             x.under25 = x.secondsRemaining <= (25 * 60);
-            x.winProbDiff = 100 * Math.abs(x.lastPlay.homeWinPercentage - x.lastPlay.awayWinPercentage);
+            x.winProbDiff = getWinProbDiff(x);
             x.tossup = x.winProbDiff < 20;
         });
         sortOrder = [
             { desc: x => x.close },
             { desc: x => x.close * x.under2 },
             { desc: x => x.close * x.under5 },
+            { desc: x => x.numRanked },
             { desc: x => x.close * x.under8 },
             { desc: x => x.close * x.under15 },
+            { desc: x => x.numPowerFive },
             { desc: x => x.close * x.under20 },
             { desc: x => x.close * x.under25 },
             { desc: x => x.close * x.period },
@@ -67,9 +69,7 @@ export default function gameSort(allGames) {
             { desc: x => x.potentialLeadChange },
             { desc: x => x.potentialTie },
             { desc: x => x.tossup },
-            { desc: x => x.numRanked },
             { desc: x => x.winProbDiff },
-            { desc: x => x.numPowerFive },
             { desc: x => x.numFBS },
             { asc: x => x.spreadPossessions },
             { asc: x => x.rankSum },
@@ -102,6 +102,16 @@ export default function gameSort(allGames) {
     }
     const sorted = sort(allGames).by(sortOrder)
     return sorted;
+}
+
+function getWinProbDiff(x){
+    let diff;
+    if (x.lastPlay.homeWinPercentage) {
+        diff = 100 * Math.abs(x.lastPlay.homeWinPercentage || 0 - x.lastPlay.awayWinPercentage || 0);
+    } else {
+        diff = undefined;
+    }
+    return diff
 }
 
 function isGameClose(x){

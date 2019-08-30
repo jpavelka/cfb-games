@@ -15,7 +15,8 @@ export default function getDisplayInfo(info, teamDispOptions, quickInfoOptions, 
             favoredText: info.favored == side ? "(-" + info.spread + ")" : "",
             score: sideInfo.score,
             id: sideInfo.id,
-            gameId: info.id
+            gameId: info.id,
+            hasBall: side == 'home' ? info.homeHasBall : info.awayHasBall
         }
     })
     let dFormatStr = 'ddd MMM D';
@@ -75,6 +76,9 @@ function teamLine(teamInfo, teamDispOptions){
     ];
     if (teamDispOptions.includeSpread){
         s.push(<span>{' ' + teamInfo.favoredText}</span>);
+    }
+    if (teamDispOptions.possessionIndicator && teamInfo.hasBall){
+        s.push(<span>{' ' + String.fromCharCode(9679)}</span>)
     }
     let colInfo = [{
         key: teamInfo.gameId + '_' + teamInfo.id + '_teamInfoCol',
