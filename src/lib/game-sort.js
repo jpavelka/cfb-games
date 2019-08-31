@@ -45,7 +45,11 @@ export default function gameSort(allGames) {
             x.under15 = x.secondsRemaining <= (15 * 60);
             x.under20 = x.secondsRemaining <= (20 * 60);
             x.under25 = x.secondsRemaining <= (25 * 60);
-            x.winProbDiff = getWinProbDiff(x);
+            let lastPlay = x.lastPlay || {};
+            let probs = lastPlay.probability || {};
+            x.homeWinProb = probs.homeWinPercentage;
+            x.awayWinProb = probs.awayWinPercentage;
+            x.winProbDiff = 100 * Math.abs(x.homeWinProb - x.awayWinProb);
             x.tossup = x.winProbDiff < 20;
             if (x.favored){
                 x.favoredAhead = x.teams[x.favored].score > x.teams[x.underdog].score;
@@ -112,17 +116,6 @@ export default function gameSort(allGames) {
     const sorted = sort(allGames).by(sortOrder);
     console.log(sorted);
     return sorted;
-}
-
-function getWinProbDiff(x){
-    let diff;
-    let lastPlay = x.lastPlay;
-    if (lastPlay.homeWinPercentage) {
-        diff = 100 * Math.abs(lastPlay.homeWinPercentage || 0 - lastPlay.awayWinPercentage || 0);
-    } else {
-        diff = undefined;
-    }
-    return diff
 }
 
 function isGameClose(x){
