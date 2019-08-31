@@ -101,7 +101,7 @@ class SubList extends React.Component {
             }
             gameSectionRender = <p>{this.props.emptyText}</p>
         } else {
-            let checkId = this.props.headerText + indentLevel;
+            let checkId = 'check' + this.props.headerHistory + this.props.headerText;
             if (potentialSubGroups.length > 0){
                 subGroupSelectRender = <Row><Col>
                     {indentText + extraIndentText}
@@ -136,6 +136,7 @@ class SubList extends React.Component {
                                 headerText={sub.name}
                                 potentialSubGroups={potentialSubGroups.slice(1, potentialSubGroups.length)}
                                 indentLevel={this.props.indentLevel + 1}
+                                headerHistory={(this.props.headerHistory || '') + ' - ' + this.props.headerText}
                             />
                         })
                     }
@@ -150,7 +151,7 @@ class SubList extends React.Component {
                 </Row>
             }
         }
-        let toggleId = this.props.headerText + 'header';
+        let toggleId = 'toggle' + this.props.headerHistory + this.props.headerText;
         return <div>
             <Row><Col><h3>
                 <Label for={toggleId}>
