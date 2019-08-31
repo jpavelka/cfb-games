@@ -41,6 +41,10 @@ export const styles = {
         'fontStyle': 'italic',
         'color': '#e64d35'
     },
+    'upsetAlertText': {
+        'fontStyle': 'italic',
+        'color': '#e64d35'
+    },
     'noInfo': {
         'fontStyle': 'italic',
         'color': '#555555'

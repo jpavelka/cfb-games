@@ -16,14 +16,13 @@ export default class CurrentGame extends React.Component {
         const collapseInfoOptions = [
             'upsetAlert',
             'downDistance',
-            // 'lastPlay',
             'hr',
             'neutral',
             'location',
             'hr',
             'betting'
         ];
-        const cardStyleAttr = '';
+        const cardStyleAttr = 'upsetAlert';
         const dispInfo = getDisplayInfo(this.props.info, teamDispOptions, quickInfoOptions, collapseInfoOptions, cardStyleAttr);
         return <GameTemplate
             dispInfo = {dispInfo}

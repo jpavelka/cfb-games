@@ -15,7 +15,7 @@ export default function gameSort(allGames) {
         x.rankSum = x.teams.home.rank + x.teams.away.rank;
         x.numPowerFive = numPowerFive(x);
         x.numFBS = numFBS(x);
-        let lineInfo = getLineInfo(x.lines);
+        let lineInfo = getLineInfo(x.lines, x.teams.home.school, x.teams.away.school);
         x.favored = lineInfo.favored;
         x.underdog = x.favored == 'home' ? 'away' : 'home';
         x.spread = lineInfo.spread || 999;
@@ -153,7 +153,7 @@ function isClearFavorite(game){
     return false;
 }
 
-function getLineInfo(lines){
+function getLineInfo(lines, homeName, awayName){
     lines = lines || {}
     let info = {}
     let ind = 0
@@ -161,7 +161,16 @@ function getLineInfo(lines){
         let line = lines[ind];
         if (line.spread){
             info.spread = Math.abs(line.spread)
-            info.favored = (line.spread < 0 ? 'home' : 'away')
+            let fs = line.formattedSpread.trim();
+            let hs = (homeName + ' -' + line.spread).trim();
+            let as = (awayName + ' -' + line.spread).trim();
+            if (fs == hs){
+                info.favored = 'home';
+            } else if (as == fs){
+                info.favored = 'away';
+            } else {
+                info.favored = (line.spread < 0 ? 'home' : 'away')
+            }
         }
         if (line.overUnder){
             info.overUnder = line.overUnder
