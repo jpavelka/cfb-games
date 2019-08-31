@@ -15,6 +15,9 @@ export default class CurrentGame extends React.Component {
         ];
         const collapseInfoOptions = [
             'upsetAlert',
+            'downDistance',
+            // 'lastPlay',
+            'hr',
             'neutral',
             'location',
             'hr',

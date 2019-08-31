@@ -31,12 +31,14 @@ export default function getDisplayInfo(info, teamDispOptions, quickInfoOptions, 
         }
         broadcastString = broadcastString + bc.media.shortName;
     })
+    let lastPlay = info.lastPlay || {}
     let otherInfo = {
         gameId: info.id,
         dateStr: moment(info.date).format(dFormatStr),
         dateTimeStr: moment(info.date).format(dtFormatStr),
         broadcastStr: broadcastString,
         periodClockStr: info.periodClockStr,
+        downDistanceText: info.downDistanceText,
         upset: info.upset,
         upsetText: info.upset ? "Upset!" : "",
         upsetAlertText: info.upsetAlert ? "Upset Alert!" : "",
@@ -45,7 +47,8 @@ export default function getDisplayInfo(info, teamDispOptions, quickInfoOptions, 
         venueCityText: info.venueCity + ', ' + info.venueState,
         favored: info.favored,
         bettingLineText: info.favored ? "Line: " + info.teams[info.favored].school + " -" + info.spread : "",
-        overUnderText: info.favored ? "Over/Under: " + info.overUnder : "No betting info",
+        overUnderText: info.favored ? "Over/Under: " +  (info.overUnder ? info.overUnder : "N/A") : "No betting info",
+        lastPlayText: lastPlay.text,
     }
     let retInfo = {
         teamsDispInfo: sidesInfo.map(info => teamLine(info, teamDispOptions)),
@@ -149,6 +152,10 @@ function collapseRows(info, collapseInfoOptions) {
             rows.push(<Row style={styles.upsetText}><Col>{info.upsetText}</Col></Row>);
         } else if (op == 'upsetAlert') {
             rows.push(<Row style={styles.upsetAlertText}><Col>{info.upsetAlertText}</Col></Row>);
+        } else if (op == 'downDistance') {
+            rows.push(<Row><Col>{info.downDistanceText}</Col></Row>);
+        } else if (op == 'lastPlay') {
+            rows.push(<Row><Col>{'Last Play: ' + info.lastPlayText}</Col></Row>);
         } else {
             throw 'Unrecognized data type';
         }

@@ -106,6 +106,7 @@ export default function gameSort(allGames) {
         ]
     }
     const sorted = sort(allGames).by(sortOrder);
+    console.log(sorted);
     return sorted;
 }
 
