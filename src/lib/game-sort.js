@@ -57,9 +57,13 @@ export default function gameSort(allGames) {
         });
         sortOrder = [
             { desc: x => x.close },
+            { desc: x => x.under2 * x.potentialLeadChange },
+            { desc: x => x.under2 * x.potentialTie },
             { desc: x => x.under5 * x.potentialLeadChange },
             { desc: x => x.under5 * x.potentialTie },
-            { desc: x => x.under5 * (x.marginPossesions == 1) },
+            { desc: x => x.under8 * x.potentialLeadChange },
+            { desc: x => x.under8 * x.potentialTie },
+            { desc: x => x.under8 * (x.marginPossesions == 1) },
             { desc: x => x.close * x.under2 },
             { desc: x => x.close * x.under5 },
             { desc: x => x.numRanked },
@@ -112,8 +116,9 @@ export default function gameSort(allGames) {
 
 function getWinProbDiff(x){
     let diff;
-    if (x.lastPlay.homeWinPercentage) {
-        diff = 100 * Math.abs(x.lastPlay.homeWinPercentage || 0 - x.lastPlay.awayWinPercentage || 0);
+    let lastPlay = x.lastPlay;
+    if (lastPlay.homeWinPercentage) {
+        diff = 100 * Math.abs(lastPlay.homeWinPercentage || 0 - lastPlay.awayWinPercentage || 0);
     } else {
         diff = undefined;
     }
