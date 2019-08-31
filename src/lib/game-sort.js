@@ -106,7 +106,6 @@ export default function gameSort(allGames) {
         ]
     }
     const sorted = sort(allGames).by(sortOrder);
-    console.log(sorted);
     return sorted;
 }
 
@@ -130,12 +129,12 @@ function isGameClose(x){
     return close
 }
 
-function getSecondsRemaining(x){
+function getSecondsRemaining(period, clock){
     let secondsRemaining;
-    if (x.period > 4){
+    if (period > 4){
         secondsRemaining = 0;
     } else {
-        secondsRemaining = (60 * 15) * (4 - x.period - 1) + x.clock;
+        secondsRemaining = (60 * 15) * (4 - period) + clock;
     }
     return secondsRemaining
 }
