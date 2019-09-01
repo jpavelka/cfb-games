@@ -22,6 +22,7 @@ export default function gameSort(allGames) {
         x.spreadPossessions = Math.floor((x.spread - 1) / 8) + 1;
         x.overUnder = lineInfo.overUnder;
         x.clearFavorite = isClearFavorite(x);
+        x.boxScoreLink = getBoxScoreLink(x);
     });
     let sortOrder
     if (gameState == 'in'){
@@ -47,9 +48,9 @@ export default function gameSort(allGames) {
             x.under25 = x.secondsRemaining <= (25 * 60);
             let lastPlay = x.lastPlay || {};
             let probs = lastPlay.probability || {};
-            x.homeWinProb = probs.homeWinPercentage;
-            x.awayWinProb = probs.awayWinPercentage;
-            x.winProbDiff = 100 * Math.abs(x.homeWinProb - x.awayWinProb);
+            x.homeWinProb = 100 * probs.homeWinPercentage;
+            x.awayWinProb = 100 * probs.awayWinPercentage;
+            x.winProbDiff = Math.abs(x.homeWinProb - x.awayWinProb);
             x.tossup = x.winProbDiff < 20;
             if (x.favored){
                 x.favoredAhead = x.teams[x.favored].score > x.teams[x.underdog].score;
@@ -200,4 +201,14 @@ function isRanked(team){
 
 function numRanked(game){
     return isRanked(game.teams.home) + isRanked(game.teams.away)
+}
+
+function getBoxScoreLink(x){
+    for (let i in x.links){
+        let link = x.links[i];
+        if (link.text == 'Box Score'){
+            return link.href;
+        }
+    }
+    return;
 }

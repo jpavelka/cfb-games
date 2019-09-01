@@ -13,6 +13,8 @@ export default class UpcomingGame extends React.Component {
         ];
         const collapseInfoOptions = [
             'upset',
+            'boxScore',
+            'hr',
             'neutral',
             'location',
             'hr',

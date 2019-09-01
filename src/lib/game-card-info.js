@@ -34,6 +34,7 @@ export default function getDisplayInfo(info, teamDispOptions, quickInfoOptions, 
     let lastPlay = info.lastPlay || {}
     let otherInfo = {
         gameId: info.id,
+        boxScoreLink: info.boxScoreLink,
         dateStr: moment(info.date).format(dFormatStr),
         dateTimeStr: moment(info.date).format(dtFormatStr),
         broadcastStr: broadcastString,
@@ -46,6 +47,10 @@ export default function getDisplayInfo(info, teamDispOptions, quickInfoOptions, 
         venueText: info.venue.split('(')[0],
         venueCityText: info.venueCity + ', ' + info.venueState,
         favored: info.favored,
+        homeWinProb: info.homeWinProb,
+        awayWinProb: info.awayWinProb,
+        homeName: info.teams.home.school,
+        awayName: info.teams.away.school,
         bettingLineText: info.favored ? "Line: " + info.teams[info.favored].school + " -" + info.spread : "",
         overUnderText: info.favored ? "Over/Under: " +  (info.overUnder ? info.overUnder : "N/A") : "No betting info",
         lastPlayText: lastPlay.text,
@@ -156,6 +161,18 @@ function collapseRows(info, collapseInfoOptions) {
             rows.push(<Row><Col>{info.downDistanceText}</Col></Row>);
         } else if (op == 'lastPlay') {
             rows.push(<Row><Col>{'Last Play: ' + info.lastPlayText}</Col></Row>);
+        } else if (op == 'boxScore') {
+            rows.push(<Row><Col><a href={info.boxScoreLink}>{'Box Score'}</a>{' (ESPN)'}</Col></Row>);
+        } else if (op == 'winProb') {
+            let probText;
+            if (info.homeWinProb){
+                if (info.homeWinProb > info.awayWinProb){
+                    probText = 'Proj. Winner: ' + info.homeName + ' (' + info.homeWinProb + '%)';
+                } else {
+                    probText = 'Proj. Winner: ' + info.awayName + ' (' + info.awayWinProb + '%)';
+                }
+                rows.push(<Row><Col>{probText}</Col></Row>);
+            }
         } else {
             throw 'Unrecognized data type';
         }

@@ -16,6 +16,8 @@ export default class CurrentGame extends React.Component {
         const collapseInfoOptions = [
             'upsetAlert',
             'downDistance',
+            'winProb',
+            'boxScore',
             'hr',
             'neutral',
             'location',
