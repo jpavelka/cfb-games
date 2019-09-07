@@ -48,8 +48,10 @@ export default function gameSort(allGames) {
             x.under25 = x.secondsRemaining <= (25 * 60);
             let lastPlay = x.lastPlay || {};
             let probs = lastPlay.probability || {};
-            x.homeWinProb = (100 * probs.homeWinPercentage).toFixed(1);
-            x.awayWinProb = (100 * probs.awayWinPercentage).toFixed(1);
+            x.homeWinProb = 100 * probs.homeWinPercentage;
+            x.homeWinProb = x.homeWinProb ? x.homeWinProb.toFixed(1) : x.homeWinProb;
+            x.awayWinProb = 100 * probs.awayWinPercentage;
+            x.awayWinProb = x.awayWinProb ? x.awayWinProb.toFixed(1) : x.awayWinProb;
             x.winProbDiff = Math.abs(x.homeWinProb - x.awayWinProb);
             x.tossup = x.winProbDiff < 20;
             if (x.favored){
