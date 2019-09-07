@@ -59,11 +59,12 @@ export default function gameSort(allGames) {
                 x.underdogAhead = x.teams[x.underdog].score > x.teams[x.favored].score;
                 x.favoredHasBall = x.possession == x.teams[x.favored].id;
                 x.underdogHasBall = x.possession == x.teams[x.underdog].id;
-                x.upsetAlert = x.under20 && x.clearFavorite && (x.underdogAhead || x.marginPossesions == 1);
+                x.upsetAlert = x.under20 && x.clearFavorite && (x.underdogAhead || x.marginPossesions <= 1);
             }
         });
         sortOrder = [
             { desc: x => x.close },
+            { desc: x => x.under2 * x.tie },
             { desc: x => x.under2 * x.potentialLeadChange },
             { desc: x => x.under2 * x.potentialTie },
             { desc: x => x.under5 * x.potentialLeadChange },
