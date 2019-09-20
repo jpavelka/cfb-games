@@ -22,7 +22,8 @@ export default function gameSort(allGames) {
             { desc: x => x.numRanked },
             { desc: x => x.close * x.under8 },
             { desc: x => x.close * x.under15 },
-            { desc: x => x.numPowerFive },
+            { asc: x => x.spRankDecileSum },
+            { desc: x => Math.max(x.numRanked, x.numPowerFive) },
             { desc: x => x.close * x.under20 },
             { desc: x => x.close * x.under25 },
             { desc: x => x.close * x.period },
@@ -32,28 +33,24 @@ export default function gameSort(allGames) {
             { desc: x => x.tossup },
             { desc: x => x.winProbDiff },
             { desc: x => x.numFBS },
-            { asc: x => x.spreadPossessions },
-            { asc: x => x.rankSum },
-            { asc: x => x.overUnder },
+            { desc: x => x.spRatingSum }
         ]
     } else if (gameState == 'post'){
         sortOrder = [
             { desc: x => x.numRanked },
-            { desc: x => x.numPowerFive },
+            { asc: x => x.spRankDecileSum },
+            { desc: x => Math.max(x.numRanked, x.numPowerFive) },
             { desc: x => x.numFBS },
             { desc: x => x.upset },
-            { asc: x => x.spreadPossessions },
-            { asc: x => x.rankSum },
-            { asc: x => x.overUnder },
+            { desc: x => x.spRatingSum },
         ]
     } else {
         sortOrder = [
             { desc: x => x.numRanked },
-            { desc: x => x.numPowerFive },
+            { asc: x => x.spRankDecileSum },
+            { desc: x => Math.max(x.numRanked, x.numPowerFive) },
             { desc: x => x.numFBS },
-            { asc: x => x.spreadPossessions },
-            { asc: x => x.rankSum },
-            { asc: x => x.overUnder },
+            { desc: x => x.spRatingSum }
         ]
     }
     const sorted = sort(allGames).by(sortOrder);

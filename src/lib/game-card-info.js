@@ -1,7 +1,8 @@
 import React from 'react';
 import { Row, Col, Collapse, Label} from 'reactstrap';
 import moment from 'moment';
-import { styles } from './../lib/game-card-styles';
+import { styles, logoWidth } from './../lib/game-card-styles';
+
 
 export default function getDisplayInfo(info, teamDispOptions, quickInfoOptions, collapseInfoOptions, cardStyleCheckAttr) {
     // team lines
@@ -9,14 +10,16 @@ export default function getDisplayInfo(info, teamDispOptions, quickInfoOptions, 
         let sideInfo = info.teams[side];
         return {
             homeAway: side,
-            image: <img src={sideInfo.logo} height='30px' alt=''/>,
+            image: <img src={sideInfo.logo} height={logoWidth + 'px'} alt=''/>,
             rank: sideInfo.rank == 99 ? "" : sideInfo.rank,
             name: info.teams[side].school,
             favoredText: info.favored == side ? "(-" + info.spread + ")" : "",
             score: sideInfo.score,
             id: sideInfo.id,
             gameId: info.id,
-            hasBall: side == 'home' ? info.homeHasBall : info.awayHasBall
+            hasBall: side == 'home' ? info.homeHasBall : info.awayHasBall,
+            record: sideInfo.record,
+            confRecord: sideInfo.confRecord
         }
     })
     let dFormatStr = 'ddd MMM D';
@@ -26,10 +29,12 @@ export default function getDisplayInfo(info, teamDispOptions, quickInfoOptions, 
     }
     let broadcastString = '';
     info.geoBroadcasts.map(bc => {
-        if (broadcastString != ''){
-            broadcastString = broadcastString + ', ';
+        if (bc.media.shortName != 'ESPNRM'){
+            if (broadcastString != ''){
+                broadcastString = broadcastString + ', ';
+            }
+            broadcastString = broadcastString + bc.media.shortName;
         }
-        broadcastString = broadcastString + bc.media.shortName;
     })
     let lastPlay = info.lastPlay || {}
     let otherInfo = {
@@ -79,8 +84,8 @@ function makeCols(columnsInfo, rowStyle){
 function teamLine(teamInfo, teamDispOptions){
     let s = [
         teamInfo.image,
-        <span>{' ' + teamInfo.rank}</span>,
-        <span>{' ' + teamInfo.name}</span>
+        <span style={styles.teamRank}>{' ' + teamInfo.rank}</span>,
+        <span style={styles.teamName}>{' ' + teamInfo.name}</span>,
     ];
     if (teamDispOptions.includeSpread){
         s.push(<span>{' ' + teamInfo.favoredText}</span>);
@@ -88,6 +93,7 @@ function teamLine(teamInfo, teamDispOptions){
     if (teamDispOptions.possessionIndicator && teamInfo.hasBall){
         s.push(<span>{' ' + String.fromCharCode(9679)}</span>)
     }
+    s.push(<div style={styles.recordLine}>{teamInfo.record + ' (' + teamInfo.confRecord + ')'}</div>);
     let colInfo = [{
         key: teamInfo.gameId + '_' + teamInfo.id + '_teamInfoCol',
         size: '12',

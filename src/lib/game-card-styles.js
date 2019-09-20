@@ -1,3 +1,4 @@
+export const logoWidth = 30;
 export const styles = {
     'away': {
         'paddingTop': '10px'
@@ -47,6 +48,18 @@ export const styles = {
     },
     'noInfo': {
         'fontStyle': 'italic',
+        'color': '#555555'
+    },
+    'teamName': {
+        // 'fontWeight': '600'
+    },
+    'teamRank': {
+        'fontSize': '10pt'
+    },
+    'recordLine': {
+        'marginTop': '-10px',
+        'marginLeft': logoWidth + 5 + 'px',
+        'fontSize': '8pt',
         'color': '#555555'
     }
 }
