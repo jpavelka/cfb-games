@@ -61,5 +61,12 @@ export const styles = {
         'marginLeft': logoWidth + 5 + 'px',
         'fontSize': '8pt',
         'color': '#555555'
+    },
+    'gameTitleStyle': {
+        'fontSize': '10pt',
+        'color': '#555555',
+        'marginBottom': '-10px',
+        'marginLeft': '5px'
+
     }
 }

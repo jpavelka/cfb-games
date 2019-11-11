@@ -36,7 +36,16 @@ export default function getDisplayInfo(info, teamDispOptions, quickInfoOptions, 
             broadcastString = broadcastString + bc.media.shortName;
         }
     })
-    let lastPlay = info.lastPlay || {}
+    let lastPlay = info.lastPlay || {};
+    let venueText = info.venue || 'Venue TBD';
+    venueText = venueText.split('(')[0];
+    let venueCityText = '';
+    if (info.venueCity){
+        venueCityText += venueCityText + info.venueCity;
+    }
+    if (info.venueState){
+        venueCityText += ', ' + info.venueState
+    }
     let otherInfo = {
         gameId: info.id,
         boxScoreLink: info.boxScoreLink,
@@ -49,8 +58,8 @@ export default function getDisplayInfo(info, teamDispOptions, quickInfoOptions, 
         upsetText: info.upset ? "Upset!" : "",
         upsetAlertText: info.upsetAlert ? "Upset Alert!" : "",
         neutralText: info.neutral ? "Neutral Site" : "",
-        venueText: info.venue.split('(')[0],
-        venueCityText: info.venueCity + ', ' + info.venueState,
+        venueText: venueText,
+        venueCityText: venueCityText,
         favored: info.favored,
         homeWinProb: info.homeWinProb,
         awayWinProb: info.awayWinProb,
@@ -61,6 +70,7 @@ export default function getDisplayInfo(info, teamDispOptions, quickInfoOptions, 
         lastPlayText: lastPlay.text,
     }
     let retInfo = {
+        titleInfo: info.title,
         teamsDispInfo: sidesInfo.map(info => teamLine(info, teamDispOptions)),
         quickGameInfo: bottomRow(otherInfo, quickInfoOptions),
         collapseGameInfo: collapseRows(otherInfo, collapseInfoOptions),
@@ -93,7 +103,14 @@ function teamLine(teamInfo, teamDispOptions){
     if (teamDispOptions.possessionIndicator && teamInfo.hasBall){
         s.push(<span>{' ' + String.fromCharCode(9679)}</span>)
     }
-    s.push(<div style={styles.recordLine}>{teamInfo.record + ' (' + teamInfo.confRecord + ')'}</div>);
+    let teamRecordText = '';
+    if (teamInfo.record){
+        teamRecordText = teamRecordText + teamInfo.record
+    }
+    if (teamInfo.confRecord){
+        teamRecordText = teamRecordText + ' (' + teamInfo.confRecord + ')'
+    }
+    s.push(<div style={styles.recordLine}>{teamRecordText}</div>);
     let colInfo = [{
         key: teamInfo.gameId + '_' + teamInfo.id + '_teamInfoCol',
         size: '12',

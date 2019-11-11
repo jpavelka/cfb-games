@@ -9,10 +9,14 @@ export default class GameTemplate extends React.Component {
             moreLessCollapsed: true
         };
     }
-
-    render(){
+    render(){        
+        let titleDisp = <div />
+        if (this.props.dispInfo.titleInfo){
+            titleDisp = <div style={styles.gameTitleStyle}>{this.props.dispInfo.titleInfo}</div>
+        }
         return (
             <Col xs='12' sm='6' md='4' lg='3'><div className='card' style={this.props.dispInfo.cardStyle}>
+                {titleDisp}
                 {this.props.dispInfo.teamsDispInfo}
                 {this.props.dispInfo.quickGameInfo}
                 <Row style={styles.moreLess}><Col><Label for={this.props.gameId + 'moreLess'}>
