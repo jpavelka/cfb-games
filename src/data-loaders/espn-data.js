@@ -6,7 +6,7 @@ function getEspnScoreboardData({season, week, seasonType, groups=80, limit=999})
     }
     return axios({
         method: 'get',
-        url: 'http://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard',
+        url: 'https://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard',
         params: {
             groups: groups,
             limit: limit,
