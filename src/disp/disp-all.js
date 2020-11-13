@@ -15,8 +15,9 @@ function dispAll({seasonInfo, savedDataSource}){
 
 function setupSelections(seasonInfo){
     const selectionsDiv = d3.select('#selectionsDiv')
-    const allWeeksSelect = selectionsDiv.append('div').attr('class', 'col-xs-12 col-sm-6 col-md-4 col-lg-3 col-xl-2').html('&nbsp;&nbsp;Week')
-        .append('select').attr('class', 'form-control').attr('id', 'weekSelect').on('change', () => weekSelectChange())
+    const allWeeksSelect = selectionsDiv.append('div').html('&nbsp;&nbsp;Week')
+        .append('select').attr('class', 'form-control').attr('id', 'weekSelect').style('width', '250px')
+            .on('change', () => weekSelectChange())
     seasonInfo.allWeeks.map(w => {
         let dtFrmt = 'M/D'
         let label = moment(w.startDate).format(dtFrmt) + ' - ' + moment(w.endDate).format(dtFrmt)

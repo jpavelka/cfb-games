@@ -26,7 +26,7 @@ function dispGameCards({games}){
 
 function dispSubset({games, partitionInfo, level, value, parentDiv}){
     let initialSubsetDiv = parentDiv.append('div')
-    let subsetDiv = initialSubsetDiv.append('div').attr('class', 'm-3')
+    let subsetDiv = initialSubsetDiv.append('div').attr('class', 'm-1')
     let subsetTitle = getPartitionTitle({level: level, value: value})
     let toggleId = ['toggle', level, value, games[0].id].join('-')
     let checkId = ['check', level, value, games[0].id].join('-')
