@@ -9,9 +9,6 @@ function fullyRefineData(games){
         g.gamecastLink = 'https://www.espn.com/college-football/game?gameId=' + g.id        
         let sides = ['homeTeam', 'awayTeam']
         if (g.statusPartitionValue == 'in'){
-            if (g.down){
-                g.downDistanceText = nToNth(g.down) + ' and ' + g.distance
-            }
             g.margin = Math.abs(g.homeTeam.score - g.awayTeam.score)
             g.marginPossessions = Math.floor((g.margin - 0.5) / 8) + 1
             g.tie = g.margin == 0
@@ -123,7 +120,7 @@ function simplifyGameInfo(weekGames){
                     game[side + 'Team'].timeoutsLeft = situation[side + 'Timeouts']
                 })                
                 let lastPlay = situation.lastPlay || {}
-                game.lastPlayText = lastPlay.lastPlayText
+                game.lastPlayText = lastPlay.text
                 let down = situation.down
                 if (lastPlay.team){
                     let possessionTeam = lastPlay.team.id == game.homeTeam.id ? 'home' : 'away'
@@ -132,6 +129,7 @@ function simplifyGameInfo(weekGames){
                         game.distance = situation.distance
                         game.yardLine = situation.yardLine
                         game.possession = possessionTeam
+                        game.downDistanceText = situation.downDistanceText
                     } else {
                         game.possession = possessionTeam == 'home' ? 'away' : 'home'
                     }

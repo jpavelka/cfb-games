@@ -89,27 +89,24 @@ function addTeamLines({game, cardDiv}){
 
 
 function addInfoRow({game, cardDiv}){
-    const infoRow = cardDiv.append('div').attr('class', 'row').style('padding-top', '10px')
+    const infoRow = cardDiv.append('div').style('padding-top', '10px')
+    let timeDisp = ''
     if (game.statusState == 'in'){
-        let timeDisp = ''
         if (game.displayClock){
             timeDisp = game.displayClock + ' - '
         }
-        timeDisp += game.displayPeriod
-        infoRow.append('div').attr('class', 'col-7')
-            .html(timeDisp)
+        timeDisp += game.displayPeriod        
     } else {
-        infoRow.append('div').attr('class', 'col-7')
-            .html(moment(game.date).format(game.timeValid ? 'ddd MMM D, LT' : 'ddd MMM D'))
-    }    
-    infoRow.append('div').attr('class', 'col-5').style('text-align', 'right').style('padding-right', '25px')
-        .html(game.broadcasts)       
+        timeDisp = moment(game.date).format(game.timeValid ? 'ddd MMM D, h:mm a' : 'ddd MMM D')
+    }
+    infoRow.append('span').style('float', 'left').html(timeDisp) 
+    infoRow.append('span').style('float', 'right').html('&nbsp;&nbsp;&nbsp;' + game.broadcasts)       
 }
 
 
 function addCollapseInfo({game, cardDiv}){
     let collapseId = 'infoCollapse' + game.id
-    cardDiv.append('a')
+    cardDiv.append('div').style('clear', 'left').append('a')
         .attr('id', collapseId + 'MoreLess')
         .attr('data-toggle', 'collapse')
         .attr('href', '#' + collapseId)
@@ -119,7 +116,6 @@ function addCollapseInfo({game, cardDiv}){
         .text('More')
         .on('click', () => collapseInfoClick(collapseId))
     let collapseDiv = cardDiv.append('div').attr('id', collapseId).attr('class', 'collapse')
-    collapseDiv.append('hr')
     let addHr = false;
     if (game.clearUpset){
         addHr = true
@@ -145,7 +141,8 @@ function addCollapseInfo({game, cardDiv}){
         }
         if (game.lastPlayText){
             addHr = true
-            collapseDiv.append('div').text('Last: ' + game.lastPlayText)
+            collapseDiv.append('div').text('Last Play: ')
+                .append('span').style('font-style', 'italic').style('color', '#555555').text(game.lastPlayText)
         }
         if (game.projectedWinner){
             addHr = true
@@ -156,16 +153,6 @@ function addCollapseInfo({game, cardDiv}){
             collapseDiv.append('hr')
         }
     }
-    // venue
-    collapseDiv.append('div').text(game.venueName)
-    collapseDiv.append('div').text(game.venueCity + (game.venueState ? ', ' + game.venueState : ''))
-    collapseDiv.append('hr')    
-    if (game.hasBettingInfo){
-        // betting
-        collapseDiv.append('div').text('Line: ' + game[game.betting.favored + 'Team'].school + ' -' + game.betting.spread)
-        collapseDiv.append('div').text('Over/Under: ' + game.betting.overUnder)
-        collapseDiv.append('hr')
-    }
     // links
     collapseDiv.append('div').text('Links (ESPN):')
     collapseDiv.append('div').append('a').text('Gamecast').attr('href', game.gamecastLink)
@@ -174,6 +161,16 @@ function addCollapseInfo({game, cardDiv}){
         let team = game[side + 'Team']
         collapseDiv.append('div').append('a').text(team.school + ' Clubhouse').attr('href', team.clubhouseLink)
     })
+    collapseDiv.append('hr')
+    // venue
+    collapseDiv.append('div').text(game.venueName)
+    collapseDiv.append('div').text(game.venueCity + (game.venueState ? ', ' + game.venueState : ''))
+    collapseDiv.append('hr')    
+    if (game.hasBettingInfo){
+        // betting
+        collapseDiv.append('div').text('Line: ' + game[game.betting.favored + 'Team'].school + ' -' + game.betting.spread)
+        collapseDiv.append('div').text('Over/Under: ' + game.betting.overUnder)        
+    }
 }
 
 

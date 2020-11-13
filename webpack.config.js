@@ -5,12 +5,21 @@ const { env } = require("process");
 const { endianness } = require("os");
 
 
-module.exports = env => {
+module.exports = (env, options) => {
   env = env || {}
   let entry = ["@babel/polyfill", './src/app.js'];
   if (env.dataSource == 'saved'){
     entry[1] = './src/app-saved-data.js'
   }
+  let plugins = [
+    new HtmlWebpackPlugin({
+        title: "CFB Games",
+    })
+  ]
+  if (options.mode == 'production'){
+    plugins.push(new CleanWebpackPlugin())
+  }
+
   return {
     entry: entry,
     output: {
@@ -35,12 +44,7 @@ module.exports = env => {
           },
         ]
       },
-    plugins: [
-        new HtmlWebpackPlugin({
-            title: "CFB Games",
-        }),
-        new CleanWebpackPlugin()
-    ],
+    plugins: plugins,
     devServer: {
         contentBase: './dist',
         open: true

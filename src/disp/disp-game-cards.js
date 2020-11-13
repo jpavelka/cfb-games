@@ -31,15 +31,17 @@ function dispSubset({games, partitionInfo, level, value, parentDiv}){
     let toggleId = ['toggle', level, value, games[0].id].join('-')
     let checkId = ['check', level, value, games[0].id].join('-')
     subsetDiv.append('h3')
+        .append('a')
         .style('display', 'inline-block')
+        .on('click', () => caretTurn(toggleId + '-toggle-caret'))
         .html(subsetTitle)
-    subsetDiv.append('a')
         .attr('data-toggle', 'collapse')
         .attr('href', '#' + toggleId)
         .attr('role', 'button')
         .attr('aria-expanded', 'false')
         .attr('aria-controls', toggleId)
         .style('color', 'black')
+        .style('text-decoration', 'none')
         .on('click', () => caretTurn(toggleId + '-toggle-caret'))
         .append('i')
             .style('margin-left', '10pt')  
@@ -73,7 +75,7 @@ function dispSubset({games, partitionInfo, level, value, parentDiv}){
     }
     if (nextPartition.bool){
         let partitionKey = nextPartition.level + 'PartitionValue'
-        let partitionValues = Array.from(new Set(games.map(g => g[partitionKey])))        
+        let partitionValues = Array.from(new Set(games.map(g => g[partitionKey]))).sort()     
         partitionValues.map(pv => {
             dispSubset({
                 games: games.filter(g => g[partitionKey] == pv),
