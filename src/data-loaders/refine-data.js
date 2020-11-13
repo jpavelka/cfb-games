@@ -63,7 +63,7 @@ function isUpsetAlert(g){
     if (g.betting.spread < 10){
         return false
     } else {
-        return (g.period >= 3 && g.favored != g.leading) || (g.period >= 4 && g.marginPossessions <= 1)
+        return (g.period >= 3 && !g.favoredLeading) || (g.under8 && g.marginPossessions <= 1)
     }
 }
 
