@@ -24,7 +24,7 @@ module.exports = (env, options) => {
     entry: entry,
     output: {
         filename: '[name].bundle.[contenthash].js',
-        path: path.resolve(__dirname, 'docs')
+        path: path.resolve(__dirname, 'dist')
     },
     module: {
         rules: [
