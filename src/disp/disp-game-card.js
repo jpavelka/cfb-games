@@ -98,8 +98,17 @@ function addInfoRow({game, cardDiv}){
     } else {
         timeDisp = moment(game.date).format(game.timeValid ? 'ddd MMM D, h:mm a' : 'ddd MMM D')
     }
-    infoRow.append('span').style('float', 'left').html(timeDisp) 
-    infoRow.append('span').style('float', 'right').html('&nbsp;&nbsp;&nbsp;' + game.broadcasts)       
+    infoRow.append('span').style('float', 'left').html(timeDisp)
+    let broadcastSpan = infoRow.append('span').style('float', 'right').html('&nbsp;&nbsp;&nbsp;')
+    let broadcastText = game.broadcasts.join(', ')
+    let isEspnBroadcast = game.broadcasts.map(x => (['ESPN', 'SECN', 'ACCN'].includes(x.slice(0, 4)) || x.slice(0, 3) == 'ABC')).reduce((x, y) => x + y, 0) > 0
+    if (isEspnBroadcast){
+        let search = ['homeTeam', 'awayTeam'].map(x => game[x].school.replace(' ', '%20')).join('%20')
+        let linkText = 'https://www.espn.com/search/_/q/' + search + '/o/watch/appearance/dark'
+        broadcastSpan.append('a').html(broadcastText).attr('href', linkText)
+    } else {
+        broadcastSpan.append('span').html(broadcastText)
+    }
 }
 
 
