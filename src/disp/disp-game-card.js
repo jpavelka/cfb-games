@@ -19,7 +19,7 @@ function dispGameCard({game, parentDiv}){
 }
 
 
-function addTeamLines({game, cardDiv, timeoutsCorrect=true}){
+function addTeamLines({game, cardDiv, timeoutsCorrect=false}){
     let teamOrder = ['away', 'home']
     const imgSize = '35px'
     if (game.title != ''){
