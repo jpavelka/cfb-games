@@ -5,7 +5,6 @@ debug.js
 
 dist/*
 
-
 # Logs
 logs
 *.log

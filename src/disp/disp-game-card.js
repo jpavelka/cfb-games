@@ -19,7 +19,7 @@ function dispGameCard({game, parentDiv}){
 }
 
 
-function addTeamLines({game, cardDiv}){
+function addTeamLines({game, cardDiv, timeoutsCorrect=false}){
     let teamOrder = ['away', 'home']
     const imgSize = '35px'
     if (game.title != ''){
@@ -67,16 +67,15 @@ function addTeamLines({game, cardDiv}){
             .style('margin-top', '-10px')
             .style('margin-left', '40px')
             .style('font-size', '8pt')
-            .style('color', 'rgb(85, 85, 85)')
-            .html(recordLineText)
-        if (team.timeoutsLeft){
-            let timeoutsDiv = recordLineDiv.append('span').style('font-size', '10pt').style('color', 'black')
-            let timeoutsHtml = '&nbsp;&nbsp;'
+            .style('color', 'rgb(85, 85, 85)')            
+        if (team.timeoutsLeft && timeoutsCorrect){            
+            let timeoutsHtml = '&nbsp;&nbsp;&nbsp;&nbsp;'
             for (i=0; i<team.timeoutsLeft; i++){
                 timeoutsHtml += '&#8226;&nbsp;'
             }
-            timeoutsDiv.html(timeoutsHtml)  
-        }        
+            recordLineText += timeoutsHtml
+        }
+        recordLineDiv.html(recordLineText)     
         if (['in', 'post'].includes(game.statusPartitionValue)){
             teamCol.attr('class', 'col-9')
             scoreColText = team.score            
