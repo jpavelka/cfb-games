@@ -176,6 +176,7 @@ function simplifyTeamInfo(game, side, status, statusState){
 
 function incorporateBettingLines({games, lines}){
     games.map(g => {
+        lines = lines || {}
         let gameLines = (lines[g.id] || {lines: []}).lines
         g.hasBettingInfo = gameLines.length > 0
         if (g.hasBettingInfo){
@@ -204,6 +205,7 @@ function getFavoredLine(lines){
 
 
 function incorporateSpPlusRatings({games, ratings}){
+    ratings = ratings || []
     ratings = ratings.filter(r => r.team != 'nationalAverages')
     let ratingsByTeam = {}
     let lastRating = null
@@ -221,7 +223,7 @@ function incorporateSpPlusRatings({games, ratings}){
         lastRating = r.rating
         ratingsByTeam[r.team] = {rating: r.rating, rank: r.rank}
     })
-    minRating = ratings[ratings.length - 1].rating   
+    minRating = ratings.length > 1 ? ratings[ratings.length - 1].rating : 0
     games.map(g => {
         ['homeTeam', 'awayTeam'].map(side => {
             r = ratingsByTeam[g[side].school] || {}
