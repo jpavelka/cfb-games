@@ -1,8 +1,6 @@
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const path = require('path');
-const { env } = require("process");
-const { endianness } = require("os");
 
 
 module.exports = (env, options) => {
