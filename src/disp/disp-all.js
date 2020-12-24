@@ -15,7 +15,7 @@ function dispAll({seasonInfo, savedDataSource}){
 
 function setupSelections(seasonInfo){
     const selectionsDiv = d3.select('#selectionsDiv')
-    const allWeeksSelect = selectionsDiv.append('div').html('&nbsp;&nbsp;Week')
+    const allWeeksSelect = selectionsDiv.append('div').html('&nbsp;&nbsp;Week').style('font-weight', 'bold')
         .append('select').attr('class', 'form-control').attr('id', 'weekSelect').style('width', '250px')
             .on('change', () => weekSelectChange())
     seasonInfo.allWeeks.map(w => {
@@ -24,7 +24,7 @@ function setupSelections(seasonInfo){
         label = w.label + ' (' + label + ')'
         weekSelect = allWeeksSelect.append('option').attr('value', w.value + '_' + w.seasonType).text(label)
         if(seasonInfo.currentWeekNum == w.value && seasonInfo.currentSeasonType == w.seasonType){
-            weekSelect.property('selected', 'true')
+            weekSelect.property('selected', 'true').style('background-color', '#e8e848')
         }
     })
     window.selectedWeekNum = seasonInfo.currentWeekNum

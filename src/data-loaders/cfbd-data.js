@@ -43,7 +43,6 @@ function getSpPlusRatings({season, teams}) {
     }).catch(error => {
         console.log('Trouble loading SP+ ratings');
         console.log(error);
-        return {}
     })
 }
 
