@@ -5,7 +5,7 @@
   "main": "webapp.js",
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.15.1",
-    "axios": "^0.21.0",
+    "axios": "^0.21.1",
     "bootstrap": "^4.5.3",
     "d3": "^6.2.0",
     "fast-sort": "^2.2.0",
