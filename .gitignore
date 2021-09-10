@@ -1,4 +1,7 @@
+saved-data/*
 .theia
+.vscode/*
+debug.js
 
 dist/*
 

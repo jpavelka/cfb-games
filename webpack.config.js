@@ -1,46 +1,51 @@
-const HtmlWebPackPlugin = require("html-webpack-plugin");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
+const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const path = require("path");
-const { CleanWebpackPlugin } = require('clean-webpack-plugin');
-module.exports = {
-  module: {
-    rules: [
-      {
-        test: /\.(js|jsx)$/,
-        exclude: /node_modules/,
-        use: {
-          loader: "babel-loader"
-        }
-      },
-      {
-        test: /\.html$/,
-        use: [
-          {
-            loader: "html-loader"
-          }
-        ]
-      },
-      {
-        test:/\.css$/,
-        use:['style-loader','css-loader']
-      }
-    ]
-  },
-  plugins: [
-    new HtmlWebPackPlugin({
-      template: "./src/index.html",
-      filename: "./index.html"
-    }),
-    new CleanWebpackPlugin()
-  ],
-  devServer: {
-    host: '0.0.0.0',
-    port: 3000,
-    allowedHosts: [
-      '.gitpod.io'
-    ]
-  },
-  output: {
-    path: path.resolve(__dirname, 'docs'),
-    filename: 'main.[contenthash].js'
+
+module.exports = (env, options) => {
+  env = env || {};
+  let entry = ["@babel/polyfill", "./src/app.js"];
+  if (env.dataSource == "saved") {
+    entry[1] = "./src/app-saved-data.js";
   }
+  let plugins = [
+    new HtmlWebpackPlugin({
+      title: "CFB Games",
+    }),
+  ];
+  if (options.mode == "production") {
+    plugins.push(new CleanWebpackPlugin());
+  }
+
+  return {
+    entry: entry,
+    output: {
+      filename: "[name].bundle.[contenthash].js",
+      path: path.resolve(__dirname, "dist"),
+    },
+    module: {
+      rules: [
+        {
+          test: /\.js$/,
+          exclude: /node_modules/,
+          use: {
+            loader: "babel-loader",
+            options: {
+              presets: ["@babel/preset-env"],
+            },
+          },
+        },
+        {
+          test: /\.css$/,
+          use: [{ loader: "style-loader" }, { loader: "css-loader" }],
+        },
+      ],
+    },
+    plugins: plugins,
+    devServer: {
+      static: "./dist",
+      open: true,
+      allowedHosts: ["all"],
+    },
+  };
 };
