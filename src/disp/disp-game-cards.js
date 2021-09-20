@@ -134,7 +134,7 @@ function initializeWindowVars({games}){
         } else if (['canceled', 'postponed', 'in'].includes(s)){
 
         } else {
-            defaultPartitions[s]['date'] = true
+            defaultPartitions[s]['date'] = false
             defaultPartitions[s]['hour'] = false
         }
     })
