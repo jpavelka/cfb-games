@@ -127,7 +127,7 @@ function getPartitionTitle({ level, value }) {
   } else if (level == "date") {
     return moment(value).format("ddd. MMM. D");
   } else if (level == "hour") {
-    return moment("1900-01-01 " + value + ":00").format("h:00 a");
+    return !value ? 'Time TBD' : moment("1900-01-01 " + value + ":00").format("h:00 a");
   }
 }
 
