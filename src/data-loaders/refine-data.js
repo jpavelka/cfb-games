@@ -6,7 +6,7 @@ function fullyRefineData(games) {
       ? g.status.toLowerCase()
       : g.statusState;
     g.datePartitionValue = moment(g.date).format("YYYYMMDD");
-    g.hourPartitionValue = moment(g.date).format("H");
+    g.hourPartitionValue = g.timeValid ? moment(g.date).format("H") : null;
     g.gamecastLink =
       "https://www.espn.com/college-football/game?gameId=" + g.id;
     let sides = ["homeTeam", "awayTeam"];
@@ -118,7 +118,7 @@ function simplifyGameInfo(weekGames) {
       venueName: venue.fullName,
       venueIndoor: venue.indoor,
       datePartitionValue: moment(g.date).format("YYYYMMDD"),
-      hourPartitionValue: moment(g.date).format("H"),
+      hourPartitionValue: comp.timeValid ? moment(g.date).format("H") : null,
       title: comp.notes.map((n) => n.headline).join(", "),
     };
     let sides = ["home", "away"];
