@@ -29,7 +29,7 @@ function getBettingLines({ season, week, seasonType }) {
 }
 
 function getSpPlusRatings({ season, teams }) {
-  console.log("Attempting to get SP+ ratings from collegfootballdata.com");
+  console.log("Attempting to load SP+ ratings");
   return axios({
     method: "get",
     url: "https://us-central1-playground-255411.cloudfunctions.net/cfbd-get",
@@ -40,7 +40,7 @@ function getSpPlusRatings({ season, teams }) {
     timeout: 5000,
   })
     .then((response) => {
-      console.log("Successfully loaded SP+ ratings");
+      console.log("SP+ ratings loaded");
       spData = response.data;
       return spData;
     })

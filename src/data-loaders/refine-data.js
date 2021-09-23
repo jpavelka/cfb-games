@@ -82,7 +82,6 @@ function totalSecondsRemaining({period, seconds}){
 
 function simplifyGameInfo(weekGames){
     let games = weekGames.map(g => {
-        console.log(g)
         let comp = g.competitions[0];
         let broadcasts = ((comp.broadcasts || []).filter(c => c.market == 'national')[0] || {names: []}).names
         let status = g.status.type
