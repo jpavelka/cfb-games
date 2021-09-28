@@ -44,6 +44,17 @@ function addTeamLines({ game, cardDiv, timeoutsCorrect = false }) {
       .attr("class", "col")
       .style("display", "flex");
     teamNameDiv
+      .append("vl")
+      .style("border-left", "7px solid white")
+      .style("height", imgSize);
+    teamNameDiv
+      .append("vl")
+      .style("border-left", "3px solid #aaaaaa")
+      .style("height", getRatingBarHeight(team, imgSize, false))
+      .style("margin-top", getRatingBarHeight(team, imgSize, true))
+      .style("margin-left", "-5px")
+      .style("margin-right", "5px");
+    teamNameDiv
       .append("img")
       .attr("src", team.logo)
       .style("height", imgSize)
@@ -85,7 +96,7 @@ function addTeamLines({ game, cardDiv, timeoutsCorrect = false }) {
     let recordLineDiv = teamCol
       .append("div")
       .style("margin-top", "-10px")
-      .style("margin-left", "40px")
+      .style("margin-left", "50px")
       .style("font-size", "8pt")
       .style("color", "rgb(85, 85, 85)");
     if (team.timeoutsLeft && timeoutsCorrect) {
@@ -267,6 +278,19 @@ function collapseInfoClick(id) {
   collapseControlDiv.text(
     collapseControlDiv.property("text") == "More" ? "Less" : "More"
   );
+}
+
+function getRatingBarHeight(team, totalHeight, invert) {
+  if (team.spPlusRatingRel === undefined){
+    mult = 0
+  } else {
+    minP = 0.1;
+    mult = minP + team.spPlusRatingRel * (1 - minP);
+    mult = invert ? 1 - mult : mult;
+  }
+  heightNum = totalHeight.match(/\d+/g)[0];
+  barHeight = mult * heightNum;
+  return barHeight + totalHeight.match(/[a-zA-Z]+/)[0];
 }
 
 module.exports = { dispGameCard };
