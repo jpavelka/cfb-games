@@ -42,7 +42,18 @@ function getSpPlusRatings({ season, teams }) {
     .then((response) => {
       console.log("SP+ ratings loaded");
       spData = response.data;
-      return spData;
+      teamNameSwaps = {
+        "UT San Antonio": "UTSA",
+        Connecticut: "UConn",
+        "Southern Mississippi": "Southern Miss",
+        "Louisiana Monroe": "UL Monroe",
+      };
+      return spData.map((x) => {
+        if (Object.keys(teamNameSwaps).includes(x.team)) {
+          x.team = teamNameSwaps[x.team];
+        }
+        return x;
+      });
     })
     .catch((error) => {
       console.log("Trouble loading SP+ ratings");

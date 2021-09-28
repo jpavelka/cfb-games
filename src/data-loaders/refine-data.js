@@ -247,11 +247,15 @@ function incorporateSpPlusRatings({ games, ratings }) {
     ratingsByTeam[r.team] = { rating: r.rating, rank: r.rank };
   });
   minRating = ratings.length > 1 ? ratings[ratings.length - 1].rating : 0;
+  maxRating = ratings.length > 1 ? ratings[0].rating : 1;
   games.map((g) => {
     ["homeTeam", "awayTeam"].map((side) => {
       r = ratingsByTeam[g[side].school] || {};
       g[side].spPlusRating = r.rating || minRating;
       g[side].spPlusRank = r.rank || ratings.length;
+      g[side].spPlusRatingRel = r.rating !== undefined
+        ? (r.rating - minRating) / (maxRating - minRating)
+        : undefined;
     });
   });
   return games;
