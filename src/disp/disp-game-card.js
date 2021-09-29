@@ -49,7 +49,7 @@ function addTeamLines({ game, cardDiv, timeoutsCorrect = false }) {
       .style("height", imgSize);
     teamNameDiv
       .append("vl")
-      .style("border-left", "3px solid #aaaaaa")
+      .style("border-left", "3px solid " + getRatingColor(team))
       .style("height", getRatingBarHeight(team, imgSize, false))
       .style("margin-top", getRatingBarHeight(team, imgSize, true))
       .style("margin-left", "-5px")
@@ -280,17 +280,28 @@ function collapseInfoClick(id) {
   );
 }
 
-function getRatingBarHeight(team, totalHeight, invert) {
-  if (team.spPlusRatingRel === undefined){
-    mult = 0
+function getRatingMult(team) {
+  if (team.spPlusRatingRel === undefined) {
+    mult = 0;
   } else {
     minP = 0.1;
     mult = minP + team.spPlusRatingRel * (1 - minP);
-    mult = invert ? 1 - mult : mult;
   }
+  return mult;
+}
+
+function getRatingBarHeight(team, totalHeight, invert) {
+  mult = getRatingMult(team);
+  mult = invert ? 1 - mult : mult;
   heightNum = totalHeight.match(/\d+/g)[0];
   barHeight = mult * heightNum;
   return barHeight + totalHeight.match(/[a-zA-Z]+/)[0];
+}
+
+function getRatingColor(team) {
+  mult = getRatingMult(team);
+  hue = (mult ** 1.5 * 120).toString(10);
+  return ["hsl(", hue, ",90%,70%)"].join("");
 }
 
 module.exports = { dispGameCard };
