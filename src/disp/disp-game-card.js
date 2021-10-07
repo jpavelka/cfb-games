@@ -1,13 +1,15 @@
 const moment = require("moment");
 const d3 = require("d3");
 
+cardBackgroundColor = "rgb(238, 238, 238)";
+
 function dispGameCard({ game, parentDiv }) {
   let cardDiv = parentDiv
     .append("div")
     .attr("class", "col-12 col-sm-6 col-md-4 col-xl-3")
     .append("div")
     .attr("class", "card")
-    .style("background-color", "rgb(238, 238, 238)")
+    .style("background-color", cardBackgroundColor)
     .style("margin-top", "10px")
     .style("margin-bottom", "10px");
   if (game.upsetAlert || game.clearUpset) {
@@ -45,7 +47,11 @@ function addTeamLines({ game, cardDiv, timeoutsCorrect = false }) {
       .style("display", "flex");
     teamNameDiv
       .append("vl")
-      .style("border-left", "7px solid white")
+      .style(
+        "border-left",
+        "7px solid " +
+          (team.spPlusRatingRel === undefined ? cardBackgroundColor : "white")
+      )
       .style("height", imgSize);
     teamNameDiv
       .append("vl")
