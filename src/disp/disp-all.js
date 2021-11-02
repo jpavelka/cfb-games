@@ -33,7 +33,7 @@ function setupSelections(seasonInfo) {
     let label =
       moment(w.startDate).format(dtFrmt) +
       " - " +
-      moment(w.endDate).format(dtFrmt);
+      moment(w.endDate).add(1, "minutes").subtract(1, "days").format(dtFrmt);
     label = w.label + " (" + label + ")";
     weekSelect = allWeeksSelect
       .append("option")
