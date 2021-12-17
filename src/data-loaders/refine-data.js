@@ -173,7 +173,7 @@ function simplifyGameInfo(weekGames) {
 
 function simplifyTeamInfo(game, side, status, statusState) {
   let t = game.competitions[0].competitors.filter((t) => t.homeAway == side)[0];
-  let rank = t.curatedRank.current;
+  let rank = (t.curatedRank || {curatedRank: 99}).current;
   let records = t.records || [];
   let record = records.filter((r) => r.type == "total")[0] || {};
   let confRecord = records.filter((r) => r.type == "vsconf")[0] || {};
