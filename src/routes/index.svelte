@@ -13,11 +13,9 @@
         allGamesData.update(() => groupGames($allGamesDataRaw, $includeFCS))
     }
     async function loadNewWeekData({season, seasonType, week}: {season: string, seasonType: string, week: string}) {
-        const gamesFname = `games_${season}_${seasonType}_${week}_FBS-FCS.json`
+        const gamesFname = `games_${season}_${seasonType}_${week}_FBS-FCS.json?${(new Date()).getTime()}` 
         const d: {meta: WeekMetaData, games: Array<Game>} = await fetch(
-            bucketUrl + gamesFname, {cache: "no-cache"})
-                .then(x => x.json())
-                .catch(e => console.log(e))
+            bucketUrl + gamesFname).then(x => x.json()).catch(e => console.log(e))
         allGamesDataRaw.update(() => d.games.map(g => getDerivedInfo(g)));
         weekMetaData.update(() => d.meta)
         getGameData();

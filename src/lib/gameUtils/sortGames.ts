@@ -37,25 +37,18 @@ const makeCompList = (game) => {
 }
 
 const pairwiseCompare = (a, b) => {
-    console.log(a)
-    console.log(b)
     for (const i in a){
         if ([null, undefined].includes(a[i])){
-            console.log('b < a undef', i)
             return -1
         }
         else if ([null, undefined].includes(b[i])){
-            console.log('a < b undef', i)
             return 1
         }
         if (a[i] < b[i]){
-            console.log('a < b', i)
             return 1
         } else if (a[i] > b[i]){
-            console.log('b < a', i)
             return -1
         }
     }
-    console.log('tie')
     return -1
 }

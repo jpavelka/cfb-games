@@ -47,7 +47,11 @@
     <div class=dttmBroadLine>
         <div class=gameDttm>
             {#if game.statusSort === 'Current'}
-                {game.statusDetail}
+                {#if game.statusDetail === 'Delayed'}
+                    Delayed ({game.period < 1 ? '' : game.period <= 4 ? game.displayClock + ' ' + game.period + 'Q' : 'OT'})
+                {:else}
+                    {game.statusDetail}
+                {/if}
             {:else if game.statusSort === 'Upcoming'}
                 {game.dttmStr || 'TBD'}
             {:else if game.statusSort === 'Completed'}
@@ -129,9 +133,7 @@
     }
     .gameDttm {
         white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        margin-right: 0.4em;
+        margin-right: 0.2em;
     }
     .gameBroadcast {
         margin-left: auto;
