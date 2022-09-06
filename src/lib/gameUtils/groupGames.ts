@@ -1,14 +1,13 @@
 import type { Game, GameGrouping } from "$lib/types"
+import { gamesToShowFilterFuncs, teamSearchFunc } from "$lib/gameUtils/filterFuncs";
 
-export default function(games: Array<Game> | undefined, includeFCS: string) {
+export default function(games: Array<Game> | undefined, gamesToShow: string, teamSearchStr: string) {
     if (games === undefined){
         throw 'No games have been loaded'
     }
-    if (includeFCS === 'f'){
-        games = games.filter(g => {
-            return g.teams.away.classification === 'FBS' || g.teams.home.classification === 'FBS'
-        }
-        )
+    games = games.filter(g => gamesToShowFilterFuncs[gamesToShow](g));
+    if (teamSearchStr !== ''){
+        games = games.filter(g => teamSearchFunc(g, teamSearchStr));
     }
     let grouped = groupByStatus(games);
     for (const statusObj of grouped){

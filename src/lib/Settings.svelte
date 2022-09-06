@@ -1,6 +1,8 @@
 <!-- todo: favorite teams, channels, hide strength bars, sort styles (situation, interest score, etc) -->
+<!-- todo: game filters: All, FBS, P5, Ranked -->
 <script lang="ts">
-    import { settingsVisible as visible} from "$lib/stores";
+    import { settingsVisible as visible, gamesToShow } from "$lib/stores";
+    import { gamesToShowFilterFuncs } from "$lib/gameUtils/filterFuncs";
     const handleClose = () => {
         visible.update(() => false);
     }
@@ -13,8 +15,11 @@
             handleClose();
         }
     }
-    export let getGameData;
-    export let includeFCS;
+    export let getGameData: Function;
+    const gamesToShowChangeFunc = (val: string) => {
+        gamesToShow.update(() => val);
+        getGameData();
+    }
 </script>
 
 <div 
@@ -24,16 +29,16 @@
 >
     <div class='settingsContent'>
         <h1 style='text-align: center'>Settings</h1>
-        <input
-            type="checkbox"
-            id=includeFCS
-            checked={$includeFCS === 't'}
-            on:click={() => {
-                includeFCS.update(x => x === 't' ? 'f' : 't');
-                getGameData();
-            }}
-        >
-        <label for=includeFCS>Include FCS</label>
+        <h2 class="sectionHeading">Games to show:</h2>
+        {#each Object.keys(gamesToShowFilterFuncs) as x}
+            <input
+                type='radio'
+                name='gamesToShowType'
+                id={'gts' + x}
+                checked={$gamesToShow === x} on:click={() => gamesToShowChangeFunc(x)}
+            >
+            <label class=radioLabel for={'gts' + x}>{x}</label>
+        {/each}
     </div>
 </div>
 
@@ -63,5 +68,11 @@
     }
     .invisible {
         display: none;
+    }
+    .sectionHeading {
+        margin-bottom: 0.25em;
+    }
+    .radioLabel {
+        margin-right: 1em;
     }
 </style>

@@ -4,13 +4,13 @@
     import SubGames from '$lib/gameListComps/SubGames.svelte';
     import MoreInfo from '$lib/singleGameComps/MoreInfo.svelte';
     import Settings from '$lib/Settings.svelte';
-    import { allGamesData, allGamesDataRaw, weekMetaData, seasonInfo, settingsVisible, includeFCS } from '$lib/stores';
+    import { allGamesData, allGamesDataRaw, weekMetaData, seasonInfo, settingsVisible, gamesToShow, teamSearchStr } from '$lib/stores';
     import getDerivedInfo from '$lib/gameUtils/derivedInfo';
     import groupGames from '$lib/gameUtils/groupGames';
     const bucketUrl = 'https://storage.googleapis.com/weekly-scoreboard-data/'
     const seasonInfoUrl = bucketUrl + 'season_info.json'
     function getGameData() {
-        allGamesData.update(() => groupGames($allGamesDataRaw, $includeFCS))
+        allGamesData.update(() => groupGames($allGamesDataRaw, $gamesToShow, $teamSearchStr))
     }
     async function loadNewWeekData({season, seasonType, week}: {season: string, seasonType: string, week: string}) {
         const gamesFname = `games_${season}_${seasonType}_${week}_FBS-FCS.json?${(new Date()).getTime()}` 
@@ -40,6 +40,15 @@
     const weekDatesFormatter = (d: string) => Intl.DateTimeFormat([],
         {timeZone: 'America/New_York', month: 'numeric', day: 'numeric'}
     ).format(new Date(d));
+    const teamSearchFunc = () => {
+        const el = document.getElementById('teamSearch') as HTMLInputElement;
+        teamSearchStr.update(() => el.value);
+        getGameData();
+    }
+    const teamSearchReset = () => {
+        teamSearchStr.update(() => '');
+        getGameData();
+    }
 </script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
@@ -49,7 +58,6 @@
     {#key $allGamesData}
         <Settings
             getGameData={getGameData}
-            includeFCS={includeFCS}
         ></Settings>
         <MoreInfo></MoreInfo>
         <div class=mainContent>
@@ -74,14 +82,29 @@
                 >
                 <i class="fa fa-gear"></i></span>
             </div>
-            <SubGames
-                allSubData={$allGamesData}
-                hideGroup={hideGroup}
-                previousSubGroupKey={undefined}
-                subGroupHierarchy={['Status', 'Date', 'Hour']}
-                hierarchyLevel={0}
-                postCheckClickFunc={getGameData}
-            ></SubGames>
+            <div class="teamSearch">
+            {#if $teamSearchStr === ''}
+                <form on:submit={teamSearchFunc}>
+                    <input class=teamSearchBox id=teamSearch type="text" placeholder="Team Search" >
+                    <button class=teamSearchButton>Search</button>
+                </form>
+            {:else}
+                <span class=searchText>Filter on teams matching "{$teamSearchStr}"</span> 
+                <button class=teamSearchButton on:click={teamSearchReset}>Clear</button>
+            {/if}
+            </div>
+            {#if $allGamesData.length > 0}
+                <SubGames
+                    allSubData={$allGamesData}
+                    hideGroup={hideGroup}
+                    previousSubGroupKey={undefined}
+                    subGroupHierarchy={['Status', 'Date', 'Hour']}
+                    hierarchyLevel={0}
+                    postCheckClickFunc={getGameData}
+                ></SubGames>
+            {:else}
+                <div class=noGames>No games to show</div>
+            {/if}
         </div>
         <div class=lastUpdate>Last update: {(new Date($weekMetaData.lastUpdate)).toLocaleString(
             [], {weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', timeZoneName: 'short'}
@@ -115,5 +138,26 @@
         margin-top: 0.1em;
         margin-right: 0.3em;
         cursor: pointer;
+    }
+    .teamSearch {
+        padding: 0.5em;
+    }
+    .teamSearchBox {
+        height: 2.5em;
+    }
+    .teamSearchButton {
+        height: 2.75em
+    }
+    .noGames {
+        text-align: center;
+        font-size: 2em;
+        padding: 1em;
+    }
+    .searchText {
+        font-size: 1.25em;
+        margin-right: 1em;
+    }
+    button {
+        padding: 0.2em 1em;
     }
 </style>

@@ -1,7 +1,7 @@
 import { writable } from 'svelte/store';
 import type { Writable } from 'svelte/store';
 import type { Game, GameGrouping, WeekMetaData, SeasonInfo } from '$lib/types';
-import { browser } from "$app/env"
+import Cookies from 'js-cookie'
 
 export const allGamesDataRaw: Writable<Array<Game> | undefined> = writable(undefined);
 export const allGamesData: Writable<Array<GameGrouping>> = writable([]);
@@ -15,5 +15,6 @@ export const weekMetaData: Writable<WeekMetaData> = writable({
 export const seasonInfo: Writable<SeasonInfo> = writable({
     season: '', seasonType: '', week: '', calendar: []
 });
-export const includeFCS: Writable<string> = writable(browser && localStorage.getItem("includeFCS") || "t");
-includeFCS.subscribe((val) => {if (browser) return (localStorage.userId = val)})
+export const gamesToShow: Writable<string> = writable(Cookies.get('gamesToShow') || 'All');
+gamesToShow.subscribe((val) => {Cookies.set('gamesToShow', val, {expires: 30})});
+export const teamSearchStr: Writable<string> = writable('');
