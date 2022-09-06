@@ -20,8 +20,12 @@
         weekMetaData.update(() => d.meta)
         getGameData();
     }
-    async function weekSelectChangeFunc(event) {
-        const [st, w] = event.target.value.split('_');
+    async function weekSelectChangeFunc(event: Event) {
+        if (!!!event.target) {
+            return
+        }
+        const target = event.target as HTMLInputElement
+        const [st, w] = (target.value || '').split('_');
         await loadNewWeekData({season: $seasonInfo.season, seasonType: st, week: w})
     }
     async function getInitialData() {

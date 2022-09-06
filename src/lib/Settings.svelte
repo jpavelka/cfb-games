@@ -27,9 +27,9 @@
         <input
             type="checkbox"
             id=includeFCS
-            checked={$includeFCS}
+            checked={$includeFCS === 't'}
             on:click={() => {
-                includeFCS.update(x => !x);
+                includeFCS.update(x => x === 't' ? 'f' : 't');
                 getGameData();
             }}
         >

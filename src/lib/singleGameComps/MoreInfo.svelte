@@ -5,7 +5,7 @@
     const handleClose = () => {
         visible.update(() => false);
     }
-    const closeIfOutsideClick = (event: MouseEvent) => {
+    const closeIfOutsideClick = (event: Event) => {
         if (!!!event.target) {
             return
         }

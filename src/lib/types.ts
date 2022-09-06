@@ -86,10 +86,10 @@ export type Team = {
 export type GameGrouping = {commonStr: string, games: Array<Game>, subGames?: Array<GameGrouping>}
 
 export type WeekMetaData = {
-    season: string | undefined;
-    seasonType: string | undefined;
-    week: string | undefined;
-    lastUpdate: string | undefined;
+    season: string;
+    seasonType: string;
+    week: string;
+    lastUpdate: string;
 }
 
 type SeasonWeekInfo = {
@@ -100,8 +100,8 @@ type SeasonWeekInfo = {
 }
 
 export type SeasonInfo = {
-    season: string | undefined;
-    seasonType: string | undefined;
-    week: string | undefined;
+    season: string;
+    seasonType: string;
+    week: string;
     calendar: Array<SeasonWeekInfo>;
 }

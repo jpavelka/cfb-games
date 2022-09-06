@@ -1,10 +1,10 @@
 import type { Game, GameGrouping } from "$lib/types"
 
-export default function(games: Array<Game> | undefined, includeFCS: boolean) {
+export default function(games: Array<Game> | undefined, includeFCS: string) {
     if (games === undefined){
         throw 'No games have been loaded'
     }
-    if (!includeFCS){
+    if (includeFCS === 'f'){
         games = games.filter(g => {
             return g.teams.away.classification === 'FBS' || g.teams.home.classification === 'FBS'
         }
