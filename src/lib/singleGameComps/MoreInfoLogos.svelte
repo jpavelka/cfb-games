@@ -14,7 +14,7 @@
     <div class=recordsText>
         {team.classification === 'FBS' ? team.conference : (
             !!team.conference ? `${team.conference} (${team.classification})` : (
-                team.school == 'TBD' ? '' : `NCAA Div II`
+                team.school == 'TBD' ? '' : ''
             )
         )}
     </div>
