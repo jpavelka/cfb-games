@@ -13,9 +13,15 @@
         allGamesData.update(() => groupGames($allGamesDataRaw, $gamesToShow, $teamSearchStr))
     }
     async function loadNewWeekData({season, seasonType, week}: {season: string, seasonType: string, week: string}) {
-        const gamesFname = `games_${season}_${seasonType}_${week}_FBS-FCS.json?${(new Date()).getTime()}` 
-        const d: {meta: WeekMetaData, games: Array<Game>} = await fetch(
-            bucketUrl + gamesFname).then(x => x.json()).catch(e => console.log(e))
+        let d: {meta: WeekMetaData, games: Array<Game>};
+        if (import.meta.env.VITE_DATA_LOC === 'local'){
+            d = await import('../../local/data').then((x) => x.gd).catch(() => {
+                return {meta: {season: '', seasonType: '', week: '', lastUpdate: ''}, games: []}
+            });
+        } else {
+            const gamesFname = `games_${season}_${seasonType}_${week}_FBS-FCS.json?${(new Date()).getTime()}` 
+            d = await fetch(bucketUrl + gamesFname).then(x => x.json()).catch(e => console.log(e))
+        }
         allGamesDataRaw.update(() => d.games.map(g => getDerivedInfo(g)));
         weekMetaData.update(() => d.meta)
         getGameData();
