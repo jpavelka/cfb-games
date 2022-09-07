@@ -15,7 +15,7 @@
     async function loadNewWeekData({season, seasonType, week}: {season: string, seasonType: string, week: string}) {
         let d: {meta: WeekMetaData, games: Array<Game>};
         if (import.meta.env.VITE_DATA_LOC === 'local'){
-            d = await import('/data').then((x) => x.gd).catch(() => {
+            d = await import('../data.js').then((x) => x.gd).catch(() => {
                 return {meta: {season: '', seasonType: '', week: '', lastUpdate: ''}, games: []}
             });
         } else {

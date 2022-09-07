@@ -21,5 +21,5 @@ for (const [k, v] of Object.entries(gamesToShowTeamFilterFuncs)){
 export const gamesToShowFilterFuncs = gtsff;
 
 export const teamSearchFunc = (g: Game, s: string) => {
-    return oneTeam(g, (t: Team) => t.school.toLowerCase().includes(s.toLowerCase()))
+    return oneTeam(g, (t: Team) => t.school.toLowerCase().includes(s.trim().toLowerCase()))
 }
