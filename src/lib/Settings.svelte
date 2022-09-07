@@ -31,13 +31,15 @@
         <h1 style='text-align: center'>Settings</h1>
         <h2 class="sectionHeading">Games to show:</h2>
         {#each Object.keys(gamesToShowFilterFuncs) as x}
-            <input
-                type='radio'
-                name='gamesToShowType'
-                id={'gts' + x}
-                checked={$gamesToShow === x} on:click={() => gamesToShowChangeFunc(x)}
-            >
-            <label class=radioLabel for={'gts' + x}>{x}</label>
+            <div class=checkboxWrapper>
+                <input
+                    type='radio'
+                    name='gamesToShowType'
+                    id={'gts' + x}
+                    checked={$gamesToShow === x} on:click={() => gamesToShowChangeFunc(x)}
+                >
+                <label for={'gts' + x}>{x}</label>
+            </div>
         {/each}
     </div>
 </div>
@@ -72,7 +74,9 @@
     .sectionHeading {
         margin-bottom: 0.25em;
     }
-    .radioLabel {
-        margin-right: 1em;
+    .checkboxWrapper {
+        display: inline-block;
+        white-space: nowrap;
+        margin: 0.5em;
     }
 </style>
