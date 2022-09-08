@@ -1,3 +1,6 @@
+import { showFavoriteTeamsFirst } from "$lib/stores";
+import { get } from 'svelte/store';
+
 export default function sortGames(games) {
     games.sort((a, b) => pairwiseCompare(makeCompList(a), makeCompList(b)));
     return games;
@@ -23,9 +26,16 @@ const makeCompList = (game) => {
             ['gameInterest', 'min'],
         ];
     } else if (game.statusSort === 'Upcoming'){
-        keyList = [['gameInterest', 'min']];
+        keyList = [
+            ['gameInterest', 'min']
+        ];
     } else if (game.statusSort === 'Completed'){
-        keyList = [['gameInterest', 'min']];
+        keyList = [
+            ['gameInterest', 'min']
+        ];
+    }
+    if (get(showFavoriteTeamsFirst) === 'y'){
+        keyList = [['favoriteTeamGame', 'max']].concat(keyList);
     }
     const vals = keyList.map(x => {
         const [k, d] = x;

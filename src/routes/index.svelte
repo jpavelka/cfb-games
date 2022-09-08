@@ -4,13 +4,17 @@
     import SubGames from '$lib/gameListComps/SubGames.svelte';
     import MoreInfo from '$lib/singleGameComps/MoreInfo.svelte';
     import Settings from '$lib/Settings.svelte';
-    import { allGamesData, allGamesDataRaw, weekMetaData, seasonInfo, settingsVisible, gamesToShow, teamSearchStr } from '$lib/stores';
+    import {
+        allGamesData, allGamesDataRaw, weekMetaData, seasonInfo,
+        settingsVisible, gamesToShow, teamSearchStr, allTeamsList
+    } from '$lib/stores';
     import getDerivedInfo from '$lib/gameUtils/derivedInfo';
     import groupGames from '$lib/gameUtils/groupGames';
     const bucketUrl = 'https://storage.googleapis.com/weekly-scoreboard-data/'
     const seasonInfoUrl = bucketUrl + 'season_info.json'
+    const teamListUrl = bucketUrl + 'conferences.json'
     function getGameData() {
-        allGamesData.update(() => groupGames($allGamesDataRaw, $gamesToShow, $teamSearchStr))
+        allGamesData.update(() => groupGames($allGamesDataRaw, $gamesToShow, $teamSearchStr));
     }
     async function loadNewWeekData({season, seasonType, week}: {season: string, seasonType: string, week: string}) {
         let d: {meta: WeekMetaData, games: Array<Game>};
@@ -39,6 +43,8 @@
             .then(x => x.json())
             .catch(e => console.log(e));
         seasonInfo.update(() => initialSeasonInfo);
+        const teamList: Array<{[key: string]: string}> = await fetch(teamListUrl).then(x => x.json()).catch(e => console.log(e));
+        allTeamsList.update(() => teamList.filter(x => ['fbs', 'fcs'].includes(x.classification)));
         await loadNewWeekData({season: initialSeasonInfo.season, seasonType: initialSeasonInfo.seasonType, week: initialSeasonInfo.week})
     }
     const initialLoadPromise = getInitialData();

@@ -1,7 +1,6 @@
 <script lang="ts">
     import type { Game } from "$lib/types"
-    import { moreInfoGame } from "$lib/stores";
-    import { moreInfoVisible } from "$lib/stores";
+    import { moreInfoGame, moreInfoVisible, showGameBars } from "$lib/stores";
     export let game : Game;
     const showMoreInfo = () => {
         console.log(game);
@@ -16,12 +15,14 @@
     </div>
     {#each game.teamsArray as team}
         <div class=teamLine>
-            <div class=teamStrengthBarBackground class:hide={team.school === 'TBD'}>
-                <div
-                    class=teamStrengthBar
-                    style='height: {Math.max(0.1, 2 * (1 - team.approxRank / 40))}em; background-color: hsl({Math.max(0, 120 - 3 * team.approxRank)}, 90%, 70%)'
-                ></div>
-            </div>
+            {#if $showGameBars === 'y'}
+                <div class=teamStrengthBarBackground class:hide={team.school === 'TBD'}>
+                    <div
+                        class=teamStrengthBar
+                        style='height: {Math.max(0.1, 2 * (1 - team.approxRank / 40))}em; background-color: hsl({Math.max(0, 120 - 3 * team.approxRank)}, 90%, 70%)'
+                    ></div>
+                </div>
+            {/if}
             <img class=logoImg class:noLogo={!!!team.logo} src={team.logo} alt={team.displayName}>
             <div class='teamName teamLineUp' class:winnerText={team.winner}>
                 <span class='teamRank'>{team.ranked ? team.rank : ''}</span>
@@ -60,7 +61,7 @@
         </div>
         <div class=gameBroadcast>{game.broadcastStr || ''}</div>
     </div>
-    <div class=gameInterestBarBackground class:hide={game.teamsTbd}>
+    <div class=gameInterestBarBackground class:hide={game.teamsTbd || $showGameBars === 'n'}>
         <div
             class=gameInterestBar
             style='width: {Math.min(100, Math.max(1, 100 * (1 - game.gameInterest / 80) + 5))}%; background-color: hsl({Math.max(0, 120 - 2 * game.gameInterest)}, 90%, 70%)'

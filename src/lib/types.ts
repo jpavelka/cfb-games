@@ -58,6 +58,7 @@ export type Game = {
     impliedWinProb?: number;
     teamsTbd: boolean;
     possessionHomeAway?: string;
+    favoriteTeamGame: boolean;
 }
 
 export type Team = {

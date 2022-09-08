@@ -1,4 +1,5 @@
 import type { Game } from "$lib/types";
+import { favoriteTeams } from "$lib/stores";
 
 export default function(g: Game) {
     g.stadium = (g.venue || {}).fullName;
@@ -94,6 +95,10 @@ export default function(g: Game) {
     g.teamsArray = [(g.teams || {}).away, (g.teams || {}).home];
     g.spreadTouchdowns = g.spread ? Math.round(g.spread / 7) : 4;
     g.gameInterest = g.teams.away.approxRank + g.teams.home.approxRank + g.spreadTouchdowns;
+    favoriteTeams.subscribe(val => {
+        const favTeamsList = val.split(',')
+        g.favoriteTeamGame = favTeamsList.includes(g.teams.away.school) || favTeamsList.includes(g.teams.home.school)
+    })
     if (g.statusState === 'in'){
         g.margin = Math.abs(g.teams.home.score - g.teams.away.score);
         g.marginPossessions = Math.floor((g.margin - 0.5) / 8) + 1;

@@ -1,10 +1,18 @@
-<!-- todo: favorite teams, channels, hide strength bars, sort styles (situation, interest score, etc) -->
+<!-- todo: favorite teams, channels, sort styles (situation, interest score, etc) -->
 <!-- todo: game filters: All, FBS, P5, Ranked -->
 <script lang="ts">
-    import { settingsVisible as visible, gamesToShow } from "$lib/stores";
+    import { 
+        settingsVisible, gamesToShow, showGameBars, allTeamsList, favoriteTeams,
+        showFavoriteTeamsFirst, settingsScrollY
+    } from "$lib/stores";
     import { gamesToShowFilterFuncs } from "$lib/gameUtils/filterFuncs";
+    import { afterUpdate } from 'svelte';
+
+    afterUpdate(() => {
+        document.getElementById("settingsModal").scrollTop = $settingsScrollY;
+	});
     const handleClose = () => {
-        visible.update(() => false);
+        settingsVisible.update(() => false);
     }
     const closeIfOutsideClick = (event: MouseEvent) => {
         if (!!!event.target) {
@@ -16,18 +24,52 @@
         }
     }
     export let getGameData: Function;
+    const getGameDataNoScroll = () => {
+        settingsScrollY.update(() => document.getElementById("settingsModal").scrollTop);
+        getGameData();
+    }
     const gamesToShowChangeFunc = (val: string) => {
         gamesToShow.update(() => val);
-        getGameData();
+        getGameDataNoScroll();
+    }
+    const getSortedTeams = () => {
+        let sortedTeams = {}
+        for (const team of $allTeamsList){
+            if (!Object.keys(sortedTeams).includes(team.classification)){
+                sortedTeams[team.classification] = {};
+            }
+            if (!Object.keys(sortedTeams[team.classification]).includes(team.conference)){
+                sortedTeams[team.classification][team.conference] = [];
+            }
+            sortedTeams[team.classification][team.conference].push(team.school)
+        }
+        return sortedTeams
+    }
+    const getFavTeamList = () => {
+        return $favoriteTeams.split(',').filter(s => s !== '');
+    }
+    const isTeamFavorite = (t: string) => {
+        const favTeamList = getFavTeamList();
+        return favTeamList.includes(t)
+    }
+    const favoriteTeamClick = (t: string) => {
+        const favTeamList = getFavTeamList();
+        if (isTeamFavorite(t)){
+            favoriteTeams.update(() => favTeamList.filter(y => y !== t).join(','));
+        } else {
+            favTeamList.push(t);
+            favoriteTeams.update(() => favTeamList.join(','));
+        }
+        getGameDataNoScroll();
     }
 </script>
 
-<div 
+<div
     class='backgroundDiv'
-    class:invisible="{!$visible}"
+    class:invisible="{!$settingsVisible}"
     on:click={(event) => closeIfOutsideClick(event)}
 >
-    <div class='settingsContent'>
+    <div id='settingsModal' class='settingsContent'>
         <h1 style='text-align: center'>Settings</h1>
         <h2 class="sectionHeading">Games to show:</h2>
         {#each Object.keys(gamesToShowFilterFuncs) as x}
@@ -36,11 +78,62 @@
                     type='radio'
                     name='gamesToShowType'
                     id={'gts' + x}
-                    checked={$gamesToShow === x} on:click={() => gamesToShowChangeFunc(x)}
-                >
-                <label for={'gts' + x}>{x}</label>
+                    checked={$gamesToShow === x}
+                    on:click={() => gamesToShowChangeFunc(x)}
+                ><label for={'gts' + x}>{x}</label>
             </div>
         {/each}
+        <hr>
+        <h2 class="sectionHeading">Game display:</h2>
+        <div class=checkboxWrapper>
+            <input
+                id='showGameBars'
+                type='checkbox'
+                checked={$showGameBars === 'y'}
+                on:click={() => showGameBars.update(x => x === 'y' ? 'n' : 'y')}
+            ><label for='showGameBars'>Show game interest and team strength bars</label>
+        </div>
+        <hr>
+        <h2 class="sectionHeading">Favorite teams:</h2>
+        <div class=checkboxWrapper>
+            <input
+                id='showFavoriteTeams'
+                type='checkbox'
+                checked={$showFavoriteTeamsFirst === 'y'}
+                on:click={() => {
+                    showFavoriteTeamsFirst.update(x => x === 'y' ? 'n' : 'y');
+                    getGameDataNoScroll();
+                }}
+            ><label for='showFavoriteTeams'>Show favorite teams first</label>
+        </div>
+        {#if getFavTeamList().length === 0}
+            <div class='selectTeamsMsg basicText'>Select your favorite teams below</div>
+        {:else}
+            <div class=basicText>Current favorites: {getFavTeamList().sort().join(', ')}</div>
+        {/if}
+        {#each ['fbs', 'fcs'] as subdiv}
+            <div class=teamsSub>
+                <h3 class="closer">{subdiv.toUpperCase()}</h3>
+                {#each Object.entries(getSortedTeams()[subdiv]).sort((a, b) => a[0] < b[0] ? -1 : 1) as [conf, confTeams]}
+                    <div class=teamsSub>
+                        <h4 class="closer">{conf}</h4>
+                        {#each confTeams.sort() as team}
+                            <div class=checkboxWrapper>
+                                <input
+                                    id={'teamCheck' + team}
+                                    type='checkbox'
+                                    checked={isTeamFavorite(team)}
+                                    on:click={() => favoriteTeamClick(team)}
+                                ><label for={'teamCheck' + team}>{team}</label>
+                            </div>
+                        {/each}
+                    </div>
+                {/each}
+            </div>
+        {/each}
+    </div>
+    <div>
+        
     </div>
 </div>
 
@@ -77,6 +170,21 @@
     .checkboxWrapper {
         display: inline-block;
         white-space: nowrap;
+        margin: 0.5em;
+    }
+    h3.closer {
+        margin-bottom: -0.8em;
+    }
+    h4.closer {
+        margin-bottom: -0.3em;
+    }
+    .teamsSub {
+        margin-left: 0.5em;
+    }
+    .selectTeamsMsg {
+        font-style: italic;
+    }
+    .basicText {
         margin: 0.5em;
     }
 </style>

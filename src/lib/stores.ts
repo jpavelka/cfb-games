@@ -15,6 +15,29 @@ export const weekMetaData: Writable<WeekMetaData> = writable({
 export const seasonInfo: Writable<SeasonInfo> = writable({
     season: '', seasonType: '', week: '', calendar: []
 });
-export const gamesToShow: Writable<string> = writable(Cookies.get('gamesToShow') || 'All');
-gamesToShow.subscribe((val) => {Cookies.set('gamesToShow', val, {expires: 30})});
 export const teamSearchStr: Writable<string> = writable('');
+export const allTeamsList: Writable<Array<{[key: string]: string}>> = writable([]);
+export const settingsScrollY: Writable<number> = writable(0);
+
+const createCookieSyncedStore = (name: string, defaultValue: string, allowedValues: Array<string> | undefined) => {
+    let currentCookieValue = Cookies.get(name) || defaultValue;
+    if (allowedValues !== undefined){
+        if (currentCookieValue === undefined){
+            currentCookieValue = defaultValue;
+        }
+        if (!allowedValues.includes(currentCookieValue)){
+            currentCookieValue = defaultValue;
+        }
+    }
+    const cookieStore: Writable<string> = writable(currentCookieValue);
+    cookieStore.subscribe(val => {
+        Cookies.set(name, val, {expires:30})
+    })
+    return cookieStore
+}
+
+export const gamesToShow = createCookieSyncedStore('gamesToShow', 'All', ['All', 'FBS', 'FCS', 'P5', 'Ranked']);
+export const showGameBars = createCookieSyncedStore('showGameBars', 'y', ['y', 'n']);
+export const showFavoriteTeamsFirst = createCookieSyncedStore('showFavoriteTeamsFirst', 'y', ['y', 'n']);
+export const favoriteTeams = createCookieSyncedStore('favoriteTeams', '', undefined);
+
