@@ -46,20 +46,20 @@ function groupByStatus(games: Array<Game>){
     return statusGrouped
 }
 
-function groupByDesiredKey(arrayToGroup: Array<Game>, groupKey: keyof Game, sortFunc: (a: string, b: string) => number){
+function groupByDesiredKey(arrayToGroup: Array<Game>, groupKey: keyof Game, groupSortKey: keyof Game, sortFunc: (a: string, b: string) => number){
     let groupObj: {[key: string]: Array<Game>} = {};
     for (const g of arrayToGroup){
-        const groupStr = `${g[groupKey]}` || 'TBA';
-        if (!Object.keys(groupObj).includes(groupStr)){
-            groupObj[groupStr] = [];
+        const groupSortStr = `${g[groupSortKey]}` || 'TBA';
+        if (!Object.keys(groupObj).includes(groupSortStr)){
+            groupObj[groupSortStr] = [];
         }
-        groupObj[groupStr].push(g);
+        groupObj[groupSortStr].push(g);
     }
-    let allGroupStrs = Object.keys(groupObj);
-    allGroupStrs.sort(sortFunc);
+    let allGroupSortStrs = Object.keys(groupObj);
+    allGroupSortStrs.sort(sortFunc);
     let sortedGroups = [];
-    for (const d of allGroupStrs){
-        sortedGroups.push({commonStr: d, games: groupObj[d], subGames: undefined});
+    for (const d of allGroupSortStrs){
+        sortedGroups.push({commonStr: groupObj[d][0][groupKey], games: groupObj[d], subGames: undefined});
     }
     return sortedGroups
 }
@@ -68,12 +68,12 @@ function groupByDayFunc(games: Array<Game>) {
     const sortFunc = (a: string, b: string) => (
         a === 'TBA' ? 1 : (b === 'TBA' ? -1 : (new Date(a) < new Date (b) ? -1 : 1))
     )
-    return groupByDesiredKey(games, 'dateStr', sortFunc)
+    return groupByDesiredKey(games, 'dateStr', 'dateSortStr', sortFunc)
 }
 
 function groupByHourFunc(games: Array<Game>) {
     const sortFunc = (a: string, b: string) => (
         a === 'TBA' ? 1 : (b === 'TBA' ? -1 : (new Date(a) < new Date (b) ? -1 : 1))
     )
-    return groupByDesiredKey(games, 'hourStr', sortFunc)
+    return groupByDesiredKey(games, 'hourStr', 'hourStr', sortFunc)
 }

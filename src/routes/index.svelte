@@ -48,7 +48,7 @@
     ).format(new Date(d));
     const teamSearchFunc = () => {
         const el = document.getElementById('teamSearch') as HTMLInputElement;
-        teamSearchStr.update(() => el.value);
+        teamSearchStr.update(() => el.value.trim());
         getGameData();
     }
     const teamSearchReset = () => {
@@ -89,15 +89,16 @@
                 <i class="fa fa-gear"></i></span>
             </div>
             <div class="teamSearch">
-            {#if $teamSearchStr === ''}
                 <form on:submit={teamSearchFunc}>
-                    <input class=teamSearchBox id=teamSearch type="text" placeholder="Team Search" >
+                    <input class=teamSearchBox id=teamSearch type="text" placeholder="Team Search" value={$teamSearchStr}>
                     <button class=teamSearchButton>Search</button>
+                    {#if $teamSearchStr !== ''}
+                        <button class=teamSearchButton on:click={teamSearchReset}>Clear</button>
+                    {/if}
                 </form>
-            {:else}
-                <span class=searchText>Filter on teams matching "{$teamSearchStr}"</span> 
-                <button class=teamSearchButton on:click={teamSearchReset}>Clear</button>
-            {/if}
+                {#if $teamSearchStr !== ''}
+                    <div type='button' class='searchResults'>Search results: "{$teamSearchStr}"</div>
+                {/if}
             </div>
             {#if $allGamesData.length > 0}
                 <SubGames
@@ -159,11 +160,11 @@
         font-size: 2em;
         padding: 1em;
     }
-    .searchText {
-        font-size: 1.25em;
-        margin-right: 1em;
-    }
     button {
         padding: 0.2em 1em;
+    }
+    .searchResults {
+        font-style: italic;
+        margin-top: 0.25em;
     }
 </style>

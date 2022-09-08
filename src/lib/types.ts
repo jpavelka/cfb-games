@@ -20,6 +20,7 @@ export type Game = {
     overUnder: number | undefined;
     dttmStr: string | undefined;
     dateStr: string | undefined;
+    dateSortStr: string;
     hourStr: string | undefined;
     broadcastStr: string | undefined;
     timeValid: boolean;
@@ -56,6 +57,7 @@ export type Game = {
     lastPlay?: string;
     impliedWinProb?: number;
     teamsTbd: boolean;
+    possessionHomeAway?: string;
 }
 
 export type Team = {
@@ -83,7 +85,7 @@ export type Team = {
     approxRank: number;
 }
 
-export type GameGrouping = {commonStr: string, games: Array<Game>, subGames?: Array<GameGrouping>}
+export type GameGrouping = {commonStr: string, games: Array<Game>, subGames: Array<GameGrouping>}
 
 export type WeekMetaData = {
     season: string;

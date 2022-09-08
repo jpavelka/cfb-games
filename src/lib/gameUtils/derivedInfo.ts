@@ -48,6 +48,7 @@ export default function(g: Game) {
     const gameDttm = new Date(g.dttm)
     g.dttmStr = undefined;
     g.dateStr = undefined;
+    g.dateSortStr = gameDttm.toLocaleDateString();
     g.hourStr = 'TBA';
     if (g.timeValid){
         g.dttmStr = gameDttm.toLocaleDateString([],

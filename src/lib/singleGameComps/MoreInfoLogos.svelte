@@ -1,27 +1,30 @@
 <script lang='ts'>
     import type { Team } from '$lib/types'
     export let team: Team;
+    let sw: number;
+    $: screenSize = sw < 500 ? 'sm' : sw < 800 ? 'md' : 'lg'
 </script>
+<svelte:window bind:innerWidth={sw}/>
 
 <div class='teamDiv'>
     <img class=logoImg class:noLogo={!!!team.logo} src={team.logo} alt={team.displayName}>
     <div class=teamName>
         {team.ranked ? `${team.rank}. ` : ''}
-        {window.innerWidth < 500 ? team.abbreviation : (
-            window.innerWidth < 800 ? team.school : team.displayName)
-        }
+        {screenSize === 'lg' ? team.displayName : screenSize === 'md' ? team.school : team.abbreviation}
     </div>
-    <div class=recordsText>
-        {team.classification === 'FBS' ? team.conference : (
-            !!team.conference ? `${team.conference} (${team.classification})` : (
-                team.school == 'TBD' ? '' : ''
-            )
-        )}
-    </div>
-    <div class=recordsText>
-        {!!team.recordOverall ? team.recordOverall : ''}
-        {!!team.recordConference ? ` (${team.recordConference})` : ''}
-    </div>
+    {#if !(screenSize === 'sm')}
+        <div class=recordsText>
+            {team.classification === 'FBS' ? team.conference : (
+                !!team.conference ? `${team.conference} (${team.classification})` : (
+                    team.school == 'TBD' ? '' : ''
+                )
+            )}
+        </div>
+        <div class=recordsText>
+            {!!team.recordOverall ? team.recordOverall : ''}
+            {!!team.recordConference ? ` (${team.recordConference})` : ''}
+        </div>
+    {/if}
 </div>
 
 <style>
@@ -41,7 +44,7 @@
         text-align: center;
     }
     .recordsText {
-        font-size: 1.1em;
+        font-size: 1em;
         text-align: center;
     }
     .noLogo {
