@@ -92,7 +92,10 @@
                 id='showGameBars'
                 type='checkbox'
                 checked={$showGameBars === 'y'}
-                on:click={() => showGameBars.update(x => x === 'y' ? 'n' : 'y')}
+                on:click={() => {
+                    showGameBars.update(x => x === 'y' ? 'n' : 'y');
+                    getGameDataNoScroll();
+                }}
             ><label for='showGameBars'>Show game interest and team strength bars</label>
         </div>
         <hr>
