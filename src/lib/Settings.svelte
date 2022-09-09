@@ -7,7 +7,7 @@
     } from "$lib/stores";
     import { gamesToShowFilterFuncs } from "$lib/gameUtils/filterFuncs";
     import { afterUpdate } from 'svelte';
-
+    
     afterUpdate(() => {
         document.getElementById("settingsModal").scrollTop = $settingsScrollY;
 	});
@@ -66,23 +66,25 @@
 
 <div
     class='backgroundDiv'
-    class:invisible="{!$settingsVisible}"
+    class:invisible={!$settingsVisible}
     on:click={(event) => closeIfOutsideClick(event)}
 >
     <div id='settingsModal' class='settingsContent'>
         <h1 style='text-align: center'>Settings</h1>
         <h2 class="sectionHeading">Games to show:</h2>
-        {#each Object.keys(gamesToShowFilterFuncs) as x}
-            <div class=checkboxWrapper>
-                <input
-                    type='radio'
-                    name='gamesToShowType'
-                    id={'gts' + x}
-                    checked={$gamesToShow === x}
-                    on:click={() => gamesToShowChangeFunc(x)}
-                ><label for={'gts' + x}>{x}</label>
-            </div>
-        {/each}
+        <div class=checkBoxesWrapper>
+            {#each Object.keys(gamesToShowFilterFuncs) as x}
+                <div class='checkboxWrapper multipleChecks smallerChecks'>
+                    <input
+                        type='radio'
+                        name='gamesToShowType'
+                        id={'gts' + x}
+                        checked={$gamesToShow === x}
+                        on:click={() => gamesToShowChangeFunc(x)}
+                    ><label for={'gts' + x}>{x}</label>
+                </div>
+            {/each}
+        </div>
         <hr>
         <h2 class="sectionHeading">Game display:</h2>
         <div class=checkboxWrapper>
@@ -117,23 +119,22 @@
                 {#each Object.entries(getSortedTeams()[subdiv]).sort((a, b) => a[0] < b[0] ? -1 : 1) as [conf, confTeams]}
                     <div class=teamsSub>
                         <h4 class="closer">{conf}</h4>
-                        {#each confTeams.sort() as team}
-                            <div class=checkboxWrapper>
-                                <input
-                                    id={'teamCheck' + team}
-                                    type='checkbox'
-                                    checked={isTeamFavorite(team)}
-                                    on:click={() => favoriteTeamClick(team)}
-                                ><label for={'teamCheck' + team}>{team}</label>
-                            </div>
-                        {/each}
+                        <div class=checkBoxesWrapper>
+                            {#each confTeams.sort() as team}
+                                <div class='checkboxWrapper multipleChecks'>
+                                    <input
+                                        id={'teamCheck' + team}
+                                        type='checkbox'
+                                        checked={isTeamFavorite(team)}
+                                        on:click={() => favoriteTeamClick(team)}
+                                    ><label for={'teamCheck' + team}>{team}</label>
+                                </div>
+                            {/each}
+                        </div>
                     </div>
                 {/each}
             </div>
         {/each}
-    </div>
-    <div>
-        
     </div>
 </div>
 
@@ -167,16 +168,29 @@
     .sectionHeading {
         margin-bottom: 0.25em;
     }
+    .checkBoxesWrapper {
+        display: flex;
+        flex-wrap: wrap;
+    }
     .checkboxWrapper {
         display: inline-block;
-        white-space: nowrap;
         margin: 0.5em;
     }
+    .multipleChecks {
+        width: 10em;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .smallerChecks {
+        width: 5em;
+    }
     h3.closer {
-        margin-bottom: -0.8em;
+        margin-bottom: -0.2em;
     }
     h4.closer {
         margin-bottom: -0.3em;
+        margin-top: 0.5em
     }
     .teamsSub {
         margin-left: 0.5em;
