@@ -186,7 +186,7 @@
         text-overflow: ellipsis;
     }
     .smallerChecks {
-        width: 5em;
+        width: 6em;
     }
     h3.closer {
         margin-bottom: -0.2em;
