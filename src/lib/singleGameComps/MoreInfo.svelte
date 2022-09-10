@@ -73,9 +73,9 @@
                 {#if !$game.spread && !$game.overUnder}
                     <div class=notAvailable>Not available</div>
                 {/if}
-                {#if !!$game.impliedWinProb}
+                <!-- {#if !!$game.impliedWinProb}
                     <div>Projected Winner: {$game.favored} ({$game.impliedWinProb}%)</div>
-                {/if}
+                {/if} -->
             </div>
             <hr>
             <div>
