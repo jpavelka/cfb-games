@@ -1,4 +1,4 @@
-import { showFavoriteTeamsFirst } from "$lib/stores";
+import { showFavoriteTeamsFirst, currentGameSortStyle } from "$lib/stores";
 import { get } from 'svelte/store';
 
 export default function sortGames(games) {
@@ -9,22 +9,28 @@ export default function sortGames(games) {
 const makeCompList = (game) => {
     let keyList = [];
     if (game.statusSort === 'Current'){
-        keyList = [
-            ['close', 'max'],
-            ['under2Tied', 'max'],
-            ['under2PotChange', 'max'],
-            ['under2PotTie', 'max'],
-            ['under5Tied', 'max'],
-            ['under5PotChange', 'max'],
-            ['under5PotTie', 'max'],
-            ['closeUnder2', 'max'],
-            ['under8Tied', 'max'],
-            ['under8PotChange', 'max'],
-            ['under8PotTie', 'max'],
-            ['closeUnder5', 'max'],
-            ['closeUnder8', 'max'],
-            ['gameInterest', 'min'],
-        ];
+        if (get(currentGameSortStyle) === 'situation'){
+            keyList = [
+                ['close', 'max'],
+                ['under2Tied', 'max'],
+                ['under2PotChange', 'max'],
+                ['under2PotTie', 'max'],
+                ['under5Tied', 'max'],
+                ['under5PotChange', 'max'],
+                ['under5PotTie', 'max'],
+                ['closeUnder2', 'max'],
+                ['under8Tied', 'max'],
+                ['under8PotChange', 'max'],
+                ['under8PotTie', 'max'],
+                ['closeUnder5', 'max'],
+                ['closeUnder8', 'max'],
+                ['gameInterest', 'min'],
+            ];
+        } else {
+            keyList = [
+                ['gameInterest', 'min']
+            ];
+        }
     } else if (game.statusSort === 'Upcoming'){
         keyList = [
             ['gameInterest', 'min']

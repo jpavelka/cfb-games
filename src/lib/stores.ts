@@ -41,4 +41,5 @@ export const gamesToShow = createCookieSyncedStore('gamesToShow', 'All', ['All',
 export const showGameBars = createCookieSyncedStore('showGameBars', 'y', ['y', 'n']);
 export const showFavoriteTeamsFirst = createCookieSyncedStore('showFavoriteTeamsFirst', 'y', ['y', 'n']);
 export const favoriteTeams = createCookieSyncedStore('favoriteTeams', '', undefined);
+export const currentGameSortStyle = createCookieSyncedStore('currentGameSortStyle', 'situation', ['pregameInterest', 'situation'])
 

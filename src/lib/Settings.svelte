@@ -3,7 +3,8 @@
 <script lang="ts">
     import { 
         settingsVisible, gamesToShow, showGameBars, allTeamsList, favoriteTeams,
-        showFavoriteTeamsFirst, settingsScrollY, settingsHideTeamGroup
+        showFavoriteTeamsFirst, settingsScrollY, settingsHideTeamGroup,
+        currentGameSortStyle
     } from "$lib/stores";
     import { slide } from 'svelte/transition';
     import { gamesToShowFilterFuncs } from "$lib/gameUtils/filterFuncs";
@@ -31,6 +32,10 @@
     }
     const gamesToShowChangeFunc = (val: string) => {
         gamesToShow.update(() => val);
+        getGameDataNoScroll();
+    }
+    const currentGameSortChangeFunc = (val: string) => {
+        currentGameSortStyle.update(() => val);
         getGameDataNoScroll();
     }
     const changeHideTeam = (k: string) => {
@@ -98,6 +103,26 @@
                     ><label for={'gts' + x}>{x}</label>
                 </div>
             {/each}
+        </div>
+        <hr>
+        <h2 class="sectionHeading">Current game sorting</h2>
+        <div class='checkboxWrapper multipleChecks'>
+            <input
+                type='radio'
+                name='currentGameSort'
+                id='currentGameSortIn'
+                checked={$currentGameSortStyle === 'situation'}
+                on:click={() => currentGameSortChangeFunc('situation')}
+            ><label for={'currentGameSortIn'}>{'Game situation'}</label>
+        </div>
+        <div class='checkboxWrapper multipleChecks'>
+            <input
+                type='radio'
+                name='currentGameSort'
+                id='currentGameSortPre'
+                checked={$currentGameSortStyle === 'pregameInterest'}
+                on:click={() => currentGameSortChangeFunc('pregameInterest')}
+            ><label for={'currentGameSortPre'}>{'Pregame interest'}</label>
         </div>
         <hr>
         <h2 class="sectionHeading">Game display:</h2>
