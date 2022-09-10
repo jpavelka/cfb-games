@@ -3,8 +3,9 @@
 <script lang="ts">
     import { 
         settingsVisible, gamesToShow, showGameBars, allTeamsList, favoriteTeams,
-        showFavoriteTeamsFirst, settingsScrollY
+        showFavoriteTeamsFirst, settingsScrollY, settingsHideTeamGroup
     } from "$lib/stores";
+    import { slide } from 'svelte/transition';
     import { gamesToShowFilterFuncs } from "$lib/gameUtils/filterFuncs";
     import { afterUpdate } from 'svelte';
     
@@ -32,11 +33,24 @@
         gamesToShow.update(() => val);
         getGameDataNoScroll();
     }
+    const changeHideTeam = (k: string) => {
+        settingsScrollY.update(() => document.getElementById("settingsModal").scrollTop);
+        settingsHideTeamGroup.update(x => {
+            x[k] = !x[k];
+            return x
+        })
+    }
     const getSortedTeams = () => {
         let sortedTeams = {}
         for (const team of $allTeamsList){
+            if (!Object.keys($settingsHideTeamGroup).includes(team.classification)) {
+                $settingsHideTeamGroup[team.classification] = true;
+            }
             if (!Object.keys(sortedTeams).includes(team.classification)){
                 sortedTeams[team.classification] = {};
+            }
+            if (!Object.keys($settingsHideTeamGroup).includes(team.conference)) {
+                $settingsHideTeamGroup[team.conference] = true;
             }
             if (!Object.keys(sortedTeams[team.classification]).includes(team.conference)){
                 sortedTeams[team.classification][team.conference] = [];
@@ -118,24 +132,46 @@
         {/if}
         {#each ['fbs', 'fcs'] as subdiv}
             <div class=teamsSub>
-                <h3 class="closer">{subdiv.toUpperCase()}</h3>
-                {#each Object.entries(getSortedTeams()[subdiv]).sort((a, b) => a[0] < b[0] ? -1 : 1) as [conf, confTeams]}
-                    <div class=teamsSub>
-                        <h4 class="closer">{conf}</h4>
-                        <div class=checkBoxesWrapper>
-                            {#each confTeams.sort() as team}
-                                <div class='checkboxWrapper multipleChecks'>
-                                    <input
-                                        id={'teamCheck' + team}
-                                        type='checkbox'
-                                        checked={isTeamFavorite(team)}
-                                        on:click={() => favoriteTeamClick(team)}
-                                    ><label for={'teamCheck' + team}>{team}</label>
+                <h3 class="closer" on:click={() => changeHideTeam(subdiv)}>
+                    {subdiv.toUpperCase()}
+                    <span class='headerArrow'>
+                        {#if !$settingsHideTeamGroup[subdiv]}
+                            &#9660;
+                        {:else}
+                            &#9658;
+                        {/if}
+                    </span>
+                </h3>
+                {#if !$settingsHideTeamGroup[subdiv]}
+                    {#each Object.entries(getSortedTeams()[subdiv]).sort((a, b) => a[0] < b[0] ? -1 : 1) as [conf, confTeams]}
+                        <div class=teamsSub transition:slide|local>
+                            <h4 class="closer" on:click={() => changeHideTeam(conf)}>
+                                {conf}
+                                <span class='headerArrow'>
+                                    {#if !$settingsHideTeamGroup[conf]}
+                                        &#9660;
+                                    {:else}
+                                        &#9658;
+                                    {/if}
+                                </span>
+                            </h4>
+                            {#if !$settingsHideTeamGroup[conf]}
+                                <div class=checkBoxesWrapper transition:slide|local>
+                                    {#each confTeams.sort() as team}
+                                        <div class='checkboxWrapper multipleChecks'>
+                                            <input
+                                                id={'teamCheck' + team}
+                                                type='checkbox'
+                                                checked={isTeamFavorite(team)}
+                                                on:click={() => favoriteTeamClick(team)}
+                                            ><label for={'teamCheck' + team}>{team}</label>
+                                        </div>
+                                    {/each}
                                 </div>
-                            {/each}
+                            {/if}
                         </div>
-                    </div>
-                {/each}
+                    {/each}
+                {/if}
             </div>
         {/each}
     </div>
