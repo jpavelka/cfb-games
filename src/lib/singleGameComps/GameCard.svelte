@@ -49,7 +49,7 @@
         <div class=gameDttm>
             {#if game.statusSort === 'Current'}
                 {#if game.statusDetail === 'Delayed'}
-                    Delayed ({game.period < 1 ? '' : game.period <= 4 ? game.displayClock + ' ' + game.period + 'Q' : 'OT'})
+                    Delayed {game.period < 1 ? '' : game.period <= 4 ? '(' + game.displayClock + ' Q' + game.period + ')' : '(OT)'}
                 {:else}
                     {game.statusDetail}
                 {/if}
