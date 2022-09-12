@@ -59,7 +59,7 @@
                 {game.dateStr}
             {/if}
         </div>
-        <div class=gameBroadcast>{['in', 'pre'].includes(game.statusSort) ? (game.broadcastStr || '') : ''}</div>
+        <div class=gameBroadcast>{['in', 'pre'].includes(game.statusState || '') ? (game.broadcastStr || '') : ''}</div>
     </div>
     <div class=gameInterestBarBackground class:hide={game.teamsTbd || $showGameBars === 'n'}>
         <div
