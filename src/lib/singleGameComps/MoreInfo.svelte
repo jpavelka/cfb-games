@@ -64,8 +64,10 @@
             <hr>
             <div class=sectionHeading>Betting Info</div>
             <div class=sectionText>
-                {#if $game.spread}
-                    <div>Line: {$game.favored} -{$game.spread}</div>
+                {#if $game.spread !== undefined}
+                    <div>
+                        Line: {$game.spread === 0 ? 'Even' : `${$game.favored} -${$game.spread}`}
+                    </div>
                 {/if}
                 {#if $game.overUnder}
                     <div>Over/Under: {$game.overUnder}</div>
@@ -73,9 +75,6 @@
                 {#if !$game.spread && !$game.overUnder}
                     <div class=notAvailable>Not available</div>
                 {/if}
-                <!-- {#if !!$game.impliedWinProb}
-                    <div>Projected Winner: {$game.favored} ({$game.impliedWinProb}%)</div>
-                {/if} -->
             </div>
             <hr>
             <div>

@@ -1,6 +1,7 @@
 <script lang="ts">
     import type { Game } from "$lib/types"
     import { moreInfoGame, moreInfoVisible, showGameBars } from "$lib/stores";
+import { teamSearchFunc } from "$lib/gameUtils/filterFuncs";
     export let game : Game;
     const showMoreInfo = () => {
         console.log(game);
@@ -28,7 +29,7 @@
                 <span class='teamRank'>{team.ranked ? team.rank : ''}</span>
                 {team.school}
             </div>
-            {#if team.favored}
+            {#if team.favored || (game.spread === 0 && team.school === game.teams.home.school)}
                 <div class='spread teamLineUp'>(-{game.spread})</div>
             {/if}
             {#if team.possession}
