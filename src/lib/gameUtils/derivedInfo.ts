@@ -77,7 +77,13 @@ export default function(g: Game) {
     if (!!g.odds) {
         const odds = g.odds || {};
         g.overUnder = odds.overUnder;
+        if ([null, undefined].includes(g.overUnder)){
+            g.overUnder = undefined
+        }
         g.spread = odds.spread;
+        if ([null, undefined].includes(g.spread)){
+            g.spread = undefined
+        }
         g.favored = odds.homeFavored ? g.teams.home.school : g.teams.away.school;
         if (g.spread === 0){
             g.favored = undefined;

@@ -29,8 +29,10 @@ import { teamSearchFunc } from "$lib/gameUtils/filterFuncs";
                 <span class='teamRank'>{team.ranked ? team.rank : ''}</span>
                 {team.school}
             </div>
-            {#if team.favored || (game.spread === 0 && team.school === game.teams.home.school)}
-                <div class='spread teamLineUp'>(-{game.spread})</div>
+            {#if game.spread !== undefined}
+                {#if team.favored || (game.spread === 0 && team.school === game.teams.home.school)}
+                    <div class='spread teamLineUp'>(-{game.spread})</div>
+                {/if}
             {/if}
             {#if team.possession}
                 <div class='football teamLineUp'>&#127944</div>

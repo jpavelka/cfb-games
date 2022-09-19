@@ -69,10 +69,10 @@
                         Line: {$game.spread === 0 ? 'Even' : `${$game.favored} -${$game.spread}`}
                     </div>
                 {/if}
-                {#if $game.overUnder}
+                {#if $game.overUnder !== undefined}
                     <div>Over/Under: {$game.overUnder}</div>
                 {/if}
-                {#if !$game.spread && !$game.overUnder}
+                {#if $game.spread === undefined && $game.overUnder === undefined}
                     <div class=notAvailable>Not available</div>
                 {/if}
             </div>
