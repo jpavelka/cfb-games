@@ -1,13 +1,13 @@
 <script lang="ts">
     import type { Game } from "$lib/types"
     import { moreInfoGame, moreInfoVisible, showGameBars } from "$lib/stores";
-import { teamSearchFunc } from "$lib/gameUtils/filterFuncs";
     export let game : Game;
     const showMoreInfo = () => {
         console.log(game);
         moreInfoGame.update(() => game);
         moreInfoVisible.update(() => true);
     }
+    const matchupScoreTrunc = Math.min(100, Math.max(1, game.matchupScore))
 </script>
 
 <div class=gameCard on:click={showMoreInfo}>
@@ -64,10 +64,10 @@ import { teamSearchFunc } from "$lib/gameUtils/filterFuncs";
         </div>
         <div class=gameBroadcast>{['in', 'pre'].includes(game.statusState || '') ? (game.broadcastStr || '') : ''}</div>
     </div>
-    <div class=gameInterestBarBackground class:hide={game.teamsTbd || $showGameBars === 'n'}>
+    <div class=matchupScoreBarBackground class:hide={game.teamsTbd || $showGameBars === 'n'}>
         <div
-            class=gameInterestBar
-            style='width: {Math.min(100, Math.max(1, 100 * (1 - game.gameInterest / 80) + 5))}%; background-color: hsl({Math.max(0, 120 - 2 * game.gameInterest)}, 90%, 70%)'
+            class=matchupScoreBar
+            style='width: {matchupScoreTrunc}%; background-color: hsl({120 * game.matchupScore / 100}, 90%, 70%)'
         ></div>
     </div>
 </div>
@@ -105,13 +105,13 @@ import { teamSearchFunc } from "$lib/gameUtils/filterFuncs";
         position: absolute;
         bottom: 0;
     }
-    .gameInterestBarBackground {
+    .matchupScoreBarBackground {
         height: 8px;
         margin-top: 10px;
         background-color: white;
         position: relative;
     }
-    .gameInterestBar {
+    .matchupScoreBar {
         height: 4px;
         margin-top: 2px;
         position: absolute;

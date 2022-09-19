@@ -19,10 +19,10 @@ export default function(g: Game) {
             t.loser = !t.winner;
         }
         t.possession = g.possession === t.id
-        const sumRank = t.classification === 'FBS' ? t.masseyRank.mean : (
+        const approxRank = t.classification === 'FBS' ? t.masseyRank.mean : (
             !!t.masseyRank ? fcsMasseyEq(t.masseyRank.mean) : 250
         );
-        t.approxRank = Math.round(sumRank / 5);
+        t.approxRank = Math.round(approxRank / 5);
     }
     g.possessionHomeAway = g.teams.away.possession ? 'away' : (g.teams.home.possession ? 'home' : undefined)
     g.teamsTbd = g.teams.away.school === 'TBD' || g.teams.home.school === 'TBD';
@@ -98,7 +98,8 @@ export default function(g: Game) {
     }
     g.teamsArray = [(g.teams || {}).away, (g.teams || {}).home];
     g.spreadTouchdowns = g.spread ? Math.round(g.spread / 7) : 4;
-    g.gameInterest = g.teams.away.approxRank + g.teams.home.approxRank + g.spreadTouchdowns;
+    const rankDiff = Math.min(10, Math.abs(g.teams.away.approxRank - g.teams.home.approxRank));
+    g.matchupScore = 100 - (g.teams.away.approxRank + g.teams.home.approxRank + rankDiff);
     favoriteTeams.subscribe(val => {
         const favTeamsList = val.split(',')
         g.favoriteTeamGame = favTeamsList.includes(g.teams.away.school) || favTeamsList.includes(g.teams.home.school)
@@ -127,6 +128,11 @@ export default function(g: Game) {
         g.closeUnder5 = g.close * g.under5
         g.closeUnder8 = g.close * g.under8
     }
+    g.situationScore = 100;
+    favoriteTeams.subscribe(val => {
+        const favTeamsList = val.split(',')
+        g.favoriteTeamGame = favTeamsList.includes(g.teams.away.school) || favTeamsList.includes(g.teams.home.school)
+    })
     return g
 }
 

@@ -46,7 +46,7 @@ export type Game = {
             shortName: string;
         }
     }>;
-    gameInterest: number;
+    matchupScore: number;
     spreadTouchdowns: number;
     statusDetail: string;
     statusState: 'in' | 'pre' | 'post' | 'postponed' | 'canceled';

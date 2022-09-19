@@ -25,20 +25,20 @@ const makeCompList = (game: Game) => {
                 ['under8PotTie', 'max'],
                 ['closeUnder5', 'max'],
                 ['closeUnder8', 'max'],
-                ['gameInterest', 'min'],
+                ['matchupScore', 'max'],
             ];
         } else {
             keyList = [
-                ['gameInterest', 'min']
+                ['matchupScore', 'max']
             ];
         }
     } else if (game.statusSort === 'Upcoming'){
         keyList = [
-            ['gameInterest', 'min']
+            ['matchupScore', 'max']
         ];
     } else if (game.statusSort === 'Completed'){
         keyList = [
-            ['gameInterest', 'min']
+            ['matchupScore', 'max']
         ];
     }
     if (get(showFavoriteTeamsFirst) === 'y'){
