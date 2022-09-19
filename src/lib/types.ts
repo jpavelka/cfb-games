@@ -18,10 +18,11 @@ export type Game = {
     spread: number | undefined;
     favored: string | undefined;
     overUnder: number | undefined;
-    dttmStr: string | undefined;
-    dateStr: string | undefined;
+    dttmStr: string;
+    dateStr: string;
     dateSortStr: string;
-    hourStr: string | undefined;
+    hourStr: string;
+    hourSortStr: string;
     broadcastStr: string | undefined;
     timeValid: boolean;
     conferenceCompetition: boolean;
@@ -55,10 +56,11 @@ export type Game = {
     downDist?: string;
     possessionText?: string;
     lastPlay?: string;
-    impliedWinProb?: number;
     teamsTbd: boolean;
     possessionHomeAway?: string;
     favoriteTeamGame: boolean;
+    period: number;
+    displayClock: string;
 }
 
 export type Team = {
@@ -86,7 +88,11 @@ export type Team = {
     approxRank: number;
 }
 
-export type GameGrouping = {commonStr: string, games: Array<Game>, subGames: Array<GameGrouping>}
+export type GameGrouping = {
+    commonStr: string,
+    games: Array<Game>,
+    subGames: Array<GameGrouping>
+}
 
 export type WeekMetaData = {
     season: string;

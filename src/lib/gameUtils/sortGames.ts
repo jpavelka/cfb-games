@@ -1,13 +1,14 @@
+import type { Game } from "$lib/types";
 import { showFavoriteTeamsFirst, currentGameSortStyle } from "$lib/stores";
 import { get } from 'svelte/store';
 
-export default function sortGames(games) {
+export default function sortGames(games: Array<Game>) {
     games.sort((a, b) => pairwiseCompare(makeCompList(a), makeCompList(b)));
     return games;
 }
 
-const makeCompList = (game) => {
-    let keyList = [];
+const makeCompList = (game: Game) => {
+    let keyList: Array<[keyof Game, string]> = [];
     if (game.statusSort === 'Current'){
         if (get(currentGameSortStyle) === 'situation'){
             keyList = [
@@ -45,14 +46,14 @@ const makeCompList = (game) => {
     }
     const vals = keyList.map(x => {
         const [k, d] = x;
-        let retVal = game[k];
+        let retVal: number = game[k];
         retVal = (d === 'min' ? -1 : 1) * retVal;
         return retVal
     })
     return vals
 }
 
-const pairwiseCompare = (a, b) => {
+const pairwiseCompare = (a: Array<any>, b: Array<any>) => {
     for (const i in a){
         if ([null, undefined].includes(a[i])){
             return -1

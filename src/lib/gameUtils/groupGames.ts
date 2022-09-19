@@ -40,7 +40,7 @@ function groupByStatus(games: Array<Game>){
     let statusGrouped: Array<GameGrouping> = []
     for (const stat of orderedStatuses){
         if (Object.keys(statusGames).includes(stat)){
-            statusGrouped.push({commonStr: stat + ' Games', games: statusGames[stat]})
+            statusGrouped.push({commonStr: stat + ' Games', games: statusGames[stat], subGames: []})
         }
     }
     return statusGrouped
@@ -59,7 +59,12 @@ function groupByDesiredKey(arrayToGroup: Array<Game>, groupKey: keyof Game, grou
     allGroupSortStrs.sort(sortFunc);
     let sortedGroups = [];
     for (const d of allGroupSortStrs){
-        sortedGroups.push({commonStr: groupObj[d][0][groupKey], games: groupObj[d], subGames: undefined});
+        const newGroup: GameGrouping = {
+            commonStr: `${groupObj[d][0][groupKey]}`,
+            games: groupObj[d],
+            subGames: []
+        }
+        sortedGroups.push(newGroup);
     }
     return sortedGroups
 }
@@ -75,5 +80,5 @@ function groupByHourFunc(games: Array<Game>) {
     const sortFunc = (a: string, b: string) => (
         a === 'TBA' ? 1 : (b === 'TBA' ? -1 : (new Date(a) < new Date (b) ? -1 : 1))
     )
-    return groupByDesiredKey(games, 'hourStr', 'hourStr', sortFunc)
+    return groupByDesiredKey(games, 'hourStr', 'hourSortStr', sortFunc)
 }

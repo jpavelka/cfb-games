@@ -47,23 +47,22 @@ export default function(g: Game) {
         }
     }
     const gameDttm = new Date(g.dttm)
-    g.dttmStr = undefined;
-    g.dateStr = undefined;
-    g.dateSortStr = gameDttm.toLocaleDateString();
-    g.hourStr = 'TBA';
+    const estDtStr = Intl.DateTimeFormat([],
+        {timeZone: 'America/New_York', weekday: 'short', month: 'short', day: 'numeric'}
+    ).format(gameDttm);
+    g.dttmStr = estDtStr;
+    g.dateStr = estDtStr;
+    g.dateSortStr = estDtStr;
+    g.hourStr = 'TBD';
+    g.hourSortStr = '24';
     if (g.timeValid){
         g.dttmStr = gameDttm.toLocaleDateString([],
             {weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit'}
         );
         g.dateStr = gameDttm.toLocaleDateString([], {weekday: 'short', month: 'short', day: 'numeric'});
+        g.dateSortStr = g.dateStr;
         g.hourStr = gameDttm.toLocaleTimeString([], {hour: 'numeric'});
-    } else {
-        g.dttmStr = Intl.DateTimeFormat([],
-            {timeZone: 'America/New_York', weekday: 'short', month: 'short', day: 'numeric'}
-        ).format(gameDttm);
-        g.dateStr = Intl.DateTimeFormat([],
-            {timeZone: 'America/New_York', weekday: 'short', month: 'short', day: 'numeric'}
-        ).format(gameDttm);
+        g.hourSortStr = gameDttm.toLocaleTimeString([], {hour: 'numeric', hourCycle: 'h23'});
     }
     g.eventStr = undefined;
     let eventStrs = [];
@@ -85,7 +84,6 @@ export default function(g: Game) {
         } else {
             g.teams.home.favored = odds.homeFavored;
             g.teams.away.favored = !g.teams.home.favored;
-            g.impliedWinProb = getImpliedWinProb(g.spread);
         }
     } else {
         g.overUnder = undefined;
@@ -130,54 +128,7 @@ const fcsMasseyEq = (r: number) => {
     return Math.min(20 + (r * 4 ** Math.max(2, (1 + r / 10))), 130 + r);
 }
 
-const getImpliedWinProb = (spread: number) => {
-    const strSpread = `${spread}`
-    const winProbMap: {[key: string]: number} = {
-        '0': 50,
-        '0.5': 50.0,
-        '1': 51.2,
-        '1.5':	52.5,
-        '2':	53.4,
-        '2.5':	54.3,
-        '3':	57.4,
-        '3.5':	60.6,
-        '4':	61.9,
-        '4.5':	63.1,
-        '5':	64.1,
-        '5.5':	65.1,
-        '6':	66.4,
-        '6.5':	67.7,
-        '7':	70.3,
-        '7.5':	73.0,
-        '8':	73.8,
-        '8.5':	74.6,
-        '9':	75.1,
-        '9.5':	75.5,
-        '10':	77.4,
-        '10.5':	79.3,
-        '11':	79.9,
-        '11.5':	80.6,
-        '12':	81.6,
-        '12.5':	82.6,
-        '13':	83.0,
-        '13.5':	83.5,
-        '14':	85.1,
-        '14.5':	86.8,
-        '15':	87.4,
-        '15.5':	88.1,
-        '16':	88.6,
-        '16.5':	89.1,
-        '17':	91.4,
-        '17.5':	93.7,
-        '18':	95.0,
-        '18.5':	96.2,
-        '19':	97.3,
-        '19.5':	98.4
-    }
-    return winProbMap[strSpread] || 99.9
-}
-
-function totalSecondsRemaining({ period, seconds }) {
+function totalSecondsRemaining({ period, seconds }: { period: number, seconds: number }) {
     if (period > 4) {
       return 0;
     } else {
