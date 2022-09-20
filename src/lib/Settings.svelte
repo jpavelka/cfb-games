@@ -1,10 +1,8 @@
 <!-- todo: favorite teams, channels, sort styles (situation, interest score, etc) -->
-<!-- todo: game filters: All, FBS, P5, Ranked -->
 <script lang="ts">
     import { 
         settingsVisible, gamesToShow, showGameBars, allTeamsList, favoriteTeams,
-        showFavoriteTeamsFirst, settingsScrollY, settingsHideTeamGroup,
-        currentGameSortStyle
+        showFavoriteTeamsFirst, settingsScrollY, settingsHideTeamGroup
     } from "$lib/stores";
     import { slide } from 'svelte/transition';
     import { gamesToShowFilterFuncs } from "$lib/gameUtils/filterFuncs";
@@ -32,10 +30,6 @@
     }
     const gamesToShowChangeFunc = (val: string) => {
         gamesToShow.update(() => val);
-        getGameDataNoScroll();
-    }
-    const currentGameSortChangeFunc = (val: string) => {
-        currentGameSortStyle.update(() => val);
         getGameDataNoScroll();
     }
     const changeHideTeam = (k: string) => {
