@@ -1,18 +1,20 @@
 <script lang="ts">
     import type { Game } from "$lib/types"
     import { moreInfoGame, moreInfoVisible, showGameBars } from "$lib/stores";
+    import GameBar from "./GameBar.svelte";
     export let game : Game;
     const showMoreInfo = () => {
         console.log(game);
         moreInfoGame.update(() => game);
         moreInfoVisible.update(() => true);
     }
-    const matchupScoreTrunc = Math.min(100, Math.max(1, game.matchupScore))
 </script>
 
 <div class=gameCard on:click={showMoreInfo}>
     <div class=topLine>
-        <div class=eventName>{game.eventStr || ''}</div>
+        <div class=eventName>
+            {game.eventStr || ''}
+        </div>
     </div>
     {#each game.teamsArray as team}
         <div class=teamLine>
@@ -24,7 +26,7 @@
                     ></div>
                 </div>
             {/if}
-            <img class=logoImg class:noLogo={!!!team.logo} src={team.logo} alt={team.displayName}>
+            <img class=logoImg class:noLogo={!!!team.logo} src={team.logo} alt={team.abbreviation}>
             <div class='teamName teamLineUp' class:winnerText={team.winner}>
                 <span class='teamRank'>{team.ranked ? team.rank : ''}</span>
                 {team.school}
@@ -64,12 +66,19 @@
         </div>
         <div class=gameBroadcast>{['in', 'pre'].includes(game.statusState || '') ? (game.broadcastStr || '') : ''}</div>
     </div>
-    <div class=matchupScoreBarBackground class:hide={game.teamsTbd || $showGameBars === 'n'}>
-        <div
-            class=matchupScoreBar
-            style='width: {matchupScoreTrunc}%; background-color: hsl({120 * game.matchupScore / 100}, 90%, 70%)'
-        ></div>
-    </div>
+    {#if $showGameBars === 'y' && !game.teamsTbd}
+        <div class=gameBars>
+            {#if game.statusState === 'in'}
+                <GameBar icon='scoreboard' valueNorm={game.situationScoreNorm}></GameBar>
+            {/if}
+            <GameBar icon='matchup' valueNorm={game.matchupScoreNorm}></GameBar>
+            {#if ['in', 'post'].includes(game.statusState)}
+                <GameBar icon='surprised' valueNorm={game.surpriseScoreNorm}></GameBar>
+            {/if}
+        </div>
+    {:else}
+        <div style='margin: 10pt'></div>
+    {/if}
 </div>
 
 <style>
@@ -105,17 +114,8 @@
         position: absolute;
         bottom: 0;
     }
-    .matchupScoreBarBackground {
-        height: 8px;
-        margin-top: 10px;
-        background-color: white;
-        position: relative;
-    }
-    .matchupScoreBar {
-        height: 4px;
-        margin-top: 2px;
-        position: absolute;
-        left: 0;
+    .gameBars {
+        margin-top: 5pt;
     }
     .logoImg {
         height: 2.2em;

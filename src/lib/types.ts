@@ -15,9 +15,9 @@ export type Game = {
     };
     teamsArray: Array<Team>;
     eventStr: string | undefined;
-    spread: number | undefined;
+    spread: number | undefined | null;
     favored: string | undefined;
-    overUnder: number | undefined;
+    overUnder: number | undefined | null;
     dttmStr: string;
     dateStr: string;
     dateSortStr: string;
@@ -34,8 +34,8 @@ export type Game = {
     }>;
     odds: {
         provider: string;
-        spread: number;
-        overUnder: number;
+        spread: number | undefined | null;
+        overUnder: number | undefined | null;
         homeFavored: boolean;
     } | null;
     geoBroadcasts: Array<{
@@ -47,6 +47,13 @@ export type Game = {
         }
     }>;
     matchupScore: number;
+    surpriseScore: number;
+    situationScore: number;
+    matchupScoreNorm: number;
+    surpriseScoreNorm: number;
+    situationScoreNorm: number;
+    matchupSurpriseScore: number;
+    matchupSituationSurpriseScore: number;
     spreadTouchdowns: number;
     statusDetail: string;
     statusState: 'in' | 'pre' | 'post' | 'postponed' | 'canceled';
@@ -60,7 +67,9 @@ export type Game = {
     possessionHomeAway?: string;
     favoriteTeamGame: boolean;
     period: number;
+    clock: number;
     displayClock: string;
+    upset: boolean;
 }
 
 export type Team = {
@@ -75,7 +84,7 @@ export type Team = {
     favored: boolean;
     recordOverall: string | undefined;
     recordConference: string | undefined;
-    score?: number | undefined;
+    score?: number;
     winner?: boolean;
     loser?: boolean;
     possession?: boolean;

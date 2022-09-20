@@ -77,11 +77,11 @@ export default function(g: Game) {
     if (!!g.odds) {
         const odds = g.odds || {};
         g.overUnder = odds.overUnder;
-        if ([null, undefined].includes(g.overUnder)){
+        if (g.overUnder === null || g.overUnder === undefined){
             g.overUnder = undefined
         }
         g.spread = odds.spread;
-        if ([null, undefined].includes(g.spread)){
+        if (g.spread === null || g.spread === undefined){
             g.spread = undefined
         }
         g.favored = odds.homeFavored ? g.teams.home.school : g.teams.away.school;
@@ -104,31 +104,55 @@ export default function(g: Game) {
         const favTeamsList = val.split(',')
         g.favoriteTeamGame = favTeamsList.includes(g.teams.away.school) || favTeamsList.includes(g.teams.home.school)
     })
+    g.situationScore = 0;
     if (g.statusState === 'in'){
-        g.margin = Math.abs(g.teams.home.score - g.teams.away.score);
-        g.marginPossessions = Math.floor((g.margin - 0.5) / 8) + 1;
-        g.tie = g.margin == 0;
-        g.leading = g.tie ? undefined : g.teams.home.score > g.teams.away.score ? "home" : "away";
-        g.under2 = totalSecondsRemaining({ period: g.period, seconds: g.clock }) <= 2 * 60;
-        g.under5 = totalSecondsRemaining({ period: g.period, seconds: g.clock }) <= 5 * 60;
-        g.under8 = totalSecondsRemaining({ period: g.period, seconds: g.clock }) <= 8 * 60;
-        g.close = g.period <= 2 ? g.marginPossessions <= 3 : g.marginPossessions <= 2;
-        g.potentialLeadChange = g.margin < 8 && g.leading != g.possessionHomeAway;
-        g.potentialTie = g.margin <= 8 && g.leading != g.possessionHomeAway;
-        g.under2Tied = g.under2 * g.tie;
-        g.under2PotChange = g.under2 * g.potentialLeadChange
-        g.under2PotTie = g.under2 * g.potentialTie
-        g.under5Tied = g.under5 * g.tie;
-        g.under5PotChange = g.under5 * g.potentialLeadChange
-        g.under5PotTie = g.under5 * g.potentialTie
-        g.under8Tied = g.under8 * g.tie;
-        g.under8PotChange = g.under8 * g.potentialLeadChange
-        g.under8PotTie = g.under8 * g.potentialTie
-        g.closeUnder2 = g.close * g.under2
-        g.closeUnder5 = g.close * g.under5
-        g.closeUnder8 = g.close * g.under8
+        const secsRemaining = totalSecondsRemaining({ period: g.period, seconds: g.clock });
+        const minutesElapsed = 60 - (secsRemaining / 60);
+        const timeScore = (Math.round(minutesElapsed * 2) / 2) / 60;
+        const margin = Math.abs((g.teams.home.score || 0) - (g.teams.away.score || 0));
+        let nextMargin = margin;
+        if (g.possessionHomeAway !== undefined) {
+            const leading = (g.teams.home.score || 0) > (g.teams.away.score || 0) ? "home" : "away";
+            nextMargin = Math.abs(margin + (leading === g.possessionHomeAway ? 1 : -1) * 7);
+        }
+        const marginScore = Math.min(1, Math.max(0, ((margin + nextMargin) / 2) / 14))
+        g.situationScore = timeScore * marginScore * 100
     }
-    g.situationScore = 100;
+    g.surpriseScore = 0;
+    if (['in', 'post'].includes(g.statusState)){
+        let minutesElapsed = 60;
+        if (g.statusState === 'in'){
+            const secsRemaining = totalSecondsRemaining({ period: g.period, seconds: g.clock });
+            minutesElapsed = 60 - (secsRemaining / 60);
+        }
+        const timeScore = 100 * (Math.round(minutesElapsed * 2) / 2) / 60;
+        if (g.spread === undefined){
+            g.upset = false;
+            g.surpriseScore = 50;
+        } else {
+            let margin = 0;
+            if (g.teams.home.score !== undefined && g.teams.away.score !== undefined){
+                margin = g.teams.home.score - g.teams.away.score;
+            }
+            if (g.favored !== g.teams.home.school){
+                margin = -margin;
+            }
+            const distFromSpread = Math.abs((g.spread || 0) - margin);
+            const distFromSpreadSurpriseScore = Math.min(25, distFromSpread) / 25;
+            g.upset = margin < 0;
+            const upsetSurpriseScore = g.upset ? Math.min(10, (g.spread || 0)) / 10 : 0;
+            g.surpriseScore = timeScore * (0.85 * distFromSpreadSurpriseScore + 0.15 * upsetSurpriseScore);
+        }
+    }
+    g.matchupScoreNorm = Math.min(100, Math.max(1, g.matchupScore)) / 100;
+    g.situationScoreNorm = Math.min(100, Math.max(1, g.situationScore)) / 100;
+    g.surpriseScoreNorm = Math.min(100, Math.max(1, g.surpriseScore)) / 100;
+    g.matchupSurpriseScore = 100 * (
+        (4 * g.matchupScoreNorm + g.surpriseScoreNorm) / 5
+    );
+    g.matchupSituationSurpriseScore = 100 * (
+        (4 * g.situationScoreNorm + 2 * g.matchupScoreNorm + g.surpriseScoreNorm) / 7
+    );
     favoriteTeams.subscribe(val => {
         const favTeamsList = val.split(',')
         g.favoriteTeamGame = favTeamsList.includes(g.teams.away.school) || favTeamsList.includes(g.teams.home.school)
@@ -151,7 +175,7 @@ function totalSecondsRemaining({ period, seconds }: { period: number, seconds: n
     }
 }
 
-function getMinutesAndSecondsRemaining(s) {
+function getMinutesAndSecondsRemaining(s: number) {
     let minutes = Math.floor(s / 60);
     let seconds = s - 60 * minutes;
     return { minutes: minutes, seconds: seconds };

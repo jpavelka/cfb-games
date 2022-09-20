@@ -105,26 +105,6 @@
             {/each}
         </div>
         <hr>
-        <h2 class="sectionHeading">Current game sorting</h2>
-        <div class='checkboxWrapper multipleChecks'>
-            <input
-                type='radio'
-                name='currentGameSort'
-                id='currentGameSortIn'
-                checked={$currentGameSortStyle === 'situation'}
-                on:click={() => currentGameSortChangeFunc('situation')}
-            ><label for={'currentGameSortIn'}>{'Game situation'}</label>
-        </div>
-        <div class='checkboxWrapper multipleChecks'>
-            <input
-                type='radio'
-                name='currentGameSort'
-                id='currentGameSortPre'
-                checked={$currentGameSortStyle === 'pregameInterest'}
-                on:click={() => currentGameSortChangeFunc('pregameInterest')}
-            ><label for={'currentGameSortPre'}>{'Pregame interest'}</label>
-        </div>
-        <hr>
         <h2 class="sectionHeading">Game display:</h2>
         <div class=checkboxWrapper>
             <input
@@ -135,7 +115,7 @@
                     showGameBars.update(x => x === 'y' ? 'n' : 'y');
                     getGameDataNoScroll();
                 }}
-            ><label for='showGameBars'>Show game interest and team strength bars</label>
+            ><label for='showGameBars'>Show team/game interest bars</label>
         </div>
         <hr>
         <h2 class="sectionHeading">Favorite teams:</h2>

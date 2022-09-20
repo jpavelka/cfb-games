@@ -1,6 +1,8 @@
 <script lang="ts">
-    import { moreInfoGame as game } from "$lib/stores";
+    import AllGames from "$lib/gameListComps/AllGames.svelte";
+import { moreInfoGame as game } from "$lib/stores";
     import { moreInfoVisible as visible} from "$lib/stores";
+    import GameBar from "./GameBar.svelte";
     import MoreInfoLogos from './MoreInfoLogos.svelte';
     const handleClose = () => {
         visible.update(() => false);
@@ -38,6 +40,20 @@
                 {/if}
                 <MoreInfoLogos team={$game.teams.home}></MoreInfoLogos>
             </div>
+            {#if !$game.teamsTbd}
+                <div class='gameBarsHolder'>
+                    {#if $game.statusState === 'in'}
+                        <div class=sectionText>Situation: {(100 * $game.situationScoreNorm).toFixed(0)}/100</div>
+                        <GameBar icon='scoreboard' valueNorm={$game.situationScoreNorm} backgroundColor='black'></GameBar>
+                    {/if}
+                    <div class=sectionText>Matchup: {(100 * $game.matchupScoreNorm).toFixed(0)}/100</div>
+                    <GameBar icon='matchup' valueNorm={$game.matchupScoreNorm} backgroundColor='black'></GameBar>
+                    {#if ['in', 'post'].includes($game.statusState)}
+                        <div class=sectionText>Surprise: {(100 * $game.surpriseScoreNorm).toFixed(0)}/100</div>
+                        <GameBar icon='surprised' valueNorm={$game.surpriseScoreNorm} backgroundColor='black'></GameBar>
+                    {/if}
+                </div>
+            {/if}
             {#if !!$game.downDist}
                 <hr>
                 <div class=sectionHeading>Situation</div>
@@ -173,5 +189,9 @@
         width: 4vw;
         font-size: 2vw;
         text-align: center;
+    }
+    .gameBarsHolder {
+        width: 60%;
+        margin: auto;
     }
 </style>

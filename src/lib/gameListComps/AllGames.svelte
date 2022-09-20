@@ -1,5 +1,6 @@
 <script lang='ts'>
     import type { Game } from '$lib/types';
+    import { showFavoriteTeamsFirst } from '$lib/stores';
     import GameCard from '$lib/singleGameComps/GameCard.svelte';
     import sortGames from '$lib/gameUtils/sortGames';
     export let games: Array<Game>;
@@ -7,7 +8,7 @@
 
 <div class='gamesContainer'>
     {#if games !== undefined}
-        {#each sortGames(games) as game}
+        {#each sortGames(games, $showFavoriteTeamsFirst === 'y') as game}
             <GameCard game={game}/>
         {/each}
         {#each Array(10).fill('') as s}
