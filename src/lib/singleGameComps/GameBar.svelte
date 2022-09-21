@@ -1,11 +1,20 @@
 <script lang="ts">
+    import matchup from '$lib/assets/matchup.svg';
+    import scoreboard from '$lib/assets/scoreboard.svg';
+    import surprised from '$lib/assets/surprised.svg';
     export let icon : string;
     export let valueNorm : number;
     export let backgroundColor : string = 'white';
+    const iconImg = (
+        icon === 'matchup' ? matchup :
+        icon === 'scoreboard' ? scoreboard :
+        icon === 'surprised' ? surprised :
+        undefined
+    )
 </script>
 
 <div class=gameBarWithIconContainer>
-    <img class=barIcon src="./{icon}.svg" alt="*">
+    <img class=barIcon src={iconImg} alt="*">
     <div class=gameBarBackground style='background-color: {backgroundColor}'>
         <div
             class=gameBar
