@@ -20,7 +20,8 @@ jobs:
 
       - name: Copy Favicon
         run: |
-          cp static/favicon.jpg build
+          mkdir build/cfb-games
+          cp static/favicon.jpg build/cfb-games
 
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@3.7.1
