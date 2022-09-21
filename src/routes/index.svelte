@@ -1,6 +1,7 @@
 <script lang='ts'>
     import '$lib/common.css'
     import type { Game, WeekMetaData } from '$lib/types';
+    import settingsIcon from '$lib/assets/settings.svg';
     import SubGames from '$lib/gameListComps/SubGames.svelte';
     import MoreInfo from '$lib/singleGameComps/MoreInfo.svelte';
     import Settings from '$lib/Settings.svelte';
@@ -87,11 +88,12 @@
                         </option>
                     {/each}
                 </select>
-                <span
+                <img
                     class=settingsButton
+                    src={settingsIcon}
+                    alt="*"
                     on:click={() => settingsVisible.update(() => true)}
                 >
-                <i class="fa fa-gear"></i></span>
             </div>
             <div class="teamSearch">
                 <form on:submit={teamSearchFunc}>
@@ -145,10 +147,8 @@
         padding: 0.5em;
     }
     .settingsButton {
-        font-size: 1.75em;
+        height: 2.2em;
         color: gray;
-        margin-top: 0.1em;
-        margin-right: 0.3em;
         cursor: pointer;
     }
     .teamSearch {
