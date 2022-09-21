@@ -1,4 +1,4 @@
-<!-- todo: favorite teams, channels -->
+<!-- todo: channels -->
 <script lang="ts">
     import { 
         settingsVisible, gamesToShow, showGameBars, allTeamsList, favoriteTeams,
@@ -9,7 +9,10 @@
     import { afterUpdate } from 'svelte';
     
     afterUpdate(() => {
-        document.getElementById("settingsModal").scrollTop = $settingsScrollY;
+        const settingsElement = document.getElementById("settingsModal");
+        if (settingsElement !== null){
+            settingsElement.scrollTop = $settingsScrollY;
+        }
 	});
     const handleClose = () => {
         settingsVisible.update(() => false);
@@ -24,8 +27,15 @@
         }
     }
     export let getGameData: Function;
+    const updateSettingsScrollY = (x: number) => {
+        const settingsElement = document.getElementById("settingsModal");
+        if (settingsElement !== null){
+            x = settingsElement.scrollTop;
+        }
+        return x
+    }
     const getGameDataNoScroll = () => {
-        settingsScrollY.update(() => document.getElementById("settingsModal").scrollTop);
+        settingsScrollY.update(x => updateSettingsScrollY(x));
         getGameData();
     }
     const gamesToShowChangeFunc = (val: string) => {
@@ -33,14 +43,14 @@
         getGameDataNoScroll();
     }
     const changeHideTeam = (k: string) => {
-        settingsScrollY.update(() => document.getElementById("settingsModal").scrollTop);
+        settingsScrollY.update(x => updateSettingsScrollY(x));
         settingsHideTeamGroup.update(x => {
             x[k] = !x[k];
             return x
         })
     }
     const getSortedTeams = () => {
-        let sortedTeams = {}
+        let sortedTeams: {[key: string]: {[key: string]: Array<string>}} = {}
         for (const team of $allTeamsList){
             if (!Object.keys($settingsHideTeamGroup).includes(team.classification)) {
                 $settingsHideTeamGroup[team.classification] = true;
@@ -179,7 +189,7 @@
 <style>
     .backgroundDiv {
         position: fixed; /* Stay in place */
-        z-index: 1; /* Sit on top */
+        z-index: 2; /* Sit on top */
         padding-top: 100px; /* Location of the box */
         left: 0;
         top: 0;

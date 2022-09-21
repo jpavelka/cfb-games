@@ -72,7 +72,7 @@
             getGameData={getGameData}
         ></Settings>
         <MoreInfo></MoreInfo>
-        <div class=mainContent>
+        <div class=header>
             <div class=selections>
                 <select
                     name='weekSelect'
@@ -95,6 +95,9 @@
                     on:click={() => settingsVisible.update(() => true)}
                 >
             </div>
+        </div>
+        <div class=mainContent>
+            
             <div class="teamSearch">
                 <form on:submit={teamSearchFunc}>
                     <input class=teamSearchBox id=teamSearch type="text" placeholder="Team Search" value={$teamSearchStr}>
@@ -120,31 +123,49 @@
                 <div class=noGames>No games to show</div>
             {/if}
         </div>
-        <div class=lastUpdate>Last update: {(new Date($weekMetaData.lastUpdate)).toLocaleString(
-            [], {weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', timeZoneName: 'short'}
-        )}</div>
+        <div class=footer>
+            <div class=lastUpdate>
+                Last update: {(new Date($weekMetaData.lastUpdate)).toLocaleString(
+                    [], {weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', timeZoneName: 'short'}
+                )}
+            </div>
+        </div>
     {/key}
 {:catch}
     <div>An error has occurred - please try again later</div>
 {/await}
 
 <style>
+    .header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        background: white;
+        z-index: 1;
+        border-bottom: 1pt solid lightgray;
+    }
     .mainContent {
         overflow: auto;
         padding-bottom: 1.5em;
+        padding-top: 2.5em;
+    }
+    .footer {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background: white;
+        border-top: 1pt solid lightgray;
     }
     .lastUpdate {
         font-size: 0.8em;
-        position: fixed;
-        bottom: 0;
-        width: 100%;
         text-align: center;
-        background: white;
     }
     .selections {
         display: flex;
         justify-content: space-between;
-        padding: 0.5em;
+        padding: 0.4em 1em;
     }
     .settingsButton {
         height: 2.2em;

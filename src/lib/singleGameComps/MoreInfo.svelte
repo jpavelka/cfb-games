@@ -125,7 +125,7 @@ import { moreInfoGame as game } from "$lib/stores";
 <style>
     .backgroundDiv {
         position: fixed; /* Stay in place */
-        z-index: 1; /* Sit on top */
+        z-index: 2; /* Sit on top */
         padding-top: 100px; /* Location of the box */
         left: 0;
         top: 0;
