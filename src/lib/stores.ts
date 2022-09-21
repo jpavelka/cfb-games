@@ -41,3 +41,13 @@ export const gamesToShow = createCookieSyncedStore('gamesToShow', 'All', ['All',
 export const showGameBars = createCookieSyncedStore('showGameBars', 'y', ['y', 'n']);
 export const showFavoriteTeamsFirst = createCookieSyncedStore('showFavoriteTeamsFirst', 'y', ['y', 'n']);
 export const favoriteTeams = createCookieSyncedStore('favoriteTeams', '', undefined);
+
+const gameSortChoices = {
+    'Current Games': ['Default', 'Situation', 'Matchup', 'Surprise'],
+    'Completed Games': ['Default', 'Matchup', 'Surprise']
+};
+let gss: {[key: string]: {choices: Array<string>, store: Writable<string>}} = {}
+for (const [k, v] of Object.entries(gameSortChoices)){
+    gss[k] = {choices: v, store: createCookieSyncedStore(k.replace(' ', '') + 'SortStyle', v[0], v)}
+}
+export { gss as gameSortStyles }

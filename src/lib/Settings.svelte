@@ -1,4 +1,4 @@
-<!-- todo: favorite teams, channels, sort styles (situation, interest score, etc) -->
+<!-- todo: favorite teams, channels -->
 <script lang="ts">
     import { 
         settingsVisible, gamesToShow, showGameBars, allTeamsList, favoriteTeams,

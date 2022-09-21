@@ -1,5 +1,6 @@
 <script lang='ts'>
-    import { displaySubGroups } from '$lib/stores';
+    import { displaySubGroups, gameSortStyles } from '$lib/stores';
+    import { get } from 'svelte/store';
     import AllGames from '$lib/gameListComps/AllGames.svelte';
     import { slide } from 'svelte/transition';
     import type { GameGrouping } from '$lib/types';
@@ -27,6 +28,14 @@
             return dsg
         })
     }
+    const sortStyleChangeFunc = (event: Event, k: string) => {
+        if (!!!event.target) {
+            return
+        }
+        const target = event.target as HTMLInputElement;
+        gameSortStyles[k].store.update(() => target.value);
+        postCheckClickFunc();
+    }
 </script>
 
 {#each allSubData as subData, i}
@@ -43,6 +52,24 @@
         </h2>
         {#if !hideGroup[subData.commonStr]}
             <div transition:slide|local>
+                {#if Object.keys(gameSortStyles).includes(subData.commonStr)}
+                    <div class=sortStyleSelectContainer>
+                        Sort by: <span class=sortStyleSelect>
+                            <select
+                                class=smallerSelect
+                                name={subData.commonStr + 'SortStyle'}
+                                on:change={e => sortStyleChangeFunc(e, subData.commonStr)}
+                            >
+                                {#each gameSortStyles[subData.commonStr].choices as x}
+                                    <option 
+                                        value={x}
+                                        selected={x === get(gameSortStyles[subData.commonStr].store)}
+                                    >{x}</option>
+                                {/each}
+                            </select>
+                        </span>
+                    </div>
+                {/if}
                 {#if hierarchyLevel < subGroupHierarchy.length - 1 && subData.commonStr !== 'Current Games'}
                     <div class="groupCheck">
                         <input
@@ -92,5 +119,16 @@
     .groupCheck {
         padding: 0.3em;
         font-size: 1.1em;
+    }
+    .sortStyleSelectContainer {
+        padding: 0.3em;
+        margin-left: 0.3em;
+    }
+    .sortStyleSelect {
+        margin-left: 0.3em;
+    }
+    .smallerSelect {
+        padding-top: 0.2em;
+        padding-bottom: 0.2em;
     }
 </style>

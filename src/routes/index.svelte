@@ -13,7 +13,7 @@
     const bucketUrl = 'https://storage.googleapis.com/weekly-scoreboard-data/'
     const seasonInfoUrl = bucketUrl + 'season_info.json'
     const teamListUrl = bucketUrl + 'conferences.json'
-    function getGameData() {
+    export function getGameData() {
         allGamesData.update(() => groupGames($allGamesDataRaw, $gamesToShow, $teamSearchStr));
     }
     async function loadNewWeekData({season, seasonType, week}: {season: string, seasonType: string, week: string}) {
