@@ -170,13 +170,6 @@
                         ><label for={'teamCheck' + team}>{team}</label>
                     </div>
                 {/each}
-                <button on:click={() => {
-                    for (const team of getFavTeamList()){
-                        favoriteTeamClick(team);
-                    }
-                }}>
-                    Remove all
-                </button>
             </div>
         {/if}
         {#each ['fbs', 'fcs'] as subdiv}
@@ -194,7 +187,7 @@
                 {#if !$settingsHideTeamGroup[subdiv]}
                     {#each Object.entries(getSortedTeams()[subdiv]).sort((a, b) => a[0] < b[0] ? -1 : 1) as [conf, confTeams]}
                         <div class=teamsSub transition:slide|local>
-                            <h4 class="closer" on:click={() => changeHideTeam(conf)}>
+                            <h4 class="closer pointer" on:click={() => changeHideTeam(conf)}>
                                 {conf}
                                 <span class='headerArrow'>
                                     {#if !$settingsHideTeamGroup[conf]}
