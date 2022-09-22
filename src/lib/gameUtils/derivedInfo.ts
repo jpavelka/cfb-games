@@ -34,18 +34,17 @@ export default function(g: Game) {
     } else {
         g.location = `${city}, ${state}`
     }
-    g.broadcastStr = undefined;
+    g.broadcastStr = '';
+    let broadcastStrs = [];
     if (g.geoBroadcasts.length > 0){
-        let broadcastStrs = [];
         for (let gb of g.geoBroadcasts){
             if (gb.market.type == 'National'){
                 broadcastStrs.push(gb.media.shortName)
             }
         }
-        if (broadcastStrs.length > 0){
-            g.broadcastStr = broadcastStrs.join(', ');
-        }
+        g.broadcastStr = getBroadcastStrFromList(broadcastStrs);
     }
+    g.broadcastChannels = broadcastStrs;
     const gameDttm = new Date(g.dttm)
     const estDtStr = Intl.DateTimeFormat([],
         {timeZone: 'America/New_York', weekday: 'short', month: 'short', day: 'numeric'}
@@ -180,3 +179,7 @@ function getMinutesAndSecondsRemaining(s: number) {
     let seconds = s - 60 * minutes;
     return { minutes: minutes, seconds: seconds };
   }
+
+export function getBroadcastStrFromList(broadcastStrs: Array<string>) {
+    return broadcastStrs.join(', ');
+}

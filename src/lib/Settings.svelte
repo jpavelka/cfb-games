@@ -1,8 +1,8 @@
-<!-- todo: channels -->
 <script lang="ts">
     import { 
         settingsVisible, gamesToShow, showGameBars, allTeamsList, favoriteTeams,
-        showFavoriteTeamsFirst, settingsScrollY, settingsHideTeamGroup
+        showFavoriteTeamsFirst, settingsScrollY, settingsHideTeamGroup, allChannels,
+        excludedChannels, filterOnChannels, settingsHideChannels
     } from "$lib/stores";
     import { slide } from 'svelte/transition';
     import { gamesToShowFilterFuncs } from "$lib/gameUtils/filterFuncs";
@@ -45,6 +45,10 @@
             return x
         })
     }
+    const changeHideChannels = () => {
+        settingsScrollY.update(x => updateSettingsScrollY(x));
+        settingsHideChannels.update(x => !x);
+    }
     const getSortedTeams = () => {
         let sortedTeams: {[key: string]: {[key: string]: Array<string>}} = {}
         for (const team of $allTeamsList){
@@ -81,6 +85,23 @@
         }
         getGameDataNoScroll();
     }
+    const getExcludedChannelList = () => {
+        return $excludedChannels.split(',').filter(s => s !== '');
+    }
+    const isExcludedChannel = (c: string) => {
+        const excludedChannelList = getExcludedChannelList();
+        return excludedChannelList.includes(c)
+    }
+    const excludeChannelClick = (c: string) => {
+        const excludedChannelList = getExcludedChannelList();
+        if (isExcludedChannel(c)){
+            excludedChannels.update(() => excludedChannelList.filter(y => y !== c).join(','));
+        } else {
+            excludedChannelList.push(c);
+            excludedChannels.update(() => excludedChannelList.join(','));
+        }
+        getGameDataNoScroll();
+    }
     const gamesToShowSelectChange = (event: Event) => {
         if (!!!event.target) {
             return
@@ -99,7 +120,7 @@
     <div id='settingsModal' class='modalContent'>
         <h1 style='text-align: center; margin-top: 0.25em;'>Settings</h1>
         <h2 class="sectionHeading">Team Filtering</h2>
-        <span style="margin-right:0.5em">Include teams from this group:</span>
+        <span class=basicText style="margin-right:0.5em">Include teams from this group:</span>
         <select on:change={e => gamesToShowSelectChange(e)}>
             {#each Object.keys(gamesToShowFilterFuncs) as x}
                 <option 
@@ -160,7 +181,7 @@
         {/if}
         {#each ['fbs', 'fcs'] as subdiv}
             <div class=teamsSub>
-                <h3 class="closer" on:click={() => changeHideTeam(subdiv)}>
+                <h3 class="closer pointer" on:click={() => changeHideTeam(subdiv)}>
                     {subdiv.toUpperCase()}
                     <span class='headerArrow'>
                         {#if !$settingsHideTeamGroup[subdiv]}
@@ -202,6 +223,45 @@
                 {/if}
             </div>
         {/each}
+        <hr>
+        <h2 class="sectionHeading">Channel Filtering</h2>
+        <div class=checkboxWrapper>
+            <input
+                id='filterOnChannels'
+                type='checkbox'
+                checked={$filterOnChannels === 'y'}
+                on:click={() => {
+                    filterOnChannels.update(x => x === 'y' ? 'n' : 'y');
+                    getGameDataNoScroll();
+                }}
+            ><label for='filterOnChannels'>Only include games on selected channels</label>
+        </div>
+        <h4 class="closer pointer" on:click={() => changeHideChannels()}>
+            Channels
+            <span class='headerArrow'>
+                {#if !$settingsHideChannels}
+                    &#9660;
+                {:else}
+                    &#9658;
+                {/if}
+            </span>
+        </h4>
+        {#if !$settingsHideChannels}
+            <div class=checkBoxesWrapper transition:slide|local>
+                <div class=checkBoxesWrapper>
+                    {#each $allChannels as channel}
+                        <div class='checkboxWrapper multipleChecks'>
+                            <input
+                                id={'channelCheck' + channel}
+                                type='checkbox'
+                                checked={!isExcludedChannel(channel)}
+                                on:click={() => excludeChannelClick(channel)}
+                            ><label for={'channelCheck' + channel}>{channel}</label>
+                        </div>
+                    {/each}
+                </div>
+            </div>
+        {/if}
     </div>
 </div>
 
@@ -230,7 +290,7 @@
         margin-bottom: -0.2em;
     }
     h4.closer {
-        margin-bottom: -0.3em;
+        margin-bottom: 0em;
         margin-top: 0.5em
     }
     .teamsSub {
@@ -241,5 +301,8 @@
     }
     .basicText {
         margin: 0.5em;
+    }
+    .pointer {
+        cursor: pointer;
     }
 </style>

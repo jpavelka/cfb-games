@@ -1,11 +1,12 @@
 import type { Game, GameGrouping } from "$lib/types"
-import { gamesToShowFilterFuncs, teamSearchFunc } from "$lib/gameUtils/filterFuncs";
+import { gamesToShowFilterFuncs, teamSearchFunc, filterChannels } from "$lib/gameUtils/filterFuncs";
 
 export default function(games: Array<Game> | undefined, gamesToShow: string, teamSearchStr: string) {
     if (games === undefined){
         throw 'No games have been loaded'
     }
     games = games.filter(g => gamesToShowFilterFuncs[gamesToShow](g));
+    games = filterChannels(games);
     if (teamSearchStr !== ''){
         games = games.filter(g => teamSearchFunc(g, teamSearchStr));
     }

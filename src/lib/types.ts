@@ -23,7 +23,8 @@ export type Game = {
     dateSortStr: string;
     hourStr: string;
     hourSortStr: string;
-    broadcastStr: string | undefined;
+    broadcastChannels: Array<string>;
+    broadcastStr: string;
     timeValid: boolean;
     conferenceCompetition: boolean;
     neutralSite: boolean;

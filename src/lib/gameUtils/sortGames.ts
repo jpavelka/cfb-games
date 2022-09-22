@@ -2,6 +2,8 @@ import type { Game } from "$lib/types";
 import { gameSortStyles } from "$lib/stores";
 import { get } from 'svelte/store';
 
+type SortStyleType = Array<[keyof Game, 'max' | 'min', number]>
+
 export default function sortGames(games: Array<Game>, favoritesFirst: boolean): Array<Game> {
     if (games.length === 0){
         return games;
@@ -10,7 +12,7 @@ export default function sortGames(games: Array<Game>, favoritesFirst: boolean): 
         return sortGames(games.filter(g => g.favoriteTeamGame), false).concat(sortGames(games.filter(g => !g.favoriteTeamGame), false))
     }
     const status = games[0].statusSort;
-    let sortStyle: Array<[keyof Game, 'max' | 'min', number]> = [['matchupScore', 'max', games.length]];
+    let sortStyle: SortStyleType = [['matchupScore', 'max', games.length]];
     if (status === 'Current') {
         const styleStr = get(gameSortStyles['Current Games'].store)
         if (styleStr === 'Default'){
@@ -49,7 +51,7 @@ export default function sortGames(games: Array<Game>, favoritesFirst: boolean): 
     return sortedGames
 }
 
-function getBasicSortStyle(styleStr: string, numGames: number) {
+function getBasicSortStyle(styleStr: string, numGames: number): SortStyleType {
     if (styleStr === 'Situation'){
         return [['situationScore', 'max', numGames]]
     } else if (styleStr === 'Surprise') {

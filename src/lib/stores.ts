@@ -9,6 +9,7 @@ export const moreInfoVisible: Writable<boolean> = writable(false);
 export const settingsVisible: Writable<boolean> = writable(false);
 export const moreInfoGame: Writable<Game> = writable();
 export const settingsHideTeamGroup: Writable<{[key: string]: boolean}> = writable({});
+export const settingsHideChannels: Writable<boolean> = writable(true);
 export const displaySubGroups: Writable<{[key: string]: boolean}> = writable({});
 export const weekMetaData: Writable<WeekMetaData> = writable({
     season: '', seasonType: '', week: '', lastUpdate: ''
@@ -16,6 +17,7 @@ export const weekMetaData: Writable<WeekMetaData> = writable({
 export const seasonInfo: Writable<SeasonInfo> = writable({
     season: '', seasonType: '', week: '', calendar: []
 });
+export const allChannels: Writable<Array<string>> = writable([]);
 export const teamSearchStr: Writable<string> = writable('');
 export const allTeamsList: Writable<Array<{[key: string]: string}>> = writable([]);
 export const settingsScrollY: Writable<number> = writable(0);
@@ -41,6 +43,8 @@ export const gamesToShow = createCookieSyncedStore('gamesToShow', 'All', ['All',
 export const showGameBars = createCookieSyncedStore('showGameBars', 'y', ['y', 'n']);
 export const showFavoriteTeamsFirst = createCookieSyncedStore('showFavoriteTeamsFirst', 'y', ['y', 'n']);
 export const favoriteTeams = createCookieSyncedStore('favoriteTeams', '', undefined);
+export const filterOnChannels = createCookieSyncedStore('filterOnChannels', 'n', ['y', 'n']);
+export const excludedChannels = createCookieSyncedStore('excludedChannels', '', undefined);
 
 const gameSortChoices = {
     'Current Games': ['Default', 'Situation', 'Matchup', 'Surprise'],

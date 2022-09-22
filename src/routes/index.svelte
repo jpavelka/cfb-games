@@ -7,13 +7,15 @@
     import Settings from '$lib/Settings.svelte';
     import {
         allGamesData, allGamesDataRaw, weekMetaData, seasonInfo,
-        settingsVisible, gamesToShow, teamSearchStr, allTeamsList
+        settingsVisible, gamesToShow, teamSearchStr, allTeamsList,
+        allChannels, filterOnChannels
     } from '$lib/stores';
     import getDerivedInfo from '$lib/gameUtils/derivedInfo';
     import groupGames from '$lib/gameUtils/groupGames';
     const bucketUrl = 'https://storage.googleapis.com/weekly-scoreboard-data/'
     const seasonInfoUrl = bucketUrl + 'season_info.json'
     const teamListUrl = bucketUrl + 'conferences.json'
+    const channelListUrl = bucketUrl + 'channels.json'
     export function getGameData() {
         allGamesData.update(() => groupGames($allGamesDataRaw, $gamesToShow, $teamSearchStr));
     }
@@ -46,6 +48,8 @@
         seasonInfo.update(() => initialSeasonInfo);
         const teamList: Array<{[key: string]: string}> = await fetch(teamListUrl).then(x => x.json()).catch(e => console.log(e));
         allTeamsList.update(() => teamList.filter(x => ['fbs', 'fcs'].includes(x.classification)));
+        const channels: Array<string> = await fetch(channelListUrl).then(x => x.json()).catch(e => console.log(e));
+        allChannels.update(() => channels);
         await loadNewWeekData({season: initialSeasonInfo.season, seasonType: initialSeasonInfo.seasonType, week: initialSeasonInfo.week})
     }
     const initialLoadPromise = getInitialData();
@@ -129,6 +133,12 @@
                     [], {weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', timeZoneName: 'short'}
                 )}
             </div>
+            <div class=filterText>
+                Current filters: {([
+                    $gamesToShow === 'All' ? '' : $gamesToShow + ' teams',
+                    $filterOnChannels === 'y' ? 'selected channels' : ''
+                ].filter(s => s !== '')).join(', ').trim() || 'None'}
+            </div>
         </div>
     {/key}
 {:catch}
@@ -159,6 +169,10 @@
         border-top: 1pt solid lightgray;
     }
     .lastUpdate {
+        font-size: 0.8em;
+        text-align: center;
+    }
+    .filterText {
         font-size: 0.8em;
         text-align: center;
     }
