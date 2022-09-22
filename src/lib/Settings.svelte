@@ -22,7 +22,7 @@
             return
         }
         const target = event.target as HTMLElement
-        if (target.classList.contains('backgroundDiv')){
+        if (target.classList.contains('modalBackground')){
             handleClose();
         }
     }
@@ -92,14 +92,14 @@
 </script>
 
 <div
-    class='backgroundDiv'
+    class='modalBackground'
     class:invisible={!$settingsVisible}
     on:click={(event) => closeIfOutsideClick(event)}
 >
-    <div id='settingsModal' class='settingsContent'>
-        <h1 style='text-align: center'>Settings</h1>
-        <h2 class="sectionHeading">Team filtering:</h2>
-        <div>Only include teams from this group:</div>
+    <div id='settingsModal' class='modalContent'>
+        <h1 style='text-align: center; margin-top: 0.25em;'>Settings</h1>
+        <h2 class="sectionHeading">Team Filtering</h2>
+        <span style="margin-right:0.5em">Include teams from this group:</span>
         <select on:change={e => gamesToShowSelectChange(e)}>
             {#each Object.keys(gamesToShowFilterFuncs) as x}
                 <option 
@@ -109,7 +109,7 @@
             {/each}
         </select>
         <hr>
-        <h2 class="sectionHeading">Game display:</h2>
+        <h2 class="sectionHeading">Game Display</h2>
         <div class=checkboxWrapper>
             <input
                 id='showGameBars'
@@ -122,7 +122,7 @@
             ><label for='showGameBars'>Show team/game interest bars</label>
         </div>
         <hr>
-        <h2 class="sectionHeading">Favorite teams:</h2>
+        <h2 class="sectionHeading">Favorite Teams</h2>
         <div class=checkboxWrapper>
             <input
                 id='showFavoriteTeams'
@@ -206,29 +206,6 @@
 </div>
 
 <style>
-    .backgroundDiv {
-        position: fixed; /* Stay in place */
-        z-index: 2; /* Sit on top */
-        padding-top: 100px; /* Location of the box */
-        left: 0;
-        top: 0;
-        width: 100%; /* Full width */
-        height: 100%; /* Full height */
-        overflow: auto; /* Enable scroll if needed */
-        background-color: rgb(0,0,0); /* Fallback color */
-        background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
-    }
-    .settingsContent {
-        position: relative;
-        background-color: #fefefe;
-        margin: auto;
-        padding: 5pt;
-        border: 1px solid #888;
-        width: 80%;
-        max-height: 80%;
-        overflow: scroll;
-        box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0);
-    }
     .invisible {
         display: none;
     }

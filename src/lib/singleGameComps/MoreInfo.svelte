@@ -1,6 +1,5 @@
 <script lang="ts">
-    import AllGames from "$lib/gameListComps/AllGames.svelte";
-import { moreInfoGame as game } from "$lib/stores";
+    import { moreInfoGame as game } from "$lib/stores";
     import { moreInfoVisible as visible} from "$lib/stores";
     import GameBar from "./GameBar.svelte";
     import MoreInfoLogos from './MoreInfoLogos.svelte';
@@ -12,18 +11,18 @@ import { moreInfoGame as game } from "$lib/stores";
             return
         }
         const target = event.target as HTMLElement
-        if (target.classList.contains('backgroundDiv')){
+        if (target.classList.contains('modalBackground')){
             handleClose();
         }
     }
 </script>
 
 <div 
-    class='backgroundDiv'
+    class='modalBackground'
     class:invisible="{!$visible}"
     on:click={(event) => closeIfOutsideClick(event)}
 >
-    <div class='moreInfoContent'>
+    <div class='modalContent'>
         {#if $game !== undefined}
             <div class='specialEventName'>{$game.eventStr || ''}</div>
             {#if !($game.statusState === 'pre')}
@@ -123,29 +122,6 @@ import { moreInfoGame as game } from "$lib/stores";
 </div>
 
 <style>
-    .backgroundDiv {
-        position: fixed; /* Stay in place */
-        z-index: 2; /* Sit on top */
-        padding-top: 100px; /* Location of the box */
-        left: 0;
-        top: 0;
-        width: 100%; /* Full width */
-        height: 100%; /* Full height */
-        overflow: auto; /* Enable scroll if needed */
-        background-color: rgb(0,0,0); /* Fallback color */
-        background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
-    }
-    .moreInfoContent {
-        position: relative;
-        background-color: #fefefe;
-        margin: auto;
-        padding: 5pt;
-        border: 1px solid #888;
-        width: 80%;
-        max-height: 80%;
-        overflow: scroll;
-        box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0);
-    }
     .invisible {
         display: none;
     }
