@@ -38,10 +38,6 @@
         settingsScrollY.update(x => updateSettingsScrollY(x));
         getGameData();
     }
-    const gamesToShowChangeFunc = (val: string) => {
-        gamesToShow.update(() => val);
-        getGameDataNoScroll();
-    }
     const changeHideTeam = (k: string) => {
         settingsScrollY.update(x => updateSettingsScrollY(x));
         settingsHideTeamGroup.update(x => {
@@ -85,6 +81,14 @@
         }
         getGameDataNoScroll();
     }
+    const gamesToShowSelectChange = (event: Event) => {
+        if (!!!event.target) {
+            return
+        }
+        const target = event.target as HTMLInputElement;
+        gamesToShow.update(() => target.value);
+        getGameDataNoScroll();
+    }
 </script>
 
 <div
@@ -94,20 +98,16 @@
 >
     <div id='settingsModal' class='settingsContent'>
         <h1 style='text-align: center'>Settings</h1>
-        <h2 class="sectionHeading">Games to show:</h2>
-        <div class=checkBoxesWrapper>
+        <h2 class="sectionHeading">Team filtering:</h2>
+        <div>Only include teams from this group:</div>
+        <select on:change={e => gamesToShowSelectChange(e)}>
             {#each Object.keys(gamesToShowFilterFuncs) as x}
-                <div class='checkboxWrapper multipleChecks smallerChecks'>
-                    <input
-                        type='radio'
-                        name='gamesToShowType'
-                        id={'gts' + x}
-                        checked={$gamesToShow === x}
-                        on:click={() => gamesToShowChangeFunc(x)}
-                    ><label for={'gts' + x}>{x}</label>
-                </div>
+                <option 
+                    value={x}
+                    selected={$gamesToShow === x}
+                >{x}</option>
             {/each}
-        </div>
+        </select>
         <hr>
         <h2 class="sectionHeading">Game display:</h2>
         <div class=checkboxWrapper>
@@ -135,9 +135,28 @@
             ><label for='showFavoriteTeams'>Show favorite teams first</label>
         </div>
         {#if getFavTeamList().length === 0}
-            <div class='selectTeamsMsg basicText'>Select your favorite teams below</div>
+            <div class='selectTeamsMsg basicText'>Select your favorite teams below (click on headings to expand)</div>
         {:else}
-            <div class=basicText>Current favorites: {getFavTeamList().sort().join(', ')}</div>
+            <div class=basicText>
+                Current favorites:
+                {#each getFavTeamList().sort() as team}
+                    <div class='checkboxWrapper'>
+                        <input
+                            id={'teamCheck' + team}
+                            type='checkbox'
+                            checked={isTeamFavorite(team)}
+                            on:click={() => favoriteTeamClick(team)}
+                        ><label for={'teamCheck' + team}>{team}</label>
+                    </div>
+                {/each}
+                <button on:click={() => {
+                    for (const team of getFavTeamList()){
+                        favoriteTeamClick(team);
+                    }
+                }}>
+                    Remove all
+                </button>
+            </div>
         {/if}
         {#each ['fbs', 'fcs'] as subdiv}
             <div class=teamsSub>
@@ -229,9 +248,6 @@
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-    }
-    .smallerChecks {
-        width: 6em;
     }
     h3.closer {
         margin-bottom: -0.2em;
