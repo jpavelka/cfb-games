@@ -14,13 +14,18 @@ jobs:
 
       - name: Install and Build
         run: |
+          touch src/data.ts
           npm install
           npm run build
+
+      - name: Copy Favicon
+        run: |
+          cp static/favicon.jpg build
 
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@3.7.1
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BRANCH: gh-pages
-          FOLDER: dist
+          FOLDER: build
           CLEAN: true
