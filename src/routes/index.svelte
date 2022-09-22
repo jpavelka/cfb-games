@@ -4,7 +4,7 @@
     import settingsIcon from '$lib/assets/settings.svg';
     import SubGames from '$lib/gameListComps/SubGames.svelte';
     import MoreInfo from '$lib/singleGameComps/MoreInfo.svelte';
-    import Settings from '$lib/Settings.svelte';
+    import Settings from '$lib/settingsComps/Settings.svelte';
     import {
         allGamesData, allGamesDataRaw, weekMetaData, seasonInfo,
         settingsVisible, gamesToShow, teamSearchStr, allTeamsList,
