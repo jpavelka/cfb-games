@@ -132,7 +132,7 @@ export default function(g: Game) {
             const secsRemaining = totalSecondsRemaining({ period: g.period, seconds: g.clock });
             minutesElapsed = 60 - (secsRemaining / 60);
         }
-        const timeScore = 100 * (Math.round(minutesElapsed * 2) / 2) / 60;
+        const timeScore = (Math.round(minutesElapsed * 2) / 2) / 60;
         if (g.spread === undefined){
             g.upset = false;
             g.surpriseScore = 10;
@@ -149,7 +149,7 @@ export default function(g: Game) {
             const distFromSpreadSurpriseScore = Math.min(25, distFromSpread) / 25;
             g.upset = margin < 0;
             const upsetSurpriseScore = g.upset ? Math.min(10, (g.spread || 0)) / 10 : 0;
-            g.surpriseScore = ((1 + 2 * timeScore) / 3) * (0.85 * distFromSpreadSurpriseScore + 0.15 * upsetSurpriseScore);
+            g.surpriseScore = 100 * ((1 + 2 * timeScore) / 3) * (0.85 * distFromSpreadSurpriseScore + 0.15 * upsetSurpriseScore);
         }
     }
     g.matchupScoreNorm = Math.min(100, Math.max(1, g.matchupScore)) / 100;
