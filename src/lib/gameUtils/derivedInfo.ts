@@ -129,7 +129,7 @@ export default function(g: Game) {
         const timeScore = 100 * (Math.round(minutesElapsed * 2) / 2) / 60;
         if (g.spread === undefined){
             g.upset = false;
-            g.surpriseScore = 50;
+            g.surpriseScore = 10;
         } else {
             let margin = 0;
             if (g.teams.home.score !== undefined && g.teams.away.score !== undefined){
