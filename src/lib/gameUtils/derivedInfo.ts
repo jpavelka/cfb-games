@@ -139,7 +139,7 @@ export default function(g: Game) {
                 margin = -margin;
             }
             const distFromSpread = Math.abs((g.spread || 0) - margin);
-            const distFromSpreadSurpriseScore = 1 - Math.min(25, distFromSpread) / 25;
+            const distFromSpreadSurpriseScore = Math.min(25, distFromSpread) / 25;
             g.upset = margin < 0;
             const upsetSurpriseScore = g.upset ? Math.min(10, (g.spread || 0)) / 10 : 0;
             g.surpriseScore = ((1 + 2 * timeScore) / 3) * (0.85 * distFromSpreadSurpriseScore + 0.15 * upsetSurpriseScore);
