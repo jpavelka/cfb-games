@@ -14,7 +14,7 @@ export default function sortGames(games: Array<Game>, favoritesFirst: boolean): 
     const status = games[0].statusSort;
     let sortStyle: SortStyleType = [['matchupScore', 'max', games.length]];
     if (status === 'Current') {
-        const styleStr = get(gameSortStyles['Current Games'].store)
+        const styleStr = get(gameSortStyles['Current Games'].store);
         if (styleStr === 'Default'){
             sortStyle = [
                 ['sortSituationScore', 'max', 2],
@@ -24,9 +24,8 @@ export default function sortGames(games: Array<Game>, favoritesFirst: boolean): 
         } else {
             sortStyle = getBasicSortStyle(styleStr, games.length);
         }
-        
     } else if (status === 'Completed') {
-        const styleStr = get(gameSortStyles['Completed Games'].store)
+        const styleStr = get(gameSortStyles['Completed Games'].store);
         if (styleStr === 'Default'){
             sortStyle = [
                 ['matchupSurpriseScore', 'max', 1],
@@ -35,6 +34,9 @@ export default function sortGames(games: Array<Game>, favoritesFirst: boolean): 
         } else {
             sortStyle = getBasicSortStyle(styleStr, games.length);
         }
+    } else if (status === 'Upcoming') {
+        const styleStr = get(gameSortStyles['Upcoming Games'].store);
+        sortStyle = getBasicSortStyle(styleStr, games.length);
     }
     let sortedGames: Array<Game> = [];
     let sortStage = 0;
@@ -56,6 +58,8 @@ function getBasicSortStyle(styleStr: string, numGames: number): SortStyleType {
         return [['situationScore', 'max', numGames]]
     } else if (styleStr === 'Surprise') {
         return [['surpriseScore', 'max', numGames]]
+    } else if (styleStr === 'Start Time') {
+        return [['sortStartTime', 'min', numGames]]  
     } else {
         return [['matchupScore', 'max', numGames]]
     }

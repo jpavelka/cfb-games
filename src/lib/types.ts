@@ -73,6 +73,7 @@ export type Game = {
     clock: number;
     displayClock: string;
     upset: boolean;
+    sortStartTime: number;
 }
 
 export type Team = {

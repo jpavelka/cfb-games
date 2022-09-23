@@ -115,7 +115,12 @@ export default function(g: Game) {
             const leading = (g.teams.home.score || 0) > (g.teams.away.score || 0) ? "home" : "away";
             nextMargin = Math.abs(margin + (leading === g.possessionHomeAway ? 1 : -1) * 7);
         }
-        const marginScore = 1 - Math.min(1, Math.max(0, ((margin + nextMargin) / 2) /28))
+        const startMinInterestMargin = 28;
+        const endMinInterestMargin = 14;
+        const minInterestMargin = (
+            startMinInterestMargin - (startMinInterestMargin - endMinInterestMargin) * timeScore
+        );
+        const marginScore = 1 - Math.min(1, Math.max(0, ((margin + nextMargin) / 2) / minInterestMargin))
         g.situationScore = ((1 + 2 * timeScore) / 3) * marginScore * 100
     }
     g.surpriseScore = 0;
@@ -138,7 +143,8 @@ export default function(g: Game) {
             if (g.favored !== g.teams.home.school){
                 margin = -margin;
             }
-            const distFromSpread = Math.abs((g.spread || 0) - margin);
+            const timeScaledSpread = g.spread * timeScore;
+            const distFromSpread = Math.abs((timeScaledSpread || 0) - margin);
             const distFromSpreadSurpriseScore = Math.min(25, distFromSpread) / 25;
             g.upset = margin < 0;
             const upsetSurpriseScore = g.upset ? Math.min(10, (g.spread || 0)) / 10 : 0;
@@ -160,6 +166,7 @@ export default function(g: Game) {
         const favTeamsList = val.split(',')
         g.favoriteTeamGame = favTeamsList.includes(g.teams.away.school) || favTeamsList.includes(g.teams.home.school)
     })
+    g.sortStartTime = (new Date(g.dttm)).getTime() + (1 - g.matchupScore) + (g.timeValid ? 0 : 9999999)
     return g
 }
 

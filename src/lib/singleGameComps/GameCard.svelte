@@ -1,6 +1,6 @@
 <script lang="ts">
     import type { Game } from "$lib/types"
-    import { moreInfoGame, moreInfoVisible, showGameBars } from "$lib/stores";
+    import { favoriteTeams, moreInfoGame, moreInfoVisible, showGameBars } from "$lib/stores";
     import GameBar from "./GameBar.svelte";
     export let game : Game;
     const showMoreInfo = () => {
@@ -15,6 +15,9 @@
         <div class=eventName>
             {game.eventStr || ''}
         </div>
+        {#if game.favoriteTeamGame}
+            <span title='Favorite Team'>♡</span>
+        {/if}
     </div>
     {#each game.teamsArray as team}
         <div class=teamLine>

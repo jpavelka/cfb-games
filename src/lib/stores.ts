@@ -48,6 +48,7 @@ export const excludedChannels = createCookieSyncedStore('excludedChannels', '', 
 
 const gameSortChoices = {
     'Current Games': ['Default', 'Situation', 'Matchup', 'Surprise'],
+    'Upcoming Games': ['Matchup', 'Start Time'],
     'Completed Games': ['Default', 'Matchup', 'Surprise']
 };
 let gss: {[key: string]: {choices: Array<string>, store: Writable<string>}} = {}
