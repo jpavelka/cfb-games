@@ -104,6 +104,7 @@ export default function(g: Game) {
         g.favoriteTeamGame = favTeamsList.includes(g.teams.away.school) || favTeamsList.includes(g.teams.home.school)
     })
     g.situationScore = 0;
+    g.sortSituationScore = 0;
     if (g.statusState === 'in'){
         const secsRemaining = totalSecondsRemaining({ period: g.period, seconds: g.clock });
         const minutesElapsed = 60 - (secsRemaining / 60);
@@ -114,10 +115,11 @@ export default function(g: Game) {
             const leading = (g.teams.home.score || 0) > (g.teams.away.score || 0) ? "home" : "away";
             nextMargin = Math.abs(margin + (leading === g.possessionHomeAway ? 1 : -1) * 7);
         }
-        const marginScore = Math.min(1, Math.max(0, ((margin + nextMargin) / 2) / 14))
+        const marginScore = 1 - Math.min(1, Math.max(0, ((margin + nextMargin) / 2) / 14))
         g.situationScore = timeScore * marginScore * 100
     }
     g.surpriseScore = 0;
+    g.sortSurpriseScore = 0;
     if (['in', 'post'].includes(g.statusState)){
         let minutesElapsed = 60;
         if (g.statusState === 'in'){
@@ -146,11 +148,13 @@ export default function(g: Game) {
     g.matchupScoreNorm = Math.min(100, Math.max(1, g.matchupScore)) / 100;
     g.situationScoreNorm = Math.min(100, Math.max(1, g.situationScore)) / 100;
     g.surpriseScoreNorm = Math.min(100, Math.max(1, g.surpriseScore)) / 100;
+    g.sortSituationScore = g.situationScoreNorm > 0.6 ? g.situationScoreNorm : g.matchupScoreNorm / 10;
+    g.sortSurpriseScore = g.surpriseScoreNorm > 0.6 ? g.surpriseScoreNorm : g.matchupScoreNorm / 10;
     g.matchupSurpriseScore = 100 * (
-        (4 * g.matchupScoreNorm + g.surpriseScoreNorm) / 5
+        (4 * g.matchupScoreNorm + g.sortSurpriseScore) / 5
     );
     g.matchupSituationSurpriseScore = 100 * (
-        (4 * g.situationScoreNorm + 2 * g.matchupScoreNorm + g.surpriseScoreNorm) / 7
+        (4 * g.sortSituationScore + 2 * g.matchupScoreNorm + g.sortSurpriseScore) / 7
     );
     favoriteTeams.subscribe(val => {
         const favTeamsList = val.split(',')

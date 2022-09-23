@@ -53,6 +53,8 @@ export type Game = {
     matchupScoreNorm: number;
     surpriseScoreNorm: number;
     situationScoreNorm: number;
+    sortSituationScore: number;
+    sortSurpriseScore: number;
     matchupSurpriseScore: number;
     matchupSituationSurpriseScore: number;
     spreadTouchdowns: number;
