@@ -112,6 +112,7 @@ export type WeekMetaData = {
     seasonType: string;
     week: string;
     lastUpdate: string;
+    nextUpdate?: string;
 }
 
 type SeasonWeekInfo = {
