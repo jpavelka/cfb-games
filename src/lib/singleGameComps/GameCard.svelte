@@ -1,6 +1,6 @@
 <script lang="ts">
     import type { Game } from "$lib/types"
-    import { favoriteTeams, moreInfoGame, moreInfoVisible, showGameBars } from "$lib/stores";
+    import { moreInfoGame, moreInfoVisible, showGameBars } from "$lib/stores";
     import GameBar from "./GameBar.svelte";
     export let game : Game;
     const showMoreInfo = () => {
@@ -72,11 +72,11 @@
     {#if $showGameBars === 'y' && !game.teamsTbd}
         <div class=gameBars>
             {#if game.statusState === 'in'}
-                <GameBar icon='scoreboard' valueNorm={game.situationScoreNorm}></GameBar>
+                <GameBar icon='scoreboard' valueNorm={game.situationScoreNorm} hoverName='Situation'></GameBar>
             {/if}
-            <GameBar icon='matchup' valueNorm={game.matchupScoreNorm}></GameBar>
+            <GameBar icon='matchup' valueNorm={game.matchupScoreNorm} hoverName='Matchup'></GameBar>
             {#if ['in', 'post'].includes(game.statusState)}
-                <GameBar icon='surprised' valueNorm={game.surpriseScoreNorm}></GameBar>
+                <GameBar icon='surprised' valueNorm={game.surpriseScoreNorm} hoverName='Surprise'></GameBar>
             {/if}
         </div>
     {:else}

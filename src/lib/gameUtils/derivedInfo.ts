@@ -99,6 +99,7 @@ export default function(g: Game) {
     g.spreadTouchdowns = g.spread ? Math.round(g.spread / 7) : 4;
     const rankDiff = Math.min(10, Math.abs(g.teams.away.approxRank - g.teams.home.approxRank));
     g.matchupScore = 100 - (g.teams.away.approxRank + g.teams.home.approxRank + rankDiff);
+    g.matchupScore = 100 * ((g.matchupScore / 100) ** 2) * 1.1 + 5
     favoriteTeams.subscribe(val => {
         const favTeamsList = val.split(',')
         g.favoriteTeamGame = favTeamsList.includes(g.teams.away.school) || favTeamsList.includes(g.teams.home.school)

@@ -5,6 +5,7 @@
     export let icon : string;
     export let valueNorm : number;
     export let backgroundColor : string = 'white';
+    export let hoverName : string = '';
     const iconImg = (
         icon === 'matchup' ? matchup :
         icon === 'scoreboard' ? scoreboard :
@@ -13,7 +14,7 @@
     )
 </script>
 
-<div class=gameBarWithIconContainer>
+<div title={hoverName !== '' ? `${hoverName}: ${(100 * valueNorm).toFixed()}/100` : ''} class=gameBarWithIconContainer>
     <img class=barIcon src={iconImg} alt="*">
     <div class=gameBarBackground style='background-color: {backgroundColor}'>
         <div
