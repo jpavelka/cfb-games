@@ -107,23 +107,27 @@ export default function(g: Game) {
     g.situationScore = 0;
     g.sortSituationScore = 0;
     if (g.statusState === 'in'){
-        const secsRemaining = totalSecondsRemaining({ period: g.period, seconds: g.clock });
-        const minutesElapsed = 60 - (secsRemaining / 60);
-        const timeScore = (Math.round(minutesElapsed * 2) / 2) / 60;
-        const margin = Math.abs((g.teams.home.score || 0) - (g.teams.away.score || 0));
-        let nextMargin = margin;
-        if (g.possessionHomeAway !== undefined) {
-            const leading = (g.teams.home.score || 0) > (g.teams.away.score || 0) ? "home" : "away";
-            nextMargin = Math.abs(margin + (leading === g.possessionHomeAway ? 1 : -1) * 7);
+        if (g.period > 4) {
+            g.situationScore = 100
+        } else {
+            const secsRemaining = totalSecondsRemaining({ period: g.period, seconds: g.clock });
+            const minutesElapsed = 60 - (secsRemaining / 60);
+            const timeScore = (Math.round(minutesElapsed * 2) / 2) / 60;
+            const margin = Math.abs((g.teams.home.score || 0) - (g.teams.away.score || 0));
+            let nextMargin = margin;
+            if (g.possessionHomeAway !== undefined) {
+                const leading = (g.teams.home.score || 0) > (g.teams.away.score || 0) ? "home" : "away";
+                nextMargin = Math.abs(margin + (leading === g.possessionHomeAway ? 1 : -1) * 7);
+            }
+            const startMinInterestMargin = 28;
+            const endMinInterestMargin = 14;
+            const minInterestMargin = (
+                startMinInterestMargin - (startMinInterestMargin - endMinInterestMargin) * timeScore
+            );
+            const marginAverage = (margin + nextMargin) / 2
+            const marginScore = 1 - Math.min(1, Math.max(0, (Math.max(0, marginAverage - 3.5)) / minInterestMargin))
+            g.situationScore = ((1 + 3 * timeScore) / 4) * marginScore * 100
         }
-        const startMinInterestMargin = 28;
-        const endMinInterestMargin = 14;
-        const minInterestMargin = (
-            startMinInterestMargin - (startMinInterestMargin - endMinInterestMargin) * timeScore
-        );
-        const marginAverage = (margin + nextMargin) / 2
-        const marginScore = 1 - Math.min(1, Math.max(0, (Math.max(0, marginAverage - 3.5)) / minInterestMargin))
-        g.situationScore = ((1 + 3 * timeScore) / 4) * marginScore * 100
     }
     g.surpriseScore = 0;
     g.sortSurpriseScore = 0;
