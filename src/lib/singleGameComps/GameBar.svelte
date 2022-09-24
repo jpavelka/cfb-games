@@ -16,7 +16,7 @@
 
 <div title={hoverName !== '' ? `${hoverName}: ${(100 * valueNorm).toFixed()}/100` : ''} class=gameBarWithIconContainer>
     <img class=barIcon src={iconImg} alt="*">
-    <div class=gameBarBackground style='background-color: {backgroundColor}'>
+    <div class=gameBarBackground style='background-color: {backgroundColor}; border-color: {backgroundColor}'>
         <div
             class=gameBar
             style='width: {100 * valueNorm}%; background-color: hsl({120 * valueNorm}, 90%, 70%)'
@@ -35,8 +35,8 @@
         width: 100%;
         position: relative;
         margin-left: 4px;
-        border-left: 2px solid black;
-        border-right: 2px solid black;
+        border-left: 2px solid;
+        border-right: 2px solid;
     }
     .gameBar {
         height: 4px;
