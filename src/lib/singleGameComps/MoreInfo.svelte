@@ -2,7 +2,9 @@
     import { moreInfoGame as game } from "$lib/stores";
     import { moreInfoVisible as visible} from "$lib/stores";
     import GameBar from "./GameBar.svelte";
+    import GameIcons from "./GameIcons.svelte";
     import MoreInfoLogos from './MoreInfoLogos.svelte';
+
     const handleClose = () => {
         visible.update(() => false);
     }
@@ -39,6 +41,11 @@
                 {/if}
                 <MoreInfoLogos team={$game.teams.home}></MoreInfoLogos>
             </div>
+            {#key $game}
+                <div class=gameIconsHolder>
+                    <GameIcons game={$game} includeDescription={true} hoverDescription={false}/>
+                </div>
+            {/key}
             {#if !$game.teamsTbd}
                 <div class='gameBarsHolder'>
                     {#if $game.statusState === 'in'}
@@ -169,5 +176,11 @@
     .gameBarsHolder {
         width: 60%;
         margin: auto;
+    }
+    .gameIconsHolder {
+        max-height: 1.25em;
+        display: flex;
+        justify-content: space-around;
+        padding: 0.5em;
     }
 </style>

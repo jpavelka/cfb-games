@@ -2,8 +2,7 @@
     import type { Game } from "$lib/types"
     import { moreInfoGame, moreInfoVisible, showGameBars } from "$lib/stores";
     import GameBar from "./GameBar.svelte";
-    import favoriteTeamIcon from '$lib/assets/heartRed.svg';
-    import slingshotIcon from '$lib/assets/slingshot.svg';
+    import GameIcons from "./GameIcons.svelte";
     export let game : Game;
     const showMoreInfo = () => {
         console.log(game);
@@ -17,14 +16,7 @@
         <div class=eventName>
             {game.eventStr || ''}
         </div>
-        <div class=iconContainer>
-            {#if game.upset}
-                <img title='Upset' class=gameIcon src={slingshotIcon} alt="*">
-            {/if}
-            {#if game.favoriteTeamGame}
-                <img title='Favorite team' class=gameIcon src={favoriteTeamIcon} alt="*">
-            {/if}
-        </div>
+        <GameIcons game={game} includeDescription={false} hoverDescription={true}/>
     </div>
     {#each game.teamsArray as team}
         <div class=teamLine>
@@ -200,12 +192,5 @@
     .noLogo {
         overflow: hidden;
         opacity: 0;
-    }
-    .iconContainer {
-        display:flex;
-    }
-    .gameIcon {
-        height: 100%;
-        padding: 0pt 1pt;
     }
 </style>

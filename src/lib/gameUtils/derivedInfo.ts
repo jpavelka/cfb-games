@@ -121,7 +121,8 @@ export default function(g: Game) {
         const minInterestMargin = (
             startMinInterestMargin - (startMinInterestMargin - endMinInterestMargin) * timeScore
         );
-        const marginScore = 1 - Math.min(1, Math.max(0, ((margin + nextMargin) / 2) / minInterestMargin))
+        const marginAverage = (margin + nextMargin) / 2
+        const marginScore = 1 - Math.min(1, Math.max(0, (Math.max(0, marginAverage - 3.5)) / minInterestMargin))
         g.situationScore = ((1 + 2 * timeScore) / 3) * marginScore * 100
     }
     g.surpriseScore = 0;
