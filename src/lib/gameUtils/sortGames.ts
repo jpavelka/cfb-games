@@ -18,9 +18,10 @@ export default function sortGames(games: Array<Game>, favoritesFirst: boolean): 
         if (styleStr === 'Default'){
             sortStyle = [
                 ['matchupSituationSurpriseScore', 'max', 1],
-                ['sortSituationScore', 'max', 2],
-                ['matchupSituationSurpriseScore', 'max', 1],
+                ['sortSituationScore', 'max', 1],
+                ['matchupSituationSurpriseScore', 'max', 2],
                 ['matchupScore', 'max', 1],
+                ['sortSurpriseScore', 'max', 1]
             ];
         } else {
             sortStyle = getBasicSortStyle(styleStr, games.length);
