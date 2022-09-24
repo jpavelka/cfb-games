@@ -34,11 +34,13 @@
         height: 8px;
         width: 100%;
         position: relative;
-        margin-left: 2pt;
+        margin-left: 4px;
+        border-left: 2px solid black;
+        border-right: 2px solid black;
     }
     .gameBar {
         height: 4px;
-        margin: 2px;
+        margin: 2px 0px;
         position: absolute;
         left: 0;
     }
