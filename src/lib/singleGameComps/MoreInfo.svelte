@@ -3,6 +3,7 @@
     import { moreInfoVisible as visible} from "$lib/stores";
     import GameBar from "./GameBar.svelte";
     import GameIcons from "./GameIcons.svelte";
+    import Broadcast from "./Broadcast.svelte";
     import MoreInfoLogos from './MoreInfoLogos.svelte';
 
     const handleClose = () => {
@@ -25,106 +26,105 @@
     on:click={(event) => closeIfOutsideClick(event)}
 >
     <div class='modalContent'>
-        {#if $game !== undefined}
-            <div class='specialEventName'>{$game.eventStr || ''}</div>
-            {#if !($game.statusState === 'pre')}
-                <div class=currentStatus>{$game.statusDetail}</div>
-            {/if}
-            <div class='teamsDiv'>
-                <MoreInfoLogos team={$game.teams.away}></MoreInfoLogos>
-                {#if ['in', 'post'].includes($game.statusState)}
-                    <div class='scores'>
-                        <span class='football'>{#if $game.teams.away.possession}&#127944{/if}</span>
-                        <span>{$game.teams.away.score} - {$game.teams.home.score}</span>
-                        <span class='football'>{#if $game.teams.home.possession}&#127944{/if}</span>
+        {#key $game}
+            {#if $game !== undefined}
+                <div class='specialEventName'>{$game.eventStr || ''}</div>
+                {#if !($game.statusState === 'pre')}
+                    <div class=currentStatus>{$game.statusDetail}</div>
+                {/if}
+                <div class='teamsDiv'>
+                    <MoreInfoLogos team={$game.teams.away}></MoreInfoLogos>
+                    {#if ['in', 'post'].includes($game.statusState)}
+                        <div class='scores'>
+                            <span class='football'>{#if $game.teams.away.possession}&#127944{/if}</span>
+                            <span>{$game.teams.away.score} - {$game.teams.home.score}</span>
+                            <span class='football'>{#if $game.teams.home.possession}&#127944{/if}</span>
+                        </div>
+                    {/if}
+                    <MoreInfoLogos team={$game.teams.home}></MoreInfoLogos>
+                </div>
+                    <div class=gameIconsHolder>
+                        <GameIcons game={$game} includeDescription={true} hoverDescription={false}/>
+                    </div>
+                {#if !$game.teamsTbd}
+                    <div class='gameBarsHolder'>
+                        {#if $game.statusState === 'in'}
+                            <div class=sectionText>Situation: {(100 * $game.situationScoreNorm).toFixed(0)}/100</div>
+                            <GameBar icon='scoreboard' valueNorm={$game.situationScoreNorm} backgroundColor='black'></GameBar>
+                        {/if}
+                        <div class=sectionText>Matchup: {(100 * $game.matchupScoreNorm).toFixed(0)}/100</div>
+                        <GameBar icon='matchup' valueNorm={$game.matchupScoreNorm} backgroundColor='black'></GameBar>
+                        {#if ['in', 'post'].includes($game.statusState)}
+                            <div class=sectionText>Surprise: {(100 * $game.surpriseScoreNorm).toFixed(0)}/100</div>
+                            <GameBar icon='surprised' valueNorm={$game.surpriseScoreNorm} backgroundColor='black'></GameBar>
+                        {/if}
                     </div>
                 {/if}
-                <MoreInfoLogos team={$game.teams.home}></MoreInfoLogos>
-            </div>
-            {#key $game}
-                <div class=gameIconsHolder>
-                    <GameIcons game={$game} includeDescription={true} hoverDescription={false}/>
-                </div>
-            {/key}
-            {#if !$game.teamsTbd}
-                <div class='gameBarsHolder'>
-                    {#if $game.statusState === 'in'}
-                        <div class=sectionText>Situation: {(100 * $game.situationScoreNorm).toFixed(0)}/100</div>
-                        <GameBar icon='scoreboard' valueNorm={$game.situationScoreNorm} backgroundColor='black'></GameBar>
-                    {/if}
-                    <div class=sectionText>Matchup: {(100 * $game.matchupScoreNorm).toFixed(0)}/100</div>
-                    <GameBar icon='matchup' valueNorm={$game.matchupScoreNorm} backgroundColor='black'></GameBar>
-                    {#if ['in', 'post'].includes($game.statusState)}
-                        <div class=sectionText>Surprise: {(100 * $game.surpriseScoreNorm).toFixed(0)}/100</div>
-                        <GameBar icon='surprised' valueNorm={$game.surpriseScoreNorm} backgroundColor='black'></GameBar>
-                    {/if}
-                </div>
-            {/if}
-            {#if !!$game.downDist}
+                {#if !!$game.downDist}
+                    <hr>
+                    <div class=sectionHeading>Situation</div>
+                    <div class=sectionText>{$game.downDist} at {$game.possessionText}</div>
+                    <div class=sectionText>{!!$game.lastPlay ? `Last: ${$game.lastPlay}` : ''}</div>
+                {/if}
                 <hr>
-                <div class=sectionHeading>Situation</div>
-                <div class=sectionText>{$game.downDist} at {$game.possessionText}</div>
-                <div class=sectionText>{!!$game.lastPlay ? `Last: ${$game.lastPlay}` : ''}</div>
-            {/if}
-            <hr>
-            <div class=sectionHeading>
-                {`${$game.conferenceCompetition ? (
-                    !!$game.teams.home.conference ? $game.teams.home.conference + ' ' : ''
-                ) : 'Non-'}Conference Game`}
-            </div>
-            <div class=sectionText>{$game.dttmStr}</div>
-            {#if ($game.broadcastStr || '') !== ''}
-                <div class=sectionText>Broadcast: {$game.broadcastStr}</div>
-            {/if}
-            <hr>
-            <div class=sectionHeading>Location</div>
-                {#if $game.neutralSite}
-                    <div class=sectionText>Neutral Site</div>
-                {/if}
-                <div class=sectionText>{$game.stadium || 'stadium unknown'}</div>
-                <div class=sectionText>{$game.location || 'location unknown'}</div>
-            <hr>
-            <div class=sectionHeading>Betting Info</div>
-            <div class=sectionText>
-                {#if $game.spread !== undefined}
-                    <div>
-                        Line: {$game.spread === 0 ? 'Even' : `${$game.favored} -${$game.spread}`}
-                    </div>
-                {/if}
-                {#if $game.overUnder !== undefined}
-                    <div>Over/Under: {$game.overUnder}</div>
-                {/if}
-                {#if $game.spread === undefined && $game.overUnder === undefined}
-                    <div class=notAvailable>Not available</div>
-                {/if}
-            </div>
-            <hr>
-            <div>
-                <div class=sectionHeading>Links (ESPN)</div>
+                <div class=sectionHeading>
+                    {`${$game.conferenceCompetition ? (
+                        !!$game.teams.home.conference ? $game.teams.home.conference + ' ' : ''
+                    ) : 'Non-'}Conference Game`}
+                </div>
+                <div class=sectionText>{$game.dttmStr}</div>
                 <div class=sectionText>
-                    <a href={'https://www.espn.com/college-football/game?gameId=' + $game.id}>
-                        Gamecast
-                    </a>
-                    {#if ['in', 'post'].includes($game.statusState)}
-                        {' - '}
-                        <a href={'https://www.espn.com/college-football/boxscore/_/gameId/' + $game.id}>
-                            Box Score
-                        </a>
+                    <Broadcast game={$game} />
+                </div>
+                <hr>
+                <div class=sectionHeading>Location</div>
+                    {#if $game.neutralSite}
+                        <div class=sectionText>Neutral Site</div>
                     {/if}
-                    {#each $game.teamsArray as team}
-                        {#if team.school !== 'TBA'}
+                    <div class=sectionText>{$game.stadium || 'stadium unknown'}</div>
+                    <div class=sectionText>{$game.location || 'location unknown'}</div>
+                <hr>
+                <div class=sectionHeading>Betting Info</div>
+                <div class=sectionText>
+                    {#if $game.spread !== undefined}
+                        <div>
+                            Line: {$game.spread === 0 ? 'Even' : `${$game.favored} -${$game.spread}`}
+                        </div>
+                    {/if}
+                    {#if $game.overUnder !== undefined}
+                        <div>Over/Under: {$game.overUnder}</div>
+                    {/if}
+                    {#if $game.spread === undefined && $game.overUnder === undefined}
+                        <div class=notAvailable>Not available</div>
+                    {/if}
+                </div>
+                <hr>
+                <div>
+                    <div class=sectionHeading>Links (ESPN)</div>
+                    <div class=sectionText>
+                        <a href={'https://www.espn.com/college-football/game?gameId=' + $game.id}>
+                            Gamecast
+                        </a>
+                        {#if ['in', 'post'].includes($game.statusState)}
                             {' - '}
-                            <a href={
-                                'https://www.espn.com/college-football/team/_/id/' + team.id
-                            }>
-                                {team.school} Clubhouse
+                            <a href={'https://www.espn.com/college-football/boxscore/_/gameId/' + $game.id}>
+                                Box Score
                             </a>
                         {/if}
-                    {/each}
-
+                        {#each $game.teamsArray as team}
+                            {#if team.school !== 'TBA'}
+                                {' - '}
+                                <a href={
+                                    'https://www.espn.com/college-football/team/_/id/' + team.id
+                                }>
+                                    {team.school} Clubhouse
+                                </a>
+                            {/if}
+                        {/each}
+                    </div>
                 </div>
-            </div>
-        {/if}
+            {/if}
+        {/key}
     </div>
 </div>
 
