@@ -30,6 +30,9 @@ export default function sortGames(games: Array<Game>, favoritesFirst: boolean): 
         const styleStr = get(gameSortStyles['Completed Games'].store);
         if (styleStr === 'Default'){
             sortStyle = [
+                ['matchupSurpriseScore', 'max', 2],
+                ['matchupScore', 'max', 2],
+                ['sortSurpriseScore', 'max', 1],
                 ['matchupSurpriseScore', 'max', 1],
                 ['matchupScore', 'max', 2],
             ];

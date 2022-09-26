@@ -54,8 +54,7 @@
     <div id='settingsModal' class='modalContent'>
         <h1 style='text-align: center; margin-top: 0.25em;'>Settings</h1>
         <h2 class="sectionHeading">Team Filtering</h2>
-        <span class=basicText style="margin-right:0.5em">Include teams from this group:</span>
-        <select on:change={e => gamesToShowSelectChange(e)}>
+        <select class=basicText on:change={e => gamesToShowSelectChange(e)}>
             {#each Object.keys(gamesToShowFilterFuncs) as x}
                 <option 
                     value={x}

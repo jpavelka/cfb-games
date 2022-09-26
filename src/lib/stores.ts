@@ -45,6 +45,7 @@ export const showFavoriteTeamsFirst = createCookieSyncedStore('showFavoriteTeams
 export const favoriteTeams = createCookieSyncedStore('favoriteTeams', '', undefined);
 export const filterOnChannels = createCookieSyncedStore('filterOnChannels', 'n', ['y', 'n']);
 export const excludedChannels = createCookieSyncedStore('excludedChannels', '', undefined);
+export const channelFilterCurrentOnly = createCookieSyncedStore('channelFilterCurrentOnly', 'n', ['y', 'n']);
 
 const gameSortChoices = {
     'Current Games': ['Default', 'Situation', 'Matchup', 'Surprise'],

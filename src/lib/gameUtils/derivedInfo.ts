@@ -163,7 +163,7 @@ export default function(g: Game) {
     g.sortSituationScore = g.situationScoreNorm > 0.6 ? g.situationScoreNorm : g.matchupScoreNorm / 10;
     g.sortSurpriseScore = g.surpriseScoreNorm > 0.6 ? g.surpriseScoreNorm : g.matchupScoreNorm / 10;
     g.matchupSurpriseScore = 100 * (
-        (4 * g.matchupScoreNorm + g.sortSurpriseScore) / 5
+        (3 * g.matchupScoreNorm + g.sortSurpriseScore) / 4
     );
     const sitScoreMult = g.sortSituationScore > 0.9 ?
         5 : g.sortSituationScore > 0.7 ?

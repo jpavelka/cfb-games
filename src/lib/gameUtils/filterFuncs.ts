@@ -1,5 +1,5 @@
 import type { Game, Team } from "$lib/types";
-import { excludedChannels, filterOnChannels } from "$lib/stores";
+import { excludedChannels, filterOnChannels, channelFilterCurrentOnly } from "$lib/stores";
 import { get } from "svelte/store";
 import { getBroadcastStrFromList } from "$lib/gameUtils/derivedInfo";
 
@@ -28,6 +28,9 @@ export const teamSearchFunc = (g: Game, s: string) => {
 }
 
 export const filterChannels = (games: Array<Game>) => {
+    if (get(channelFilterCurrentOnly) === 'y' && games[0].statusSort !== 'Current'){
+        return games
+    }
     let gamesToKeep = [];
     for (const g of games){
         if (get(filterOnChannels) === 'y') {

@@ -19,7 +19,6 @@
     ]
 </script>
 
-
 <div class=iconContainer>
     {#each setup as obj}
         {#if obj.include}
@@ -39,15 +38,18 @@
 <style>
     .iconContainer {
         display:flex;
+        justify-content: space-around;
     }
     .gameIcon {
         height: 100%;
-        padding: 0pt 1pt;
         font-size: 2em;
     }
     .iconLabel {
         white-space: nowrap;
         margin-left: 0.25em;
+        /* margin-right: 0.75em; */
+    }
+    .iconLabel:not(:last-child) {
         margin-right: 0.75em;
     }
 </style>

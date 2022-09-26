@@ -1,7 +1,7 @@
 <script lang="ts">
     import {
         filterOnChannels, settingsHideChannels, allChannels,
-        settingsScrollY, excludedChannels
+        settingsScrollY, excludedChannels, channelFilterCurrentOnly
     } from "$lib/stores";
     import { slide } from 'svelte/transition';
     
@@ -43,6 +43,19 @@
         }}
     ><label for='filterOnChannels'>Only include games on selected channels</label>
 </div>
+<div class=checkboxWrapper>
+    <input
+        id='channelFilterCurrentOnly'
+        type='checkbox'
+        checked={$channelFilterCurrentOnly === 'y'}
+        disabled={$filterOnChannels === 'n'}
+        on:click={() => {
+            channelFilterCurrentOnly.update(x => x === 'y' ? 'n' : 'y');
+            getGameDataNoScroll();
+        }}
+    ><label for='channelFilterCurrentOnly' 
+    class:disabled={$filterOnChannels === 'n'}>Apply to current games only</label>
+</div>
 <h4 class="closer pointer" on:click={() => changeHideChannels()}>
     Channels
     <span class='headerArrow'>
@@ -69,3 +82,9 @@
         </div>
     </div>
 {/if}
+
+<style>
+    .disabled {
+        color: gray;
+    }
+</style>
