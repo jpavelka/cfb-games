@@ -24,6 +24,11 @@ export default function(g: Game) {
         );
         t.approxRank = Math.round(approxRank / 5);
     }
+    if (g.statusState === 'post'){
+        g.statusState = g.statusDesc === 'Canceled' ? 'canceled' : (
+            g.statusDesc === 'Postponed' ? 'postponed' : g.statusState
+        );
+    }
     g.possessionHomeAway = g.teams.away.possession ? 'away' : (g.teams.home.possession ? 'home' : undefined)
     g.teamsTbd = g.teams.away.school === 'TBD' || g.teams.home.school === 'TBD';
     g.location = undefined
