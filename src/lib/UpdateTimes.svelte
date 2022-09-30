@@ -45,13 +45,13 @@
 </script>
 
 <div>
-    Last update: {lastUpdateDispStr} ago
+    Data from {lastUpdateDispStr} ago
     {#if nextUpdate !== undefined}
         {nextUpdateDispStr === '' ? (
             ' - Refresh for new data'
 
         ) : (
-            ' - Next update: ' + nextUpdateDispStr
+            ' - New data in ' + nextUpdateDispStr
         )}
     {/if}
 </div>

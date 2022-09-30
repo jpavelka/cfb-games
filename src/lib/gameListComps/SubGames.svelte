@@ -115,6 +115,7 @@
         margin-bottom: -0;
         cursor: pointer;
         margin-top: 0.2em;
+        width: fit-content;
     }
     .groupCheck {
         padding: 0.3em;
