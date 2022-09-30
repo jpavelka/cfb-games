@@ -70,7 +70,7 @@
                         </span>
                     </div>
                 {/if}
-                {#if hierarchyLevel < subGroupHierarchy.length - 1 && subData.commonStr !== 'Current Games'}
+                {#if hierarchyLevel < subGroupHierarchy.length - 1 && ['Upcoming Games', 'Completed Games'].includes(subData.commonStr)}
                     <div class="groupCheck">
                         <input
                             class="groupCheck pointer"
