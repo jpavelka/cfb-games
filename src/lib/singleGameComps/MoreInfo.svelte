@@ -5,6 +5,7 @@
     import GameIcons from "./GameIcons.svelte";
     import Broadcast from "./Broadcast.svelte";
     import MoreInfoLogos from './MoreInfoLogos.svelte';
+    import type { Game } from "$lib/types";
 
     const handleClose = () => {
         visible.update(() => false);
@@ -18,6 +19,10 @@
             handleClose();
         }
     }
+    const makeSmallerEventStr = (g: Game) => {
+        const eventStr = g.eventStr || '';
+        return eventStr.startsWith('Moved from') && eventStr.split(' ').length <= 5;
+    }
 </script>
 
 <div 
@@ -28,7 +33,9 @@
     <div class='modalContent'>
         {#key $game}
             {#if $game !== undefined}
-                <div class='specialEventName'>{$game.eventStr || ''}</div>
+                <div class='specialEventName' class:smallerEventStr={makeSmallerEventStr($game)}>
+                    {$game.eventStr || ''}
+                </div>
                 {#if !($game.statusState === 'pre')}
                     <div class=currentStatus>{$game.statusDetail}</div>
                 {/if}
@@ -135,6 +142,9 @@
     .specialEventName {
         font-size: max(3vw, 1.4em);
         text-align: center;
+    }
+    .smallerEventStr {
+        font-size: max(1vw, 1em);
     }
     .teamsDiv {
         display: flex;
