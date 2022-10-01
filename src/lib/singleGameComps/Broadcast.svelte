@@ -59,10 +59,17 @@
         }
     ]
     let linkFunc: Function | undefined;
-    for (const broadObj of broadcastObjs) {
-        if (game.broadcastChannels.filter(c => broadObj.channels.includes(c)).length > 0){
-            linkFunc = broadObj.linkFunc;
-            break
+    for (const channel of game.broadcastChannels) {
+        let breakAll = false;
+        for (const broadObj of broadcastObjs) {
+            if (broadObj.channels.includes(channel)) {
+                linkFunc = broadObj.linkFunc;
+                breakAll = true;
+                break;
+            }
+        }
+        if (breakAll) {
+            break;
         }
     }
     const broadcastText = 'Broadcast: ' + game.broadcastStr;
