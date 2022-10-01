@@ -128,9 +128,13 @@
               {week.seasonType == "2"
                 ? "Week " + week.week
                 : "Postseason" + " "}
-              ({weekDatesFormatter(week.start)} - {weekDatesFormatter(
-                week.end
-              )})
+              {#if week.week == $weekMetaData.week && week.seasonType == $weekMetaData.seasonType}
+                (current)
+              {:else}
+                ({weekDatesFormatter(week.start)} - {weekDatesFormatter(
+                  week.end
+                )})
+              {/if}
             </option>
           {/each}
         </select>
