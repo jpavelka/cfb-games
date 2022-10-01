@@ -79,7 +79,6 @@ export type Game = {
 export type Team = {
     id: string;
     school: string;
-    mascot: string;
     abbreviation: string;
     displayName: string;
     rank: number | 'unranked' | undefined;
