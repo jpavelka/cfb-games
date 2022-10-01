@@ -128,8 +128,8 @@
               {week.seasonType == "2"
                 ? "Week " + week.week
                 : "Postseason" + " "}
-              {#if week.week == $weekMetaData.week && week.seasonType == $weekMetaData.seasonType}
-                (current)
+              {#if week.week == $seasonInfo.week && week.seasonType == $seasonInfo.seasonType}
+                (Current)
               {:else}
                 ({weekDatesFormatter(week.start)} - {weekDatesFormatter(
                   week.end
