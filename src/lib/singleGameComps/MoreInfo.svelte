@@ -109,21 +109,28 @@
                 <div>
                     <div class=sectionHeading>Links (ESPN)</div>
                     <div class=sectionText>
-                        <a href={'https://www.espn.com/college-football/game?gameId=' + $game.id}>
+                        <a
+                            href={'https://www.espn.com/college-football/game?gameId=' + $game.id}
+                            target='_blank'
+                        >
                             Gamecast
                         </a>
                         {#if ['in', 'post'].includes($game.statusState)}
                             {' - '}
-                            <a href={'https://www.espn.com/college-football/boxscore/_/gameId/' + $game.id}>
+                            <a
+                                href={'https://www.espn.com/college-football/boxscore/_/gameId/' + $game.id}
+                                target='_blank'
+                            >
                                 Box Score
                             </a>
                         {/if}
                         {#each $game.teamsArray as team}
                             {#if team.school !== 'TBA'}
                                 {' - '}
-                                <a href={
-                                    'https://www.espn.com/college-football/team/_/id/' + team.id
-                                }>
+                                <a
+                                    href={'https://www.espn.com/college-football/team/_/id/' + team.id}
+                                    target='_blank'
+                                >
                                     {team.school} Clubhouse
                                 </a>
                             {/if}
