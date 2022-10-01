@@ -21,7 +21,7 @@
     }
     const makeSmallerEventStr = (g: Game) => {
         const eventStr = g.eventStr || '';
-        return eventStr.startsWith('Moved from') && eventStr.split(' ').length <= 5;
+        return eventStr.startsWith('Moved from');
     }
 </script>
 
