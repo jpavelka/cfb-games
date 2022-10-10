@@ -1,5 +1,6 @@
 <script lang="ts">
     import { onMount } from "svelte";
+  import { showRefreshButton, dataRefreshing } from "$lib/stores";
 
     export let lastUpdateStr: string;
     export let nextUpdateStr: string | undefined;
@@ -10,6 +11,9 @@
     onMount(() => {
         const interval = setInterval(() => {
             now = new Date();
+            if (!$dataRefreshing && (now.getTime() - (nextUpdate || now).getTime() > 0)) {
+                showRefreshButton.update(() => true);
+            }
         }, 5000);
         return () => {
             clearInterval(interval);
@@ -45,13 +49,15 @@
 </script>
 
 <div>
-    Data from {lastUpdateDispStr} ago
-    {#if nextUpdate !== undefined}
-        {nextUpdateDispStr === '' ? (
-            ' - Refresh for new data'
-
-        ) : (
-            ' - New data in ' + nextUpdateDispStr
-        )}
-    {/if}
+    <div>
+        {`Data from ${lastUpdateDispStr} ago`}
+        {#if nextUpdate !== undefined}
+            {' - '}
+            {#if nextUpdateDispStr === ''}
+                New data available
+            {:else}
+                {'New data in ' + nextUpdateDispStr}
+            {/if}
+        {/if}
+    </div>
 </div>

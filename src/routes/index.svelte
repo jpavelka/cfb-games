@@ -1,5 +1,6 @@
 <script lang="ts">
   import "$lib/common.css";
+  import { slide } from 'svelte/transition';
   import type { Game, WeekMetaData } from "$lib/types";
   import settingsIcon from "$lib/assets/settings.svg";
   import SubGames from "$lib/gameListComps/SubGames.svelte";
@@ -17,6 +18,8 @@
     allTeamsList,
     allChannels,
     filterOnChannels,
+    showRefreshButton,
+    dataRefreshing,
   } from "$lib/stores";
   import getDerivedInfo from "$lib/gameUtils/derivedInfo";
   import groupGames from "$lib/gameUtils/groupGames";
@@ -69,6 +72,16 @@
       seasonType: st,
       week: w,
     });
+  }
+  async function quickReload() {
+    dataRefreshing.update(() => true);
+    showRefreshButton.update(() => false);
+    await loadNewWeekData({
+      season: $seasonInfo.season,
+      seasonType: $seasonInfo.seasonType,
+      week: $seasonInfo.week,
+    });
+    dataRefreshing.update(() => false);
   }
   async function getInitialData() {
     const initialSeasonInfo = await fetch(seasonInfoUrl, { cache: "no-cache" })
@@ -181,6 +194,15 @@
       {:else}
         <div class="noGames">No games to show</div>
       {/if}
+      {#if $showRefreshButton}
+        <div
+          class=refreshButton
+          transition:slide|local
+          on:click={quickReload}
+        >
+          New data available.<br>Click to load.
+        </div>
+      {/if}
     </div>
     <div class="footer">
       <UpdateTimes
@@ -257,5 +279,20 @@
   .searchResults {
     font-style: italic;
     margin-top: 0.25em;
+  }
+  .refreshButton {
+    position: fixed;
+    bottom: 2.5em;
+    box-shadow: 0px 7px 5px #666;
+    background-color: blah;
+    background-color: rgb(255, 255, 102);
+    background-color: rgba(255, 255, 102, 0.867);
+    border-radius: 30px;
+    text-align: center;
+    padding: 10pt;
+    font-size: 1.1em;
+    left: 50%;
+    transform: translateX(-50%);
+    cursor: pointer;
   }
 </style>

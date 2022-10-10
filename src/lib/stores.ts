@@ -21,6 +21,8 @@ export const allChannels: Writable<Array<string>> = writable([]);
 export const teamSearchStr: Writable<string> = writable('');
 export const allTeamsList: Writable<Array<{[key: string]: string}>> = writable([]);
 export const settingsScrollY: Writable<number> = writable(0);
+export const showRefreshButton: Writable<boolean> = writable(false);
+export const dataRefreshing: Writable<boolean> = writable(false);
 
 const createCookieSyncedStore = (name: string, defaultValue: string, allowedValues: Array<string> | undefined) => {
     let currentCookieValue = Cookies.get(name) || defaultValue;
