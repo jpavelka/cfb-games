@@ -194,7 +194,7 @@
       {:else}
         <div class="noGames">No games to show</div>
       {/if}
-      {#if $showRefreshButton}
+      {#if !$showRefreshButton}
         <div
           class=refreshButton
           class:refreshClicked={$dataRefreshing}
@@ -289,8 +289,8 @@
     position: fixed;
     bottom: 2.5em;
     box-shadow: 0 0 0 2px rgb(170, 170, 170);
-    background-color: rgb(255, 255, 136);
-    background-color: rgba(255, 255, 136, 0.965);
+    background-color: rgb(180, 225, 255);
+    background-color: rgba(180, 225, 255, 0.95);
     border-radius: 30px;
     text-align: center;
     padding: 10pt;
