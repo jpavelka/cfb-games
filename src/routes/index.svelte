@@ -194,7 +194,7 @@
       {:else}
         <div class="noGames">No games to show</div>
       {/if}
-      {#if !$showRefreshButton}
+      {#if $showRefreshButton}
         <div
           class=refreshButton
           class:refreshClicked={$dataRefreshing}
