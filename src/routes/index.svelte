@@ -1,6 +1,6 @@
 <script lang="ts">
   import "$lib/common.css";
-  import { slide } from 'svelte/transition';
+  import { fly } from 'svelte/transition';
   import type { Game, WeekMetaData } from "$lib/types";
   import settingsIcon from "$lib/assets/settings.svg";
   import SubGames from "$lib/gameListComps/SubGames.svelte";
@@ -75,13 +75,13 @@
   }
   async function quickReload() {
     dataRefreshing.update(() => true);
-    showRefreshButton.update(() => false);
     await loadNewWeekData({
       season: $seasonInfo.season,
       seasonType: $seasonInfo.seasonType,
       week: $seasonInfo.week,
     });
     dataRefreshing.update(() => false);
+    showRefreshButton.update(() => false);
   }
   async function getInitialData() {
     const initialSeasonInfo = await fetch(seasonInfoUrl, { cache: "no-cache" })
@@ -197,10 +197,15 @@
       {#if $showRefreshButton}
         <div
           class=refreshButton
-          transition:slide|local
+          class:refreshClicked={$dataRefreshing}
+          transition:fly|local="{{ y: 100, duration: 1000 }}"
           on:click={quickReload}
         >
-          New data available.<br>Click to load.
+          {#if $dataRefreshing}
+            Loading...
+          {:else}
+            New data available.<br>Click to load.
+          {/if}
         </div>
       {/if}
     </div>
@@ -283,10 +288,9 @@
   .refreshButton {
     position: fixed;
     bottom: 2.5em;
-    box-shadow: 0px 7px 5px #666;
-    background-color: blah;
-    background-color: rgb(255, 255, 102);
-    background-color: rgba(255, 255, 102, 0.867);
+    box-shadow: 0 0 0 2px rgb(170, 170, 170);
+    background-color: rgb(255, 255, 136);
+    background-color: rgba(255, 255, 136, 0.965);
     border-radius: 30px;
     text-align: center;
     padding: 10pt;
@@ -294,5 +298,21 @@
     left: 50%;
     transform: translateX(-50%);
     cursor: pointer;
+    animation: pulse 15s infinite;
   }
+  @keyframes pulse {
+    0% {
+      box-shadow: 0 0 0 2px rgb(170, 170, 170)
+    }
+    80% {
+      box-shadow: 0 0 0 2px rgb(170, 170, 170)
+    }
+    88% {
+      box-shadow: 0 0 0 8px rgb(204, 204, 204);
+      box-shadow: 0 0 0 8px rgba(204, 204, 204, 0.867);
+    }
+}
+.refreshClicked {
+  animation: none;
+}
 </style>
