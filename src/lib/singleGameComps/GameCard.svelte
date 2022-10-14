@@ -20,12 +20,14 @@
     {#each game.teamsArray as team}
         <div class=teamLine>
             {#if $showGameBars === 'y'}
-                <GameBar
-                    valueNorm={team.strengthScore}
-                    hoverName='Team Strength'
-                    orientation='vertical'
-                    containerStyleOverride='width: 2.2em; margin-left: -1em; margin-right: -0.5em; margin-top: 0.3em'
-                />
+                <div class:hide={team.school === 'TBD'}>
+                    <GameBar
+                        valueNorm={team.strengthScore}
+                        hoverName='Team Strength'
+                        orientation='vertical'
+                        containerStyleOverride='width: 2.2em; margin-left: -1em; margin-right: -0.5em; margin-top: 0.3em'
+                    />
+                </div>
             {/if}
             <img class=logoImg class:noLogo={!!!team.logo} src={team.logo} alt={team.abbreviation}>
             <div class='teamName teamLineUp' class:winnerText={team.winner}>
@@ -170,7 +172,7 @@
     .teamRecords {
         font-size: 0.8em;
         color: #555;
-        margin-left: 6.5em;
+        margin-left: 7em;
         margin-top: -1.5em;
     }
     .hide {

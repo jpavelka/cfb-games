@@ -17,7 +17,7 @@
         <div class=recordsText>
             {team.classification === 'FBS' ? team.conference : (
                 !!team.conference ? `${team.conference} (${team.classification})` : (
-                    team.school == 'TBD' ? '' : ''
+                    team.school === 'TBD' ? '' : ''
                 )
             )}
         </div>
@@ -26,12 +26,14 @@
             {!!team.recordConference ? ` (${team.recordConference})` : ''}
         </div>
     {/if}
-    <GameBar
-        valueNorm={team.strengthScore}
-        backgroundColor='black'
-        containerStyleOverride='width: 60%; margin: 5pt auto 2pt auto;'
-    />
-    <div class=recordsText>{(100 * team.strengthScore).toFixed(0)}/100</div>
+    {#if team.school !== 'TBD'}
+        <GameBar
+            valueNorm={team.strengthScore}
+            backgroundColor='black'
+            containerStyleOverride='width: 60%; margin: 5pt auto 2pt auto;'
+        />
+        <div class=recordsText>{(100 * team.strengthScore).toFixed(0)}/100</div>
+    {/if}
 </div>
 
 <style>
