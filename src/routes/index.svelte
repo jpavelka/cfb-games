@@ -298,23 +298,16 @@
     left: 50%;
     transform: translateX(-50%);
     cursor: pointer;
-    animation: pulse 15s infinite;
+    animation: pulse 7s infinite;
   }
   @keyframes pulse {
-    0% {
-      border: 2px solid rgb(113, 113, 113);
-    }
-    80% {
-      border: 2px solid rgb(112, 112, 112);
+    60% {
       box-shadow: 0 0 0 0 rgb(246, 246, 74);
       box-shadow: 0 0 0 0 rgba(246, 246, 74, 0.5);
     }
-    88% {
+    75% {
       box-shadow: 0 0 0 6px rgb(246, 246, 74);
       box-shadow: 0 0 0 6px rgba(246, 246, 74, 0.5);
-    }
-    100% {
-      border: 2px solid rgb(112, 112, 112);
     }
 }
 .refreshClicked {
