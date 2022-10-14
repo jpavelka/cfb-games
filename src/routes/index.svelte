@@ -288,9 +288,9 @@
   .refreshButton {
     position: fixed;
     bottom: 2.5em;
-    box-shadow: 0 0 0 2px rgb(170, 170, 170);
-    background-color: rgb(180, 225, 255);
-    background-color: rgba(180, 225, 255, 0.95);
+    border: 2px solid rgb(113, 113, 113);
+    background-color: rgb(240, 240, 240);
+    background-color: rgba(240, 240, 240, 0.95);
     border-radius: 30px;
     text-align: center;
     padding: 10pt;
@@ -302,14 +302,19 @@
   }
   @keyframes pulse {
     0% {
-      box-shadow: 0 0 0 2px rgb(170, 170, 170)
+      border: 2px solid rgb(113, 113, 113);
     }
     80% {
-      box-shadow: 0 0 0 2px rgb(170, 170, 170)
+      border: 2px solid rgb(112, 112, 112);
+      box-shadow: 0 0 0 0 rgb(246, 246, 74);
+      box-shadow: 0 0 0 0 rgba(246, 246, 74, 0.5);
     }
     88% {
-      box-shadow: 0 0 0 8px rgb(204, 204, 204);
-      box-shadow: 0 0 0 8px rgba(204, 204, 204, 0.867);
+      box-shadow: 0 0 0 6px rgb(246, 246, 74);
+      box-shadow: 0 0 0 6px rgba(246, 246, 74, 0.5);
+    }
+    100% {
+      border: 2px solid rgb(112, 112, 112);
     }
 }
 .refreshClicked {
