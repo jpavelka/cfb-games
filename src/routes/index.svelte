@@ -7,19 +7,10 @@
   import MoreInfo from "$lib/singleGameComps/MoreInfo.svelte";
   import Settings from "$lib/settingsComps/Settings.svelte";
   import UpdateTimes from "$lib/UpdateTimes.svelte";
+  import RefreshData from "$lib/RefreshData.svelte";
   import {
-    allGamesData,
-    allGamesDataRaw,
-    weekMetaData,
-    seasonInfo,
-    settingsVisible,
-    gamesToShow,
-    teamSearchStr,
-    allTeamsList,
-    allChannels,
-    filterOnChannels,
-    showRefreshButton,
-    dataRefreshing,
+    allGamesData, allGamesDataRaw, weekMetaData, seasonInfo, settingsVisible, gamesToShow,
+    teamSearchStr, allTeamsList, allChannels, filterOnChannels
   } from "$lib/stores";
   import getDerivedInfo from "$lib/gameUtils/derivedInfo";
   import groupGames from "$lib/gameUtils/groupGames";
@@ -72,16 +63,6 @@
       seasonType: st,
       week: w,
     });
-  }
-  async function quickReload() {
-    dataRefreshing.update(() => true);
-    await loadNewWeekData({
-      season: $seasonInfo.season,
-      seasonType: $seasonInfo.seasonType,
-      week: $seasonInfo.week,
-    });
-    dataRefreshing.update(() => false);
-    showRefreshButton.update(() => false);
   }
   async function getInitialData() {
     const initialSeasonInfo = await fetch(seasonInfoUrl, { cache: "no-cache" })
@@ -194,20 +175,9 @@
       {:else}
         <div class="noGames">No games to show</div>
       {/if}
-      {#if $showRefreshButton}
-        <div
-          class=refreshButton
-          class:refreshClicked={$dataRefreshing}
-          transition:fly|local="{{ y: 100, duration: 1000 }}"
-          on:click={quickReload}
-        >
-          {#if $dataRefreshing}
-            Loading...
-          {:else}
-            New data available.<br>Click to load.
-          {/if}
-        </div>
-      {/if}
+      <RefreshData
+        loadNewWeekData={loadNewWeekData}
+      />
     </div>
     <div class="footer">
       <UpdateTimes
@@ -285,32 +255,4 @@
     font-style: italic;
     margin-top: 0.25em;
   }
-  .refreshButton {
-    position: fixed;
-    bottom: 2.5em;
-    border: 2px solid rgb(113, 113, 113);
-    background-color: rgb(240, 240, 240);
-    background-color: rgba(240, 240, 240, 0.95);
-    border-radius: 30px;
-    text-align: center;
-    padding: 10pt;
-    font-size: 1.1em;
-    left: 50%;
-    transform: translateX(-50%);
-    cursor: pointer;
-    animation: pulse 7s infinite;
-  }
-  @keyframes pulse {
-    60% {
-      box-shadow: 0 0 0 0 rgb(246, 246, 74);
-      box-shadow: 0 0 0 0 rgba(246, 246, 74, 0.5);
-    }
-    75% {
-      box-shadow: 0 0 0 6px rgb(246, 246, 74);
-      box-shadow: 0 0 0 6px rgba(246, 246, 74, 0.5);
-    }
-}
-.refreshClicked {
-  animation: none;
-}
 </style>
