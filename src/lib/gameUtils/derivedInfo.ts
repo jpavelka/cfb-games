@@ -23,6 +23,7 @@ export default function(g: Game) {
             !!t.masseyRank ? fcsMasseyEq(t.masseyRank.mean) : 250
         );
         t.approxRank = Math.round(approxRank / 5);
+        t.strengthScore = Math.max(0.01, 1 - t.approxRank / 40);
     }
     if (g.statusState === 'post'){
         g.statusState = g.statusDesc === 'Canceled' ? 'canceled' : (

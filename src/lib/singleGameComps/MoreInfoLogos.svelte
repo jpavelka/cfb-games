@@ -1,4 +1,5 @@
 <script lang='ts'>
+    import GameBar from "./GameBar.svelte";
     import type { Team } from '$lib/types'
     export let team: Team;
     let sw: number;
@@ -25,6 +26,12 @@
             {!!team.recordConference ? ` (${team.recordConference})` : ''}
         </div>
     {/if}
+    <GameBar
+        valueNorm={team.strengthScore}
+        backgroundColor='black'
+        containerStyleOverride='width: 60%; margin: 5pt auto 2pt auto;'
+    />
+    <div class=recordsText>{(100 * team.strengthScore).toFixed(0)}/100</div>
 </div>
 
 <style>

@@ -5,7 +5,6 @@
     import GameIcons from "./GameIcons.svelte";
     export let game : Game;
     const showMoreInfo = () => {
-        console.log(game);
         moreInfoGame.update(() => game);
         moreInfoVisible.update(() => true);
     }
@@ -21,12 +20,12 @@
     {#each game.teamsArray as team}
         <div class=teamLine>
             {#if $showGameBars === 'y'}
-                <div class=teamStrengthBarBackground class:hide={team.school === 'TBD'}>
-                    <div
-                        class=teamStrengthBar
-                        style='height: {Math.max(0.1, 2 * (1 - team.approxRank / 40))}em; background-color: hsl({Math.max(0, 120 - 3 * team.approxRank)}, 90%, 70%)'
-                    ></div>
-                </div>
+                <GameBar
+                    valueNorm={team.strengthScore}
+                    hoverName='Team Strength'
+                    orientation='vertical'
+                    containerStyleOverride='width: 2.2em; margin-left: -1em; margin-right: -0.5em; margin-top: 0.3em'
+                />
             {/if}
             <img class=logoImg class:noLogo={!!!team.logo} src={team.logo} alt={team.abbreviation}>
             <div class='teamName teamLineUp' class:winnerText={team.winner}>

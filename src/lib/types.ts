@@ -98,6 +98,7 @@ export type Team = {
         mean: number;
     }
     approxRank: number;
+    strengthScore: number;
 }
 
 export type GameGrouping = {
