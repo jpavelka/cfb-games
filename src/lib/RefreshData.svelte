@@ -85,8 +85,9 @@
         font-size: 0.9em;
         padding: 0.8em 1.6em;
         margin: 0em 0.25em;
+        border-radius: 30px;
     }
     .newDataText {
-        font-size: 1.2em;
+        font-size: 1.15em;
     }
 </style>
