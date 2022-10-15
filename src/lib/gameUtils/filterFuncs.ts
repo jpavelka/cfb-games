@@ -28,11 +28,12 @@ export const teamSearchFunc = (g: Game, s: string) => {
 }
 
 export const filterChannels = (games: Array<Game>) => {
-    if (get(channelFilterCurrentOnly) === 'y' && games[0].statusState !== 'in'){
-        return games
-    }
     let gamesToKeep = [];
     for (const g of games){
+        if (get(channelFilterCurrentOnly) === 'y' && g.statusState !== 'in'){
+            gamesToKeep.push(g);
+            continue
+        }
         if (get(filterOnChannels) === 'y') {
             const allowedChannels = g.broadcastChannels.filter(
                 bc => !get(excludedChannels).split(',').includes(bc)
