@@ -22,7 +22,7 @@
             {#if $showGameBars === 'y'}
                 <div class:hide={team.school === 'TBD'}>
                     <GameBar
-                        valueNorm={team.strengthScore}
+                        valueNorm={team.strengthScoreNorm}
                         hoverName='Team Strength'
                         orientation='vertical'
                         containerStyleOverride='width: 2.2em; margin-left: -1em; margin-right: -0.5em; margin-top: 0.3em'

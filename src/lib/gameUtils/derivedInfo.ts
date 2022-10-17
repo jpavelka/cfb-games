@@ -23,7 +23,7 @@ export default function(g: Game) {
             !!t.masseyRank ? fcsMasseyEq(t.masseyRank.mean) : 250
         );
         t.approxRank = Math.round(approxRank / 5);
-        t.strengthScore = Math.max(0.01, 1 - t.approxRank / 40);
+        t.strengthScoreNorm = Math.max(0.01, 1 - t.approxRank / 40);
     }
     if (g.statusState === 'post'){
         g.statusState = g.statusDesc === 'Canceled' ? 'canceled' : (
@@ -104,8 +104,9 @@ export default function(g: Game) {
     g.teamsArray = [(g.teams || {}).away, (g.teams || {}).home];
     g.spreadTouchdowns = g.spread ? Math.round(g.spread / 7) : 4;
     const rankDiff = Math.min(10, Math.abs(g.teams.away.approxRank - g.teams.home.approxRank));
-    g.matchupScore = 100 - (g.teams.away.approxRank + g.teams.home.approxRank + rankDiff);
-    g.matchupScore = 100 * ((g.matchupScore / 100) ** 2) * 1.1 + 5
+    g.matchupScore = (g.teams.away.strengthScoreNorm + g.teams.home.strengthScoreNorm) / 2
+    g.matchupScore = g.matchupScore - Math.abs(g.teams.away.strengthScoreNorm - g.teams.home.strengthScoreNorm) / 4;
+    g.matchupScore = 100 * Math.min(1, g.matchupScore * 1.02)
     favoriteTeams.subscribe(val => {
         const favTeamsList = val.split(',')
         g.favoriteTeamGame = favTeamsList.includes(g.teams.away.school) || favTeamsList.includes(g.teams.home.school)
@@ -182,7 +183,7 @@ export default function(g: Game) {
         const favTeamsList = val.split(',')
         g.favoriteTeamGame = favTeamsList.includes(g.teams.away.school) || favTeamsList.includes(g.teams.home.school)
     })
-    g.sortStartTime = (new Date(g.dttm)).getTime() + (1 - g.matchupScore) + (g.timeValid ? 0 : 9999999)
+    g.sortStartTime = (new Date(g.dttm)).getTime() + (1 - g.matchupScoreNorm) + (g.timeValid ? 0 : 9999999)
     return g
 }
 

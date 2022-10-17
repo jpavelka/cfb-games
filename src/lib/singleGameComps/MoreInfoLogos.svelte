@@ -28,11 +28,11 @@
     {/if}
     {#if team.school !== 'TBD'}
         <GameBar
-            valueNorm={team.strengthScore}
+            valueNorm={team.strengthScoreNorm}
             backgroundColor='black'
             containerStyleOverride='width: 60%; margin: 5pt auto 2pt auto;'
         />
-        <div class=recordsText>{(100 * team.strengthScore).toFixed(0)}/100</div>
+        <div class=recordsText>{(100 * team.strengthScoreNorm).toFixed(0)}/100</div>
     {/if}
 </div>
 
