@@ -15,6 +15,7 @@
         undefined
     )
     const backgroundStyle = `background-color: ${backgroundColor}; border-color: ${backgroundColor};`
+    const colorVal = ((valueNorm * valueNorm) + 2 * valueNorm) / 3
 </script>
 
 <div 
@@ -32,7 +33,7 @@
     >
         <div
             class=gameBar
-            style='width: {100 * valueNorm}%; background-color: hsl({120 * valueNorm}, 90%, 70%)'
+            style='width: {100 * valueNorm}%; background-color: hsl({120 * colorVal}, 90%, 70%)'
         ></div>
     </div>
 </div>
