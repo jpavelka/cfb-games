@@ -4,7 +4,7 @@
 
     export let loadNewWeekData: Function;
 
-    let reloadIgnored = false;
+    let showLarger = false;
     async function quickReload() {
         dataRefreshing.update(() => true);
         await loadNewWeekData({
@@ -15,64 +15,91 @@
         dataRefreshing.update(() => false);
         showRefreshButton.update(() => false);
     }
-    async function ignoreForNow() {
-        reloadIgnored = true;
-        await new Promise(resolve => setTimeout(resolve, 60 * 1000));
-        reloadIgnored = false;
+    const mainClick = () => {
+        showLarger = true;
+    };
+    const ignoreClick = (event: Event) => {
+        event.stopPropagation();
+        showLarger = false;
+    }
+    const getTransitionIn = (node: any, args: any) => {
+        if (showLarger) {
+            return fly(node, {x: 300, duration: 1000})
+        } else {
+            return fly(node, {x: 50, duration: 1000})
+        }
+    }
+    const getTransitionOut = (node: any, args: any) => {
+        if (!showLarger) {
+            return fly(node, {x: 300, duration: 1000})
+        } else {
+            return fly(node, {x: 50, duration: 1000})
+        }
     }
 </script>
 
-{#if $showRefreshButton && !reloadIgnored}
-    <div
-        class=refreshDialog
-        class:refreshClicked={$dataRefreshing}
-        transition:fly|local="{{ y: 100, duration: 1000 }}"
-    >
-        <div class=newDataText>
-            {#if $dataRefreshing}
-                Loading...
+{#key showLarger}
+    {#if $showRefreshButton}
+        <div
+            class=refreshDialog
+            class:refreshClicked={$dataRefreshing}
+            on:click={mainClick}
+            in:getTransitionIn={{}}
+            out:getTransitionOut={{}}
+            style={showLarger ? 'animation: none' : 'cursor: pointer'}
+        >
+            {#if showLarger}
+                <div>
+                    <div class=newDataText>
+                        {#if $dataRefreshing}
+                            Loading...
+                        {:else}
+                            New data available!
+                        {/if}
+                    </div>
+                    <div class=buttonContainer>
+                        <button
+                            on:click={quickReload}
+                            disabled={$dataRefreshing}
+                        >Load</button>
+                        <button 
+                            on:click={ignoreClick}
+                            disabled={$dataRefreshing}
+                        >Ignore</button>
+                    </div>
+                </div>
             {:else}
-                New data available!
+                <div
+                    style='width:20px; text-align:center; margin-right:-5px'
+                >!</div>
             {/if}
         </div>
-        <div class=buttonContainer>
-            <button
-                on:click={quickReload}
-                disabled={$dataRefreshing}
-            >Load</button>
-            <button 
-                on:click={ignoreForNow}
-                disabled={$dataRefreshing}
-            >Ignore</button>
-        </div>
-    </div>
-{/if}
+    {/if}
+{/key}
 
 <style>
     .refreshDialog {
         position: fixed;
-        bottom: 2.5em;
+        bottom: 2.2em;
+        right: 0;
         border: 2px solid rgb(113, 113, 113);
         background-color: rgb(245, 245, 245);
         background-color: rgba(245, 245, 245, 0.95);
-        border-radius: 30px;
+        border-radius: 30px 0 0 30px;
         text-align: center;
-        padding: 10pt;
+        padding: 14pt;
         font-size: 1.1em;
-        left: 50%;
-        transform: translateX(-50%);
-        cursor: pointer;
-        animation: pulse 7s infinite;
+        animation: pulse 8s infinite;
         white-space: nowrap;
     }
     @keyframes pulse {
-        60% {
+        15% {
+        box-shadow: 0 0 0 12px rgb(246, 246, 74);
+        box-shadow: 0 0 0 12px rgba(246, 246, 74, 0.7);
+        }
+        40% {
         box-shadow: 0 0 0 0 rgb(246, 246, 74);
         box-shadow: 0 0 0 0 rgba(246, 246, 74, 0.5);
-        }
-        75% {
-        box-shadow: 0 0 0 8px rgb(246, 246, 74);
-        box-shadow: 0 0 0 8px rgba(246, 246, 74, 0.7);
         }
     }
     .refreshClicked {
@@ -86,6 +113,10 @@
         padding: 0.8em 1.6em;
         margin: 0em 0.25em;
         border-radius: 30px;
+        width: 7em;
+    }
+    button:hover {
+        background-color: rgb(222, 222, 222);
     }
     .newDataText {
         font-size: 1.15em;

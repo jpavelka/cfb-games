@@ -1,6 +1,5 @@
 <script lang="ts">
   import "$lib/common.css";
-  import { fly } from 'svelte/transition';
   import type { Game, WeekMetaData } from "$lib/types";
   import settingsIcon from "$lib/assets/settings.svg";
   import SubGames from "$lib/gameListComps/SubGames.svelte";

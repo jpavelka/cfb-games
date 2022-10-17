@@ -1,6 +1,6 @@
 <script lang="ts">
     import { onMount } from "svelte";
-  import { showRefreshButton, dataRefreshing } from "$lib/stores";
+    import { showRefreshButton, dataRefreshing } from "$lib/stores";
 
     export let lastUpdateStr: string;
     export let nextUpdateStr: string | undefined;
