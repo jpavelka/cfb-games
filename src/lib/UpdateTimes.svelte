@@ -1,17 +1,17 @@
 <script lang="ts">
     import { onMount } from "svelte";
-    import { showRefreshButton, dataRefreshing } from "$lib/stores";
+    import { showRefreshButton, dataRefreshing, recentDataUpdate } from "$lib/stores";
 
     export let lastUpdateStr: string;
     export let nextUpdateStr: string | undefined;
 
     const lastUpdate = new Date(lastUpdateStr);
-    const nextUpdate = nextUpdateStr === undefined ? undefined : new Date(nextUpdateStr);
+    const nextUpdate = (nextUpdateStr === undefined) ? undefined : new Date(nextUpdateStr);
     let now = new Date();
     onMount(() => {
         const interval = setInterval(() => {
             now = new Date();
-            if (!$dataRefreshing && (now.getTime() - (nextUpdate || now).getTime() > 0)) {
+            if (!$dataRefreshing && (now.getTime() - (nextUpdate || now).getTime() > 0) && !$recentDataUpdate) {
                 showRefreshButton.update(() => true);
             }
         }, 5000);

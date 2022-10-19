@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { seasonInfo, showRefreshButton, dataRefreshing } from "$lib/stores";
+    import { seasonInfo, showRefreshButton, dataRefreshing, recentDataUpdate } from "$lib/stores";
     import { fly } from 'svelte/transition';
 
     export let loadNewWeekData: Function;
@@ -14,6 +14,10 @@
         });
         dataRefreshing.update(() => false);
         showRefreshButton.update(() => false);
+        recentDataUpdate.update(() => true);
+        setTimeout(() => {
+            recentDataUpdate.update(() => false);
+        }, 10000);
     }
     const mainClick = () => {
         showLarger = true;
@@ -22,30 +26,18 @@
         event.stopPropagation();
         showLarger = false;
     }
-    const getTransitionIn = (node: any, args: any) => {
-        if (showLarger) {
-            return fly(node, {x: 300, duration: 1000})
-        } else {
-            return fly(node, {x: 50, duration: 1000})
-        }
-    }
-    const getTransitionOut = (node: any, args: any) => {
-        if (!showLarger) {
-            return fly(node, {x: 300, duration: 1000})
-        } else {
-            return fly(node, {x: 50, duration: 1000})
-        }
+    const getTransition = (node: any, args: any) => {
+        return fly(node, {x: 300, duration: 1000})
     }
 </script>
 
 {#key showLarger}
-    {#if $showRefreshButton}
+    {#if $showRefreshButton && !$recentDataUpdate}
         <div
             class=refreshDialog
             class:refreshClicked={$dataRefreshing}
             on:click={mainClick}
-            in:getTransitionIn={{}}
-            out:getTransitionOut={{}}
+            transition:getTransition={{}}
             style={showLarger ? 'animation: none' : 'cursor: pointer'}
         >
             {#if showLarger}
