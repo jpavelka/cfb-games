@@ -48,7 +48,11 @@
                 </div>
             {/if}
         </div>
-        <div class={'teamRecords' + (!!!team.recordOverall ? ' hide' : '')}>
+        <div
+            class=teamRecords
+            class:hide={!!!team.recordOverall}
+            class:teamRecordsNoBars={$showGameBars === 'n'}
+        >
             {!!team.recordOverall ? team.recordOverall : '|'}
             {!!team.recordConference ? ` (${team.recordConference})` : '|'}
         </div>
@@ -103,19 +107,6 @@
         font-size: 1.5em;
         padding: 1pt;
         margin: 2pt;
-    }
-    .teamStrengthBarBackground {
-        height: 2em;
-        width: 8px;
-        margin-right: 4px;
-        background-color: white;
-        position: relative;
-    }
-    .teamStrengthBar {
-        width: 4px;
-        margin-left: 2px;
-        position: absolute;
-        bottom: 0;
     }
     .gameBars {
         margin-top: 5pt;
@@ -174,6 +165,9 @@
         color: #555;
         margin-left: 7em;
         margin-top: -1.5em;
+    }
+    .teamRecordsNoBars {
+        margin-left: 5.75em;
     }
     .hide {
         opacity: 0;
