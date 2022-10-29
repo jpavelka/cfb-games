@@ -10,7 +10,7 @@
                 'ESPNN', 'ESPNRM', 'ESPNU', 'LHN', 'SECN', 'SECN+'
             ],
             linkFunc: (game: Game) => {
-                return 'https://www.espn.com/watch/player/_/eventCalendarId/' + game.id
+                return 'https://www.espn.com/watch/player/_/om-navmethod/espn%3Acollege-football%3Ascoreboard/eventCalendarId/' + game.id
             }
         }, {
             channels: [
