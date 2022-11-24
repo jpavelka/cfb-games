@@ -9,7 +9,7 @@ export default function(g: Game) {
     for (const t of Object.values(g.teams)){
         t.school = ['TBA', 'TBD'].includes(t.school) ? 'TBD' : t.school
         t.ranked = false;
-        if (t.rank !== 'unranked' && t.rank !== undefined){
+        if (!!t.rank && t.rank !== 'unranked'){
             if (t.rank <= 25){
                 t.ranked = true;
             }
