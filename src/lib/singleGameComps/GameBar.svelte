@@ -44,16 +44,16 @@
         margin: 2pt;
     }
     .gameBarBackground {
-        height: 8px;
+        height: 9px;
         width: 100%;
         position: relative;
         margin-left: 4px;
-        border-left: 2px solid;
-        border-right: 2px solid;
+        border-left: 2.25px solid;
+        border-right: 2.4px solid;
     }
     .gameBar {
         height: 4px;
-        margin: 2px 0px;
+        margin: 2.5px 0px;
         position: absolute;
         left: 0;
     }
