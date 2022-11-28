@@ -57,7 +57,9 @@ export default function(g: Game) {
     ).format(gameDttm);
     g.dttmStr = estDtStr;
     g.dateStr = estDtStr;
-    g.dateSortStr = estDtStr;
+    g.dateSortStr = Intl.DateTimeFormat([],
+        {timeZone: 'America/New_York', weekday: 'short', month: 'short', day: 'numeric', year: 'numeric'}
+    ).format(gameDttm);
     g.hourStr = 'TBD';
     g.hourSortStr = '24';
     if (g.timeValid){
@@ -65,7 +67,7 @@ export default function(g: Game) {
             {weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit'}
         );
         g.dateStr = gameDttm.toLocaleDateString([], {weekday: 'short', month: 'short', day: 'numeric'});
-        g.dateSortStr = g.dateStr;
+        g.dateSortStr = gameDttm.toLocaleDateString([], {weekday: 'short', month: 'short', day: 'numeric', year: 'numeric'});
         g.hourStr = gameDttm.toLocaleTimeString([], {hour: 'numeric'});
         g.hourSortStr = gameDttm.toLocaleTimeString([], {hour: 'numeric', hourCycle: 'h23'});
     }
