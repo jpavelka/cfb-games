@@ -19,7 +19,10 @@ export default function(g: Game) {
             t.loser = !t.winner;
         }
         t.possession = g.possession === t.id
-        const approxRank = t.classification === 'FBS' ? t.masseyRank.mean : (
+        if (t.classification == 'FBS' && !t.masseyRank){
+            t.masseyRank = {composite: 120, mean: 120}
+        }
+        const approxRank = t.classification === 'FBS' ? t.masseyRank.mean: (
             !!t.masseyRank ? fcsMasseyEq(t.masseyRank.mean) : 250
         );
         t.approxRank = Math.round(approxRank / 5);
