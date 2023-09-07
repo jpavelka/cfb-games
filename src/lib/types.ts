@@ -93,10 +93,7 @@ export type Team = {
     possession?: boolean;
     conference?: string;
     classification?: string;
-    masseyRank: {
-        composite: number;
-        mean: number;
-    }
+    masseyRating: number | undefined;
     approxRank: number;
     strengthScoreNorm: number;
 }

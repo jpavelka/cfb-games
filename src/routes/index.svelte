@@ -47,7 +47,11 @@
         .then((x) => x.json())
         .catch((e) => console.log(e));
     }
-    allGamesDataRaw.update(() => d.games.map((g) => getDerivedInfo(g)));
+    let allRatings: Array<number> = [];
+    for (const side of ['home', 'away']){
+      allRatings = allRatings.concat(d.games.filter(g => !!g.teams[side].masseyRating).map(g => g.teams[side].masseyRating))
+    }
+    allGamesDataRaw.update(() => d.games.map((g) => getDerivedInfo(g, Math.min(...allRatings), Math.max(...allRatings))));
     weekMetaData.update(() => d.meta);
     getGameData();
   }

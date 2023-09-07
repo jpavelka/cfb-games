@@ -1,7 +1,7 @@
 import type { Game } from "$lib/types";
 import { favoriteTeams } from "$lib/stores";
 
-export default function(g: Game) {
+export default function(g: Game, minRating: number, maxRating: number) {
     g.stadium = (g.venue || {}).fullName;
     const loc = (g.venue || {}).address || {}
     const city = loc.city || ''
@@ -18,15 +18,9 @@ export default function(g: Game) {
             t.winner = t.score === Math.max(g.teams.home.score || -1, g.teams.away.score || -1);
             t.loser = !t.winner;
         }
-        t.possession = g.possession === t.id
-        if (t.classification == 'FBS' && !t.masseyRank){
-            t.masseyRank = {composite: 120, mean: 120}
-        }
-        const approxRank = t.classification === 'FBS' ? t.masseyRank.mean: (
-            !!t.masseyRank ? fcsMasseyEq(t.masseyRank.mean) : 250
-        );
-        t.approxRank = Math.round(approxRank / 5);
-        t.strengthScoreNorm = Math.max(0.01, 1 - t.approxRank / 40);
+        t.possession = g.possession === t.id;
+        const normalizedRating = t.masseyRating ? (t.masseyRating - minRating) / (maxRating - minRating) + 0.01 : 0;
+        t.strengthScoreNorm = Math.min(normalizedRating * (1 + Math.min(0.05, (0.2 * Math.min(normalizedRating, 1 - normalizedRating)))), 1);
     }
     if (g.statusState === 'post'){
         g.statusState = g.statusDesc === 'Canceled' ? 'canceled' : (
