@@ -1,7 +1,7 @@
 import { writable } from 'svelte/store';
 import type { Writable } from 'svelte/store';
 import type { Game, GameGrouping, WeekMetaData, SeasonInfo } from '$lib/types';
-import Cookies from 'js-cookie'
+import { browser } from "$app/env";
 
 export const allGamesDataRaw: Writable<Array<Game> | undefined> = writable(undefined);
 export const allGamesData: Writable<Array<GameGrouping>> = writable([]);
@@ -25,30 +25,35 @@ export const showRefreshButton: Writable<boolean> = writable(false);
 export const dataRefreshing: Writable<boolean> = writable(false);
 export const recentDataUpdate: Writable<boolean> = writable(false);
 
-const createCookieSyncedStore = (name: string, defaultValue: string, allowedValues: Array<string> | undefined) => {
-    let currentCookieValue = Cookies.get(name) || defaultValue;
+const createStorageSyncedStore = (name: string, defaultValue: string, allowedValues: Array<string> | undefined) => {
+    let currentStorageValue = defaultValue;
+    if (browser) {
+        currentStorageValue = localStorage.getItem(name) || defaultValue;
+    }
     if (allowedValues !== undefined){
-        if (currentCookieValue === undefined){
-            currentCookieValue = defaultValue;
+        if (currentStorageValue === undefined){
+            currentStorageValue = defaultValue;
         }
-        if (!allowedValues.includes(currentCookieValue)){
-            currentCookieValue = defaultValue;
+        if (!allowedValues.includes(currentStorageValue)){
+            currentStorageValue = defaultValue;
         }
     }
-    const cookieStore: Writable<string> = writable(currentCookieValue);
-    cookieStore.subscribe(val => {
-        Cookies.set(name, val, {expires:30})
-    })
-    return cookieStore
+    const storageStore: Writable<string> = writable(currentStorageValue);
+    if (browser) {
+        storageStore.subscribe(val => {
+            localStorage.setItem(name, val)
+        })
+    }
+    return storageStore
 }
 
-export const gamesToShow = createCookieSyncedStore('gamesToShow', 'All', ['All', 'FBS', 'FCS', 'P5', 'Ranked']);
-export const showGameBars = createCookieSyncedStore('showGameBars', 'y', ['y', 'n']);
-export const showFavoriteTeamsFirst = createCookieSyncedStore('showFavoriteTeamsFirst', 'y', ['y', 'n']);
-export const favoriteTeams = createCookieSyncedStore('favoriteTeams', '', undefined);
-export const filterOnChannels = createCookieSyncedStore('filterOnChannels', 'n', ['y', 'n']);
-export const excludedChannels = createCookieSyncedStore('excludedChannels', '', undefined);
-export const channelFilterCurrentOnly = createCookieSyncedStore('channelFilterCurrentOnly', 'n', ['y', 'n']);
+export const gamesToShow = createStorageSyncedStore('gamesToShow', 'All', ['All', 'FBS', 'FCS', 'P5', 'Ranked']);
+export const showGameBars = createStorageSyncedStore('showGameBars', 'y', ['y', 'n']);
+export const showFavoriteTeamsFirst = createStorageSyncedStore('showFavoriteTeamsFirst', 'y', ['y', 'n']);
+export const favoriteTeams = createStorageSyncedStore('favoriteTeams', '', undefined);
+export const filterOnChannels = createStorageSyncedStore('filterOnChannels', 'n', ['y', 'n']);
+export const excludedChannels = createStorageSyncedStore('excludedChannels', '', undefined);
+export const channelFilterCurrentOnly = createStorageSyncedStore('channelFilterCurrentOnly', 'n', ['y', 'n']);
 
 const gameSortChoices = {
     'Current Games': ['Default', 'Situation', 'Matchup', 'Surprise'],
@@ -57,6 +62,6 @@ const gameSortChoices = {
 };
 let gss: {[key: string]: {choices: Array<string>, store: Writable<string>}} = {}
 for (const [k, v] of Object.entries(gameSortChoices)){
-    gss[k] = {choices: v, store: createCookieSyncedStore(k.replace(' ', '') + 'SortStyle', v[0], v)}
+    gss[k] = {choices: v, store: createStorageSyncedStore(k.replace(' ', '') + 'SortStyle', v[0], v)}
 }
 export { gss as gameSortStyles }

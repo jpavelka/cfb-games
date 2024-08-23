@@ -32,21 +32,21 @@
     week: string;
   }) {
     let d: { meta: WeekMetaData; games: Array<Game> };
-    if (import.meta.env.VITE_DATA_LOC === "local") {
-      d = await import("../data.js")
-        .then((x) => x.gd)
-        .catch(() => {
-          return {
-            meta: { season: "", seasonType: "", week: "", lastUpdate: "" },
-            games: [],
-          };
-        });
-    } else {
+    // if (import.meta.env.VITE_DATA_LOC === "local") {
+    //   d = await import("../data.js")
+    //     .then((x) => x.gd)
+    //     .catch(() => {
+    //       return {
+    //         meta: { season: "", seasonType: "", week: "", lastUpdate: "" },
+    //         games: [],
+    //       };
+    //     });
+    // } else {
       const gamesFname = `games_${season}_${seasonType}_${week}_FBS-FCS.json?${new Date().getTime()}`;
       d = await fetch(bucketUrl + gamesFname)
         .then((x) => x.json())
         .catch((e) => console.log(e));
-    }
+    // }
     let allRatings: Array<number> = [];
     for (const side of ['home', 'away']){
       allRatings = allRatings.concat(d.games.filter(g => !!g.teams[side].masseyRating).map(g => g.teams[side].masseyRating))
