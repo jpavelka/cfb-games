@@ -139,6 +139,9 @@
                 </div>
             {/if}
         {/key}
+        <div class=bottomBox>
+            <button class=closeButton on:click={handleClose}>Close</button>
+        </div>
     </div>
 </div>
 
@@ -199,5 +202,16 @@
         display: flex;
         justify-content: space-around;
         padding: 0.5em;
+    }
+    .bottomBox {
+        margin-top: 1rem;
+        padding-top: 0.5rem;
+        border-top: 1pt solid gray;
+        display: flex;
+    }
+    .closeButton {
+        height: 2.75em;
+        padding: 0 1rem;
+        margin: auto;
     }
 </style>
