@@ -17,11 +17,12 @@ export default function sortGames(games: Array<Game>, favoritesFirst: boolean): 
         const styleStr = get(gameSortStyles['Current Games'].store);
         if (styleStr === 'Default'){
             sortStyle = [
-                ['matchupSituationSurpriseScore', 'max', 1],
+                ['matchupSituationSurpriseScore', 'max', 2],
                 ['sortSituationScore', 'max', 1],
                 ['matchupSituationSurpriseScore', 'max', 2],
                 ['matchupScore', 'max', 1],
-                ['sortSurpriseScore', 'max', 1]
+                ['sortSurpriseScore', 'max', 1],
+                ['matchupScore', 'max', 1]
             ];
         } else {
             sortStyle = getBasicSortStyle(styleStr, games.length);

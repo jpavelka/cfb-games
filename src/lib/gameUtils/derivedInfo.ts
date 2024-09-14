@@ -172,11 +172,11 @@ export default function(g: Game, minRating: number, maxRating: number) {
         (3 * g.matchupScoreNorm + g.sortSurpriseScore) / 4
     );
     const sitScoreMult = g.sortSituationScore > 0.9 ?
-        5 : g.sortSituationScore > 0.7 ?
-        3 : g.sortSituationScore > 0.5 ?
-        2 : 1
+        6 : g.sortSituationScore > 0.7 ?
+        4 : g.sortSituationScore > 0.5 ?
+        3 : 1
     g.matchupSituationSurpriseScore = 100 * (
-        (sitScoreMult * g.sortSituationScore + 3 * g.matchupScoreNorm + 2 * g.sortSurpriseScore) / (5 + sitScoreMult)
+        (sitScoreMult * g.sortSituationScore + 4 * g.matchupScoreNorm +  g.sortSurpriseScore) / (5 + sitScoreMult)
     );
     favoriteTeams.subscribe(val => {
         const favTeamsList = val.split(',')
