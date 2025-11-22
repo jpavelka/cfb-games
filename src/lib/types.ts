@@ -19,7 +19,9 @@ export type Game = {
     favored: string | undefined;
     overUnder: number | undefined | null;
     dttmStr: string;
+    dttmStrSm: string;
     dateStr: string;
+    dateStrSm: string;
     dateSortStr: string;
     hourStr: string;
     hourSortStr: string;

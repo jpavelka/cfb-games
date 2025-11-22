@@ -54,6 +54,8 @@ export const favoriteTeams = createStorageSyncedStore('favoriteTeams', '', undef
 export const filterOnChannels = createStorageSyncedStore('filterOnChannels', 'n', ['y', 'n']);
 export const excludedChannels = createStorageSyncedStore('excludedChannels', '', undefined);
 export const channelFilterCurrentOnly = createStorageSyncedStore('channelFilterCurrentOnly', 'n', ['y', 'n']);
+export const gameDisplaySizeOptions = ['Regular', 'Small']
+export const gameDisplaySize = createStorageSyncedStore('gameDisplaySize', 'regular', gameDisplaySizeOptions)
 
 const gameSortChoices = {
     'Current Games': ['Default', 'Situation', 'Matchup', 'Surprise'],

@@ -53,7 +53,13 @@ export default function(g: Game, minRating: number, maxRating: number) {
         {timeZone: 'America/New_York', weekday: 'short', month: 'short', day: 'numeric'}
     ).format(gameDttm);
     g.dttmStr = estDtStr;
+    g.dttmStrSm = Intl.DateTimeFormat([],
+        {timeZone: 'America/New_York', weekday: 'short', month: 'numeric', day: 'numeric'}
+    ).format(gameDttm).replace(',', '');
     g.dateStr = estDtStr;
+    g.dateStrSm = Intl.DateTimeFormat([],
+        {timeZone: 'America/New_York', weekday: 'short', month: 'numeric', day: 'numeric'}
+    ).format(gameDttm).replace(',', '');
     g.dateSortStr = Intl.DateTimeFormat([],
         {timeZone: 'America/New_York', weekday: 'short', month: 'short', day: 'numeric', year: 'numeric'}
     ).format(gameDttm);
@@ -63,7 +69,11 @@ export default function(g: Game, minRating: number, maxRating: number) {
         g.dttmStr = gameDttm.toLocaleDateString([],
             {weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit'}
         );
+        g.dttmStrSm = gameDttm.toLocaleDateString([],
+            {weekday: 'short', month: 'numeric', day: 'numeric', hour: 'numeric', minute: '2-digit'}
+        ).replace(' AM', 'am').replace(' PM', 'pm').replace(',', '');
         g.dateStr = gameDttm.toLocaleDateString([], {weekday: 'short', month: 'short', day: 'numeric'});
+        g.dateStrSm = gameDttm.toLocaleDateString([], {weekday: 'short', month: 'numeric', day: 'numeric'}).replace(',', '');
         g.dateSortStr = gameDttm.toLocaleDateString([], {weekday: 'short', month: 'short', day: 'numeric', year: 'numeric'});
         g.hourStr = gameDttm.toLocaleTimeString([], {hour: 'numeric'});
         g.hourSortStr = gameDttm.toLocaleTimeString([], {hour: 'numeric', hourCycle: 'h23'});

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { settingsVisible, gamesToShow, showGameBars, settingsScrollY } from "$lib/stores";
+    import { settingsVisible, gamesToShow, showGameBars, settingsScrollY, gameDisplaySize, gameDisplaySizeOptions } from "$lib/stores";
     import FavoriteTeams from "./FavoriteTeams.svelte";
     import Channels from "./Channels.svelte";
     import { gamesToShowFilterFuncs } from "$lib/gameUtils/filterFuncs";
@@ -44,6 +44,13 @@
         gamesToShow.update(() => target.value);
         getGameDataNoScroll();
     }
+    const gameDisplaySizeChange = (event: Event) => {
+        if (!!!event.target) {
+            return
+        }
+        const target = event.target as HTMLInputElement;
+        gameDisplaySize.update(() => target.value);
+    }
 </script>
 
 <div
@@ -64,6 +71,15 @@
         </select>
         <hr>
         <h2 class="sectionHeading">Game Display</h2>
+        <h3 class="sectionHeading">Display Size</h3>
+        <select class=basicText on:change={e => gameDisplaySizeChange(e)}>
+            {#each gameDisplaySizeOptions as x}
+                <option 
+                    value={x}
+                    selected={$gameDisplaySize === x}
+                >{x}</option>
+            {/each}
+        </select>
         <div class=checkboxWrapper>
             <input
                 id='showGameBars'
