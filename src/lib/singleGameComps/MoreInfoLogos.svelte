@@ -21,11 +21,11 @@
                 )
             )}
         </div>
-        <div class=recordsText>
-            {!!team.recordOverall ? team.recordOverall : ''}
-            {!!team.recordConference ? ` (${team.recordConference})` : ''}
-        </div>
     {/if}
+    <div class=recordsText>
+        {!!team.recordOverall ? team.recordOverall : ''}
+        {!!team.recordConference ? ` (${team.recordConference})` : ''}
+    </div>
     {#if team.school !== 'TBD'}
         <GameBar
             valueNorm={team.strengthScoreNorm}
