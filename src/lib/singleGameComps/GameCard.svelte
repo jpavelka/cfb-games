@@ -37,9 +37,13 @@
         <div class=gameDttm>
             {#if game.statusSort === 'Current'}
                 {#if game.statusDetail === 'Delayed'}
-                    Delayed {game.period < 1 ? '' : game.period <= 4 ? '(' + game.displayClock + ' Q' + game.period + ')' : '(OT)'}
+                    Delayed
                 {:else}
-                    {game.period < 1 ? '' : game.period <= 4 ? game.displayClock + ' Q' + game.period : 'OT'}
+                    {
+                    game.period < 1 ? '' : 
+                    game.period === 2 && game.clock === 0 ? 'Halftime' :
+                    game.period <= 4 ? game.displayClock + ' Q' + game.period : 'OT'
+                    }
                 {/if}
             {:else if game.statusSort === 'Upcoming'}
                 {game.dttmStrSm || 'TBD'}
@@ -47,6 +51,7 @@
                 {game.dateStrSm}
             {/if}
         </div>
+        <div class=broadcastSm>{['in', 'pre'].includes(game.statusState || '') ? (game.broadcastStr || '') : ''}</div>
     </div>
 {:else}
     <div class=gameCard on:click={showMoreInfo}>
@@ -234,9 +239,9 @@
         padding: 0.5em;
         padding-bottom: 0.5em;
         background-color: #eee;
-        max-width: 350px;
+        min-width: 425px;
         margin: 0.25em;
-        flex-grow: 1;
+        flex-grow: 0;
         cursor: pointer;
         display: flex;
         align-items: center;
@@ -265,5 +270,11 @@
     }
     .favoriteHighlightSm {
         background-color: #ffffcc;
+    }
+    .broadcastSm {
+        margin-left: 1rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 </style>
