@@ -12,7 +12,7 @@
 </script>
 
 {#if $gameDisplaySize === 'Small'}
-    <div class=gameCardSm on:click={showMoreInfo}>
+    <div class=gameCardSm on:click={showMoreInfo} class:favoriteHighlightSm={game.favoriteTeamGame}>
         <div class=gameInfoSm>
             <div class=teamsSmall>
                 {#each game.teamsArray as team}
@@ -311,5 +311,8 @@
     }
     .gameBarSmFlex {
         flex-grow: 1;
+    }
+    .favoriteHighlightSm {
+        background-color: #ffffcc;
     }
 </style>
