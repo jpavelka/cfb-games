@@ -8,6 +8,7 @@
     export let hoverName : string = '';
     export let orientation : string = 'horizontal';
     export let containerStyleOverride : string = '';
+    export let iconSize: number = 20;
     const iconImg = (
         icon === 'matchup' ? matchup :
         icon === 'scoreboard' ? scoreboard :
@@ -24,7 +25,7 @@
     style={containerStyleOverride}
 >
     {#if !!iconImg}
-        <img class=barIcon src={iconImg} alt="*">
+        <img class=barIcon style={`width:${iconSize}px`} src={iconImg} alt="*">
     {/if}
     <div
         class=gameBarBackground
@@ -59,7 +60,6 @@
     }
     .barIcon {
         font-family: Arial Unicode MS;
-        width: 20px;
         text-align: center;
     }
     .vertical {

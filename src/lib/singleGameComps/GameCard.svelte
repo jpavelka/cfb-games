@@ -8,53 +8,83 @@
         moreInfoGame.update(() => game);
         moreInfoVisible.update(() => true);
     }
+    const smallIconSize = 15;
 </script>
 
 {#if $gameDisplaySize === 'Small'}
-    <div class=gameLine class:favoriteHighlightSm={game.favoriteTeamGame} on:click={showMoreInfo}>
-        <span class:winnerText={game.teamsArray[0].winner}>
-            <span class="teamNameSm alignRt">
-                <span class='teamRank'>{game.teamsArray[0].ranked ? game.teamsArray[0].rank : ''}</span>
-                {game.teamsArray[0].abbreviation}
-            </span>
-        </span>
-        <img class="logoImgSm" class:noLogo={!!!game.teamsArray[0].logo} src={game.teamsArray[0].logo} alt={game.teamsArray[0].abbreviation}>
-        {#if ['in', 'post'].includes(game.statusState) }
-            <span class="lineScore alignRt">{game.teamsArray[0].score}</span>
-        {/if}
-        {'-'}
-        {#if ['in', 'post'].includes(game.statusState) }
-            <span class=lineScore>{game.teamsArray[1].score}</span>
-        {/if}
-        <img class="logoImgSm" class:noLogo={!!!game.teamsArray[1].logo} src={game.teamsArray[1].logo} alt={game.teamsArray[1].abbreviation}>
-        <span class:winnerText={game.teamsArray[1].winner}>
-            <span class=teamNameSm>
-                <span class='teamRank'>{game.teamsArray[1].ranked ? game.teamsArray[1].rank : ''}</span>
-                {game.teamsArray[1].abbreviation}
-            </span>
-        </span>
-        &nbsp;
-        <div class=gameDttm>
-            {#if game.statusSort === 'Current'}
-                {#if game.statusDetail === 'Delayed'}
-                    Delayed
-                {:else}
-                    {
-                    game.period < 1 ? '' : 
-                    game.period === 2 && game.clock === 0 ? 'Halftime' :
-                    game.period <= 4 ? game.displayClock + ' Q' + game.period : 'OT'
-                    }
-                {/if}
-            {:else if game.statusSort === 'Upcoming'}
-                {game.dttmStrSm || 'TBD'}
-            {:else if game.statusSort === 'Completed'}
-                {game.dateStrSm}
-            {/if}
+    <div class=gameCardSm on:click={showMoreInfo}>
+        <div class=gameInfoSm>
+            <div class=teamsSmall>
+                {#each game.teamsArray as team}
+                    <div class=teamLineSm>
+                        <img class=logoImgSm class:noLogo={!!!team.logo} src={team.logo} alt={team.abbreviation}>
+                        <span class=teamNamePlusSm>
+                            <span class='teamName' class:winnerText={team.winner}>
+                                <span class='teamRank'>{team.ranked ? team.rank : ''}</span>
+                                {team.abbreviation}
+                            </span>
+                            {#if game.spread !== undefined}
+                                {#if team.favored || (game.spread === 0 && team.school === game.teams.home.school)}
+                                    <span class='spread'>(-{game.spread})</span>
+                                {/if}
+                            {/if}
+                        </span>
+                        {#if ['in', 'post'].includes(game.statusState) }
+                            <span class='score' class:winnerText={team.winner}>
+                                {team.score}
+                            </span>
+                        {/if}
+                    </div>
+                {/each}
+            </div>
+            <div class=teamsSmall>
+                {#each game.teamsArray as team}
+                    <div class=footballSm>
+                        {#if team.possession}
+                            &#127944
+                        {:else}
+                            &nbsp;
+                        {/if}
+                    </div>
+                {/each}
+            </div>
+            <div class=dttmBroadSm>
+                <div class='gameDttm gameDttmSm'>
+                    {#if game.statusSort === 'Current'}
+                        {#if game.statusDetail === 'Delayed'}
+                            Delayed {game.period < 1 ? '' : game.period <= 4 ? '(' + game.displayClock + ' Q' + game.period + ')' : '(OT)'}
+                        {:else}
+                            {game.statusDetail}
+                        {/if}
+                    {:else if game.statusSort === 'Upcoming'}
+                        {game.dttmStr || 'TBD'}
+                    {:else if game.statusSort === 'Completed'}
+                        {game.dateStr}
+                    {/if}
+                </div>
+                <div class=gameBroadcast>&nbsp;{['in', 'pre'].includes(game.statusState || '') ? (game.broadcastStr || '') : ''}</div>
+            </div>
         </div>
-        <div class=broadcastSm>{['in', 'pre'].includes(game.statusState || '') ? (game.broadcastStr || '') : ''}</div>
+        {#if $showGameBars === 'y' && !game.teamsTbd}
+            <div class=gameBarsSm>
+                {#if game.statusState === 'in'}
+                    <div class=gameBarSmFlex>
+                        <GameBar icon='scoreboard' valueNorm={game.situationScoreNorm} hoverName='Situation' iconSize={smallIconSize}></GameBar>
+                    </div>
+                {/if}
+                <div class=gameBarSmFlex>
+                    <GameBar icon='matchup' valueNorm={game.matchupScoreNorm} hoverName='Matchup' iconSize={smallIconSize}></GameBar>
+                </div>
+                {#if ['in', 'post'].includes(game.statusState)}
+                    <div class=gameBarSmFlex>
+                        <GameBar icon='surprised' valueNorm={game.surpriseScoreNorm} hoverName='Surprise' iconSize={smallIconSize}></GameBar>
+                    </div>
+                {/if}
+            </div>
+        {/if}
     </div>
 {:else}
-    <div class=gameCard on:click={showMoreInfo}>
+    <div class=gameCard>
         <div class=topLine>
             <div class=eventName>
                 {game.eventStr || ''}
@@ -233,48 +263,53 @@
         overflow: hidden;
         opacity: 0;
     }
-    .gameLine {
+    .gameCardSm {
         border: solid 1pt rgba(0,0,0,.125);
         border-radius: 0.5rem;
         padding: 0.5em;
         padding-bottom: 0.5em;
         background-color: #eee;
-        min-width: 425px;
+        width: 350px;
         margin: 0.25em;
         flex-grow: 0;
         cursor: pointer;
+    }
+    .gameInfoSm {
         display: flex;
         align-items: center;
     }
     .logoImgSm {
         height: 1.5rem;
         width: 1.5rem;
-        margin-left: 4pt;
-        margin-right: 4pt;
+        margin-right: 6pt;
     }
-    .teamNameSm {
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        width: 4rem;
+    .teamNamePlusSm {
+        display: inline-block;
+        width: 6rem;
+    }
+    .teamLineSm {
+        display: flex;
         align-items: center;
-        display: block;
     }
-    .lineScore {
-        margin-right: 3pt;
-        margin-left: 4pt;
-        width: 1rem;
+    .dttmBroadSm {
+        display: flex;
+        flex-direction: column;
+        margin-left: auto;
     }
-    .alignRt {
-        text-align: right;
+    .gameDttmSm {
+        height: 1.5rem;
     }
-    .favoriteHighlightSm {
-        background-color: #ffffcc;
+    .footballSm {
+        margin-left: 0.5rem;
+        height:1.5rem;
+        font-size: 0.5em;
+        display: flex;
+        align-items: center;
     }
-    .broadcastSm {
-        margin-left: 1rem;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
+    .gameBarsSm {
+        display: flex;
+    }
+    .gameBarSmFlex {
+        flex-grow: 1;
     }
 </style>
