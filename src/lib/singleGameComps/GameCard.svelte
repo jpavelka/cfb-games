@@ -84,7 +84,7 @@
         {/if}
     </div>
 {:else}
-    <div class=gameCard>
+    <div class=gameCard on:click={showMoreInfo}>
         <div class=topLine>
             <div class=eventName>
                 {game.eventStr || ''}
@@ -148,13 +148,19 @@
             <div class=gameBroadcast>{['in', 'pre'].includes(game.statusState || '') ? (game.broadcastStr || '') : ''}</div>
         </div>
         {#if $showGameBars === 'y' && !game.teamsTbd}
-            <div class=gameBars>
+            <div class=gameBarsSm>
                 {#if game.statusState === 'in'}
-                    <GameBar icon='scoreboard' valueNorm={game.situationScoreNorm} hoverName='Situation'></GameBar>
+                    <div class=gameBarSmFlex>
+                        <GameBar icon='scoreboard' valueNorm={game.situationScoreNorm} hoverName='Situation' iconSize={smallIconSize}></GameBar>
+                    </div>
                 {/if}
-                <GameBar icon='matchup' valueNorm={game.matchupScoreNorm} hoverName='Matchup'></GameBar>
+                <div class=gameBarSmFlex>
+                    <GameBar icon='matchup' valueNorm={game.matchupScoreNorm} hoverName='Matchup' iconSize={smallIconSize}></GameBar>
+                </div>
                 {#if ['in', 'post'].includes(game.statusState)}
-                    <GameBar icon='surprised' valueNorm={game.surpriseScoreNorm} hoverName='Surprise'></GameBar>
+                    <div class=gameBarSmFlex>
+                        <GameBar icon='surprised' valueNorm={game.surpriseScoreNorm} hoverName='Surprise' iconSize={smallIconSize}></GameBar>
+                    </div>
                 {/if}
             </div>
         {:else}
@@ -285,7 +291,7 @@
     }
     .teamNamePlusSm {
         display: inline-block;
-        width: 6rem;
+        width: 6.25rem;
     }
     .teamLineSm {
         display: flex;

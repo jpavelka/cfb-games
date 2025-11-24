@@ -10,8 +10,10 @@
 <div class='teamDiv'>
     <img class=logoImg class:noLogo={!!!team.logo} src={team.logo} alt={team.displayName}>
     <div class=teamName>
-        {team.ranked ? `${team.rank}. ` : ''}
-        {screenSize === 'lg' ? team.displayName : screenSize === 'md' ? team.school : team.abbreviation}
+        <span class=teamRank>
+            {team.ranked ? `${team.rank}. ` : ''}
+        </span>
+        {screenSize === 'lg' ? team.displayName : team.school}
     </div>
     {#if !(screenSize === 'sm')}
         <div class=recordsText>
@@ -51,6 +53,8 @@
     .teamName {
         font-size: 1.3em;
         text-align: center;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
     .recordsText {
         font-size: 1em;
@@ -59,5 +63,8 @@
     .noLogo {
         overflow: hidden;
         opacity: 0;
+    }
+    .teamRank {
+        font-size: 0.9rem;
     }
 </style>
