@@ -112,6 +112,8 @@ export type WeekMetaData = {
     week: string;
     lastUpdate: string;
     nextUpdate?: string;
+    minMassey: number;
+    maxMassey: number;
 }
 
 type SeasonWeekInfo = {
