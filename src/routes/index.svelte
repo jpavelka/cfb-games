@@ -120,6 +120,8 @@
             >
               {week.seasonType == "2"
                 ? "Week " + week.week
+                : week.week == "999"
+                ? "Playoff"
                 : "Postseason" + " "}
               {#if week.week == $seasonInfo.week && week.seasonType == $seasonInfo.seasonType}
                 (Current)
