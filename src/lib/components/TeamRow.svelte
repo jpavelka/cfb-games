@@ -1,6 +1,7 @@
 <script lang="ts">
 	import TeamLogo from './TeamLogo.svelte';
 	import { formatRecord, formatTeamSpread } from '$lib/format';
+	import { settings } from '$lib/game/settings.svelte';
 	import type { GameOdds, GameTeam } from '$lib/game/types';
 
 	let {
@@ -17,6 +18,7 @@
 	const spread = $derived(formatTeamSpread(odds, team));
 	// Only dim the loser once a result exists, and never on a tie.
 	const isLoser = $derived(showScore && team.isWinner === false);
+	const isFavorite = $derived(settings.favoriteTeamIds.includes(team.id));
 </script>
 
 <div class="team" class:winner={team.isWinner === true} class:loser={isLoser}>
@@ -24,6 +26,9 @@
 
 	<span class="identity">
 		<span class="line">
+			{#if isFavorite}
+				<span class="favorite" title="Favorite team">★</span>
+			{/if}
 			{#if team.rank}
 				<span class="rank">{team.rank}</span>
 			{/if}
@@ -69,6 +74,12 @@
 		color: var(--color-text-faint);
 		font-size: var(--text-xs);
 		font-weight: 700;
+	}
+
+	.favorite {
+		flex: none;
+		color: var(--color-accent);
+		font-size: var(--text-xs);
 	}
 
 	.name {

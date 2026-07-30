@@ -6,8 +6,9 @@
 	import LoadingState from '$lib/components/LoadingState.svelte';
 	import WeekPicker from '$lib/components/WeekPicker.svelte';
 	import type { ConferenceMap } from '$lib/game/conferences';
-	import { filterByTeam } from '$lib/game/filter';
+	import { filterByMinScore, filterByTeam, filterByTeamCategory } from '$lib/game/filter';
 	import type { RatingMap } from '$lib/game/ratings';
+	import { settings } from '$lib/game/settings.svelte';
 	import type { Scoreboard } from '$lib/game/types';
 
 	let {
@@ -39,7 +40,10 @@
 {#await scoreboard}
 	<LoadingState />
 {:then board}
-	{@const filteredGames = filterByTeam(board.games, search)}
+	{@const filteredGames = filterByTeamCategory(
+		filterByMinScore(filterByTeam(board.games, search), ratings, settings.minMatchupScore),
+		settings.teamFilter
+	)}
 	<div class="week">
 		<h2>{board.week.label}</h2>
 		<span class="season">{board.week.seasonYear}</span>
@@ -85,7 +89,13 @@
 	{#if board.games.length === 0}
 		<p class="empty">No games scheduled for {board.week.label}.</p>
 	{:else if filteredGames.length === 0}
-		<p class="empty">No games match "{search.trim()}".</p>
+		<p class="empty">
+			{#if search.trim()}
+				No games match "{search.trim()}".
+			{:else}
+				No games match your filters.
+			{/if}
+		</p>
 	{:else}
 		<GameList games={filteredGames} {conferences} {ratings} />
 	{/if}

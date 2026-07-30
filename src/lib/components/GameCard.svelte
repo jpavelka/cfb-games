@@ -8,6 +8,7 @@
 		formatStatusLine
 	} from '$lib/format';
 	import { matchupScore, matchupScoreColor, type RatingMap } from '$lib/game/ratings';
+	import { settings } from '$lib/game/settings.svelte';
 	import type { Game } from '$lib/game/types';
 
 	let {
@@ -29,9 +30,12 @@
 
 	const meta = $derived([broadcasts, spread].filter((part): part is string => Boolean(part)));
 	const matchup = $derived(matchupScore(game, ratings));
+	const hasFavorite = $derived(
+		game.teams.some((team) => settings.favoriteTeamIds.includes(team.id))
+	);
 </script>
 
-<button type="button" class="card" onclick={() => onSelect(game)}>
+<button type="button" class="card" class:favorite={hasFavorite} onclick={() => onSelect(game)}>
 	<div class="time" class:live={isLive} class:tbd={game.kickoffTbd}>
 		{#if showDate}
 			<span class="date">{formatGameDate(game)}</span>
@@ -74,6 +78,7 @@
 		width: 100%;
 		padding: var(--space-3);
 		border: 1px solid var(--color-border);
+		border-left: 3px solid var(--color-border);
 		border-radius: var(--radius-md);
 		background: var(--color-surface);
 		color: inherit;
@@ -83,6 +88,10 @@
 		transition:
 			border-color var(--transition),
 			box-shadow var(--transition);
+	}
+
+	.card.favorite {
+		border-left-color: var(--color-accent);
 	}
 
 	.card:hover {

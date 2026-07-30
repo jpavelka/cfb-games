@@ -123,15 +123,49 @@ export function matchupScoreColor(score: number): string {
 	return `hsl(${stop.h} ${stop.s}% ${stop.l}%)`;
 }
 
+export interface FavoriteSort {
+	teamIds: ReadonlySet<string>;
+	handling: 'top' | 'boost' | 'none';
+	/** Only used when `handling` is `'boost'`. */
+	boostAmount: number;
+}
+
+function isFavoriteGame(game: Game, teamIds: ReadonlySet<string>): boolean {
+	return game.teams.some((team) => teamIds.has(team.id));
+}
+
+/**
+ * The score `sortByInterest` compares on: the plain matchup score, boosted for
+ * favorite teams when `favorites.handling` is `'boost'`. A TBD side (`null`
+ * score) can't be boosted — there's no team to be a favorite of yet.
+ */
+function sortScore(game: Game, ratings: RatingMap, favorites: FavoriteSort | undefined): number | null {
+	const base = matchupScore(game, ratings);
+	if (base === null || favorites?.handling !== 'boost') return base;
+	return isFavoriteGame(game, favorites.teamIds) ? base + favorites.boostAmount : base;
+}
+
 /**
  * Most interesting matchup first. Games with no score yet (a TBD side) sink to
  * the end rather than being guessed at; ties break on `shortName` so the order
  * stays stable across re-renders.
+ *
+ * When `favorites.handling` is `'top'`, games involving a favorite team are
+ * pinned ahead of every other game (favorite-vs-favorite and non-favorite
+ * games each keep their own score order). `'boost'` instead adds
+ * `favorites.boostAmount` to a favorite game's score before comparing, so it
+ * outranks similarly-appealing games without always winning outright.
  */
-export function sortByInterest(games: readonly Game[], ratings: RatingMap): Game[] {
+export function sortByInterest(games: readonly Game[], ratings: RatingMap, favorites?: FavoriteSort): Game[] {
 	return [...games].sort((a, b) => {
-		const scoreA = matchupScore(a, ratings);
-		const scoreB = matchupScore(b, ratings);
+		if (favorites?.handling === 'top') {
+			const favA = isFavoriteGame(a, favorites.teamIds);
+			const favB = isFavoriteGame(b, favorites.teamIds);
+			if (favA !== favB) return favA ? -1 : 1;
+		}
+
+		const scoreA = sortScore(a, ratings, favorites);
+		const scoreB = sortScore(b, ratings, favorites);
 		if (scoreA === null && scoreB === null) return a.shortName.localeCompare(b.shortName);
 		if (scoreA === null) return 1;
 		if (scoreB === null) return -1;

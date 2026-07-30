@@ -3,7 +3,8 @@
 	import GameModal from './GameModal.svelte';
 	import { formatDayHeading } from '$lib/format';
 	import type { ConferenceMap } from '$lib/game/conferences';
-	import { sortByInterest, type RatingMap } from '$lib/game/ratings';
+	import { sortByInterest, type FavoriteSort, type RatingMap } from '$lib/game/ratings';
+	import { settings } from '$lib/game/settings.svelte';
 	import { groupByDay as buildDays } from '$lib/game/sort';
 	import type { Game } from '$lib/game/types';
 
@@ -13,17 +14,26 @@
 		ratings
 	}: { games: Game[]; conferences: ConferenceMap; ratings: RatingMap } = $props();
 
+	const favorites: FavoriteSort = $derived({
+		teamIds: new Set(settings.favoriteTeamIds),
+		handling: settings.favoriteHandling,
+		boostAmount: settings.favoriteBoostAmount
+	});
+
 	// A week spans Tuesday through Saturday, so day headings do the heavy lifting
 	// for scannability across days; within a day/slot, games are reordered by
 	// interest (see `sortByInterest`) rather than kept chronological.
 	const days = $derived(
 		buildDays(games).map((day) => ({
 			...day,
-			games: sortByInterest(day.games, ratings),
-			slots: day.slots.map((slot) => ({ ...slot, games: sortByInterest(slot.games, ratings) }))
+			games: sortByInterest(day.games, ratings, favorites),
+			slots: day.slots.map((slot) => ({
+				...slot,
+				games: sortByInterest(slot.games, ratings, favorites)
+			}))
 		}))
 	);
-	const flatGames = $derived(sortByInterest(games, ratings));
+	const flatGames = $derived(sortByInterest(games, ratings, favorites));
 
 	let groupByDay = $state(true);
 	// Each day starts grouped by kickoff time (the current default behavior);
