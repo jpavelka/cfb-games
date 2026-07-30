@@ -5,6 +5,8 @@ export type TeamFilter = 'all' | 'fbs' | 'fcs' | 'power4' | 'ranked';
 /** How favorite teams affect sort order: pin their games first, boost their matchup score, or leave sorting alone. */
 export type FavoriteHandling = 'top' | 'boost' | 'none';
 
+export type Theme = 'system' | 'light' | 'dark';
+
 export interface SettingsState {
 	/** Hide games below this matchup score. 0 = no filter. */
 	minMatchupScore: number;
@@ -14,6 +16,7 @@ export interface SettingsState {
 	favoriteHandling: FavoriteHandling;
 	/** Added to a favorite game's matchup score for sorting, when `favoriteHandling` is `'boost'`. */
 	favoriteBoostAmount: number;
+	theme: Theme;
 }
 
 const STORAGE_KEY = 'cfb:settings';
@@ -22,7 +25,8 @@ const DEFAULTS: SettingsState = {
 	teamFilter: 'all',
 	favoriteTeamIds: [],
 	favoriteHandling: 'none',
-	favoriteBoostAmount: 15
+	favoriteBoostAmount: 15,
+	theme: 'system'
 };
 
 /**
@@ -47,6 +51,22 @@ export const settings: SettingsState = $state(loadInitial());
 export function updateSettings(patch: Partial<SettingsState>): void {
 	Object.assign(settings, patch);
 	if (browser) localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
+}
+
+// Tracks the OS-level preference so 'system' theme can resolve to an actual
+// light/dark value (e.g. for choosing a logo variant) without needing an $effect.
+const darkMediaQuery = browser ? window.matchMedia('(prefers-color-scheme: dark)') : undefined;
+let systemPrefersDark = $state(darkMediaQuery?.matches ?? false);
+darkMediaQuery?.addEventListener('change', (event) => {
+	systemPrefersDark = event.matches;
+});
+
+const darkMode = $derived(
+	settings.theme === 'dark' || (settings.theme === 'system' && systemPrefersDark)
+);
+
+export function isDarkMode(): boolean {
+	return darkMode;
 }
 
 export function toggleFavoriteTeam(teamId: string): void {

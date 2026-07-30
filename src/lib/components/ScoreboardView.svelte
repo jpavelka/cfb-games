@@ -54,8 +54,8 @@
 		<input
 			class="search"
 			type="search"
-			placeholder="Search teams…"
-			aria-label="Search teams"
+			placeholder="Search teams or events…"
+			aria-label="Search teams or events"
 			bind:value={search}
 		/>
 	</div>

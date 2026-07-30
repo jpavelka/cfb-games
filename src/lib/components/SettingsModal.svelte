@@ -9,7 +9,8 @@
 		toggleFavoriteTeam,
 		updateSettings,
 		type FavoriteHandling,
-		type TeamFilter
+		type TeamFilter,
+		type Theme
 	} from '$lib/game/settings.svelte';
 
 	let {
@@ -35,6 +36,12 @@
 			: settings.minMatchupScore;
 		updateSettings({ minMatchupScore: clamped });
 	}
+
+	const themes: Array<{ value: Theme; label: string }> = [
+		{ value: 'system', label: 'System' },
+		{ value: 'light', label: 'Light' },
+		{ value: 'dark', label: 'Dark' }
+	];
 
 	const teamFilters: Array<{ value: TeamFilter; label: string }> = [
 		{ value: 'all', label: 'All' },
@@ -120,6 +127,24 @@
 		<button class="close" type="button" aria-label="Close" onclick={onClose}>&times;</button>
 
 		<h2>Settings</h2>
+
+		<section>
+			<span class="field">Appearance</span>
+			<div class="radioGroup">
+				{#each themes as option (option.value)}
+					<label class="radio">
+						<input
+							type="radio"
+							name="theme"
+							value={option.value}
+							checked={settings.theme === option.value}
+							onchange={() => updateSettings({ theme: option.value })}
+						/>
+						{option.label}
+					</label>
+				{/each}
+			</div>
+		</section>
 
 		<section>
 			<span class="field">Teams</span>

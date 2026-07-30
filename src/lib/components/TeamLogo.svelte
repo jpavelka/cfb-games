@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { teamInitials } from '$lib/format';
+	import { isDarkMode } from '$lib/game/settings.svelte';
 	import type { GameTeam } from '$lib/game/types';
 
 	let { team, size = 36 }: { team: GameTeam; size?: number } = $props();
@@ -7,12 +8,19 @@
 	// A handful of teams have no logo at all, and CDN URLs can rot. Either way we
 	// fall back to initials rather than showing a broken image.
 	let failed = $state(false);
+
+	const src = $derived(isDarkMode() && team.darkLogoUrl ? team.darkLogoUrl : team.logoUrl);
+
+	$effect(() => {
+		src;
+		failed = false;
+	});
 </script>
 
-{#if team.logoUrl && !failed}
+{#if src && !failed}
 	<img
 		class="logo"
-		src={team.logoUrl}
+		{src}
 		alt=""
 		width={size}
 		height={size}

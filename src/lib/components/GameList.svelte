@@ -40,6 +40,35 @@
 	// a day only needs an entry here once its own checkbox is toggled off.
 	let ungroupedByTime: Record<string, boolean> = $state({});
 
+	// Measured per day so slot headings tuck in right below the day heading
+	// even if it wraps to more than one line.
+	let dayHeadingHeights: Record<string, number> = $state({});
+
+	// Collapsing a pinned header's section shrinks its sticky containing
+	// block out from under it, so it jumps out of view instead of staying
+	// put. Captured on click (before the native toggle runs) and consumed
+	// on the following `toggle` event to nudge the scroll position back.
+	let pendingHeaderCorrection: { offset: number } | null = null;
+
+	function handleHeaderClick(event: MouseEvent, offset: number) {
+		const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
+		pendingHeaderCorrection = Math.abs(rect.top - offset) < 1 ? { offset } : null;
+	}
+
+	function handleHeaderToggle(event: Event) {
+		if (!pendingHeaderCorrection) return;
+		const { offset } = pendingHeaderCorrection;
+		pendingHeaderCorrection = null;
+
+		const summaryEl = (event.currentTarget as HTMLElement).querySelector(':scope > summary');
+		if (!summaryEl) return;
+
+		requestAnimationFrame(() => {
+			const delta = summaryEl.getBoundingClientRect().top - offset;
+			if (Math.abs(delta) > 0.5) window.scrollBy(0, delta);
+		});
+	}
+
 	let selectedGame: Game | null = $state(null);
 </script>
 
@@ -50,9 +79,9 @@
 
 {#if groupByDay}
 	{#each days as day (day.key)}
-		<details class="day" open>
-			<summary>
-				<h2>
+		<details class="day" open ontoggle={handleHeaderToggle}>
+			<summary onclick={(event) => handleHeaderClick(event, 0)}>
+				<h2 bind:clientHeight={dayHeadingHeights[day.key]}>
 					<span class="chevron" aria-hidden="true"></span>
 					{formatDayHeading(day.date)}
 					<span class="count">{day.games.length}</span>
@@ -76,8 +105,11 @@
 				</div>
 			{:else}
 				{#each day.slots as slot (slot.key)}
-					<details class="slot" open>
-						<summary>
+					<details class="slot" open ontoggle={handleHeaderToggle}>
+						<summary
+							style="top: {dayHeadingHeights[day.key] ?? 0}px"
+							onclick={(event) => handleHeaderClick(event, dayHeadingHeights[day.key] ?? 0)}
+						>
 							<h3>
 								<span class="chevron" aria-hidden="true"></span>
 								{slot.label}
@@ -133,6 +165,17 @@
 		cursor: pointer;
 	}
 
+	.day > summary {
+		position: sticky;
+		top: 0;
+		z-index: 2;
+	}
+
+	.slot > summary {
+		position: sticky;
+		z-index: 1;
+	}
+
 	summary::-webkit-details-marker {
 		display: none;
 	}
@@ -160,9 +203,6 @@
 		display: flex;
 		align-items: center;
 		gap: var(--space-2);
-		position: sticky;
-		top: 0;
-		z-index: 1;
 		margin: 0 0 var(--space-3);
 		padding: var(--space-2) 0;
 		background: var(--color-bg);
@@ -200,6 +240,8 @@
 		align-items: center;
 		gap: var(--space-2);
 		margin: 0 0 var(--space-2);
+		padding: var(--space-1) 0;
+		background: var(--color-bg);
 		color: var(--color-text-muted);
 		font-size: var(--text-sm);
 		font-weight: 600;

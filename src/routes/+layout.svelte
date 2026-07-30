@@ -2,11 +2,20 @@
 	import '../app.css';
 	import favicon from '$lib/assets/favicon.jpg';
 	import SettingsModal from '$lib/components/SettingsModal.svelte';
+	import { settings } from '$lib/game/settings.svelte';
 	import type { LayoutProps } from './$types';
 
 	let { children, data }: LayoutProps = $props();
 
 	let settingsOpen = $state(false);
+
+	$effect(() => {
+		if (settings.theme === 'system') {
+			document.documentElement.removeAttribute('data-theme');
+		} else {
+			document.documentElement.setAttribute('data-theme', settings.theme);
+		}
+	});
 </script>
 
 <svelte:head>

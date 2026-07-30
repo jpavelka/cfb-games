@@ -12,11 +12,29 @@ function teamMatches(team: GameTeam, query: string): boolean {
 	);
 }
 
-/** Games with at least one team matching `query` (case-insensitive substring). Blank query passes everything through. */
+/** ESPN's event headlines spell these out in full, so the common abbreviation needs an alias to match. */
+const EVENT_NAME_ALIASES: Record<string, string> = {
+	cfp: 'college football playoff'
+};
+
+function eventMatches(eventName: string | undefined, query: string): boolean {
+	if (!eventName) return false;
+	const lower = eventName.toLowerCase();
+	if (lower.includes(query)) return true;
+	const alias = EVENT_NAME_ALIASES[query];
+	return alias !== undefined && lower.includes(alias);
+}
+
+/**
+ * Games matching `query` (case-insensitive substring) against either team or the
+ * event name (e.g. "Rose Bowl", "CFP"). Blank query passes everything through.
+ */
 export function filterByTeam(games: readonly Game[], query: string): Game[] {
 	const trimmed = query.trim().toLowerCase();
 	if (!trimmed) return [...games];
-	return games.filter((game) => game.teams.some((team) => teamMatches(team, trimmed)));
+	return games.filter(
+		(game) => game.teams.some((team) => teamMatches(team, trimmed)) || eventMatches(game.eventName, trimmed)
+	);
 }
 
 /**

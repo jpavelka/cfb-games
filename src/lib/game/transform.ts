@@ -25,6 +25,14 @@ function normalizeColor(value: string | undefined): string | undefined {
 	return value.startsWith('#') ? value : `#${value}`;
 }
 
+const NCAA_LOGO_PATH = /\/ncaa\/500\//;
+
+/** ESPN serves a dark-background variant at the same path with a `-dark` suffix. */
+function toDarkLogoUrl(logoUrl: string | undefined): string | undefined {
+	if (!logoUrl || !NCAA_LOGO_PATH.test(logoUrl)) return undefined;
+	return logoUrl.replace(NCAA_LOGO_PATH, '/ncaa/500-dark/');
+}
+
 function parseScore(value: string | undefined): number | undefined {
 	if (value === undefined) return undefined;
 	const parsed = Number.parseInt(value, 10);
@@ -77,6 +85,7 @@ function toTeam(competitor: EspnCompetitor, odds: EspnOdds | undefined): GameTea
 		displayName: team.displayName ?? team.location ?? 'TBD',
 		abbreviation: team.abbreviation ?? team.shortDisplayName ?? '',
 		logoUrl: team.logo,
+		darkLogoUrl: toDarkLogoUrl(team.logo),
 		color: normalizeColor(team.color),
 		altColor: normalizeColor(team.alternateColor),
 		rank: toRank(competitor),

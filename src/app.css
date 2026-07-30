@@ -72,6 +72,48 @@
 	}
 }
 
+/*
+ * Explicit theme choice (from settings) overrides the system preference above.
+ * Higher-specificity attribute selectors win regardless of source order.
+ */
+:root[data-theme='light'] {
+	color-scheme: light;
+	--color-bg: #f6f7f9;
+	--color-surface: #ffffff;
+	--color-surface-alt: #eef0f4;
+	--color-border: #dde1e7;
+	--color-text: #14181f;
+	--color-text-muted: #5b6472;
+	--color-text-faint: #8a929e;
+	--color-accent: #0b6bcb;
+	--color-live: #c9342a;
+	--color-live-bg: #fdf0ef;
+	--color-warning-bg: #fffaeb;
+	--color-warning-border: #f3dfae;
+	--color-warning-text: #7a4f01;
+	--color-skeleton: #e6e9ee;
+	--shadow-sm: 0 1px 2px rgb(0 0 0 / 0.06), 0 1px 3px rgb(0 0 0 / 0.08);
+}
+
+:root[data-theme='dark'] {
+	color-scheme: dark;
+	--color-bg: #0f1115;
+	--color-surface: #191d24;
+	--color-surface-alt: #212731;
+	--color-border: #2d343f;
+	--color-text: #e8ebf0;
+	--color-text-muted: #a2abba;
+	--color-text-faint: #6f7885;
+	--color-accent: #61a6f6;
+	--color-live: #ff7a6d;
+	--color-live-bg: #2a1614;
+	--color-warning-bg: #2a2113;
+	--color-warning-border: #4a3c1d;
+	--color-warning-text: #f2d18b;
+	--color-skeleton: #242a33;
+	--shadow-sm: 0 1px 2px rgb(0 0 0 / 0.4);
+}
+
 *,
 *::before,
 *::after {

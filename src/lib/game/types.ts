@@ -45,6 +45,8 @@ export interface GameTeam {
 	displayName: string;
 	abbreviation: string;
 	logoUrl?: string;
+	/** ESPN's dark-background variant of `logoUrl`, when derivable. */
+	darkLogoUrl?: string;
 	/** Validated and '#'-prefixed, or absent. */
 	color?: string;
 	altColor?: string;
