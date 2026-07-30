@@ -1,10 +1,33 @@
-.DS_Store
 node_modules
-/build
+
+# Output
+.output
+.vercel
+.netlify
+.wrangler
 /.svelte-kit
-/package
+/build
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Env
 .env
 .env.*
 !.env.example
-/local
-src/data.ts
+!.env.test
+
+# Data fetched by scripts/*.ts, deployed to gh-pages but never committed to master
+/static/data/
+
+# Vite
+vite.config.js.timestamp-*
+vite.config.ts.timestamp-*
+
+# Read-only reference copy of the pre-rebuild app (Svelte 3 / SvelteKit next.360).
+# Byte-identical to commit 04190e5, so it is recoverable at any time with e.g.
+#   git show 04190e5:src/lib/types.ts
+previous/
+
+todo.txt

@@ -1,0 +1,397 @@
+<script lang="ts">
+	import TeamLogo from './TeamLogo.svelte';
+	import {
+		formatBroadcasts,
+		formatConferenceName,
+		formatKickoffDate,
+		formatKickoffTime,
+		formatMoneyline,
+		formatRecord,
+		formatSpread,
+		formatStatusLine,
+		formatVenue,
+		formatWinProbability
+	} from '$lib/format';
+	import type { ConferenceMap } from '$lib/game/conferences';
+	import { matchupScore, matchupScoreColor, teamStrength, type RatingMap } from '$lib/game/ratings';
+	import type { Game } from '$lib/game/types';
+
+	let {
+		game,
+		onClose,
+		conferences,
+		ratings
+	}: { game: Game | null; onClose: () => void; conferences: ConferenceMap; ratings: RatingMap } =
+		$props();
+
+	let dialogEl: HTMLDialogElement | undefined = $state();
+
+	// The dialog element outlives any one game — only open/close in response to
+	// `game` changing, never re-render its guts out from under an open modal.
+	$effect(() => {
+		if (game) {
+			dialogEl?.showModal();
+		} else {
+			dialogEl?.close();
+		}
+	});
+
+	const showScore = $derived(game ? game.status.state !== 'pre' : false);
+	const isLive = $derived(game?.status.state === 'in');
+	const statusLine = $derived(game ? formatStatusLine(game) : '');
+	const broadcasts = $derived(game ? formatBroadcasts(game) : undefined);
+	const venue = $derived(game ? formatVenue(game) : undefined);
+	const spreadText = $derived(game ? formatSpread(game) : undefined);
+	const moneylineText = $derived.by(() => {
+		if (!game) return undefined;
+		const parts = game.teams
+			.map((team) => {
+				const value = formatMoneyline(game.odds, team);
+				return value ? `${team.abbreviation || team.location} ${value}` : undefined;
+			})
+			.filter((part): part is string => part !== undefined);
+		return parts.length === 2 ? parts.join(' · ') : undefined;
+	});
+	const matchup = $derived(game ? matchupScore(game, ratings) : null);
+</script>
+
+<dialog
+	bind:this={dialogEl}
+	class="modal"
+	onclose={onClose}
+	onclick={(event) => {
+		// The dialog's box shrink-wraps .content exactly, so a click that lands on
+		// the dialog itself (rather than bubbling up from a descendant) can only be
+		// a click on the ::backdrop — the standard native-<dialog> light-dismiss check.
+		if (event.target === dialogEl) onClose();
+	}}
+>
+	{#if game}
+		<div class="content">
+			<button class="close" type="button" aria-label="Close" onclick={onClose}>&times;</button>
+
+			{#if game.eventName}
+				<p class="event">{game.eventName}</p>
+			{/if}
+
+			<p class="conferenceGame">{game.conferenceGame ? 'Conference game' : 'Non-conference game'}</p>
+
+			<p class="status" class:live={isLive}>{statusLine}</p>
+
+			<div class="teams">
+				{#each game.teams as team (team.homeAway)}
+					<div class="team" class:winner={team.isWinner === true}>
+						<TeamLogo {team} size={56} />
+						<span class="name">
+							{#if team.rank}<span class="rank">{team.rank}</span>{/if}
+							{team.location}
+						</span>
+						{#if formatConferenceName(team, conferences)}
+							<span class="conference">{formatConferenceName(team, conferences)}</span>
+						{/if}
+						{#if formatRecord(team)}
+							<span class="record">{formatRecord(team)}</span>
+						{/if}
+						<span class="strength">Strength {teamStrength(team, ratings)}</span>
+						{#if formatWinProbability(game.odds, team)}
+							<span class="winPct">{formatWinProbability(game.odds, team)} to win</span>
+						{/if}
+						{#if showScore}
+							<span class="score">{team.score ?? '–'}</span>
+						{/if}
+					</div>
+				{/each}
+			</div>
+
+			<dl class="details">
+				{#if matchup !== null}
+					<div>
+						<dt>Matchup score</dt>
+						<dd>
+							<span class="matchupScore" style:background={matchupScoreColor(matchup)}>
+								{matchup}
+							</span>
+						</dd>
+					</div>
+				{/if}
+				<div>
+					<dt>Kickoff</dt>
+					<dd>{formatKickoffDate(game.kickoff)} · {formatKickoffTime(game)}</dd>
+				</div>
+				{#if broadcasts}
+					<div>
+						<dt>Broadcast</dt>
+						<dd>{broadcasts}</dd>
+					</div>
+				{/if}
+				{#if venue}
+					<div>
+						<dt>Location</dt>
+						<dd>{game.neutralSite ? `Neutral site · ${venue}` : venue}</dd>
+					</div>
+				{/if}
+				<div>
+					<dt>Betting</dt>
+					<dd>
+						{#if spreadText || game.odds?.overUnder !== undefined}
+							{#if spreadText}{spreadText}{/if}
+							{#if spreadText && game.odds?.overUnder !== undefined}
+								<span class="dot">·</span>
+							{/if}
+							{#if game.odds?.overUnder !== undefined}O/U {game.odds.overUnder}{/if}
+						{:else}
+							<span class="muted">Not available</span>
+						{/if}
+					</dd>
+				</div>
+				{#if moneylineText}
+					<div>
+						<dt>Moneyline</dt>
+						<dd>{moneylineText}</dd>
+					</div>
+				{/if}
+			</dl>
+
+			<p class="linksHeading">ESPN links</p>
+			<div class="links">
+				<a href={game.espnUrl} target="_blank" rel="noopener noreferrer">Gamecast</a>
+				{#if game.status.state !== 'pre'}
+					<a
+						href={`https://www.espn.com/college-football/boxscore/_/gameId/${game.id}`}
+						target="_blank"
+						rel="noopener noreferrer"
+					>
+						Box Score
+					</a>
+				{/if}
+				{#each game.teams as team (team.homeAway)}
+					{#if team.location !== 'TBD'}
+						<a
+							href={`https://www.espn.com/college-football/team/_/id/${team.id}`}
+							target="_blank"
+							rel="noopener noreferrer"
+						>
+							{team.location}
+						</a>
+					{/if}
+				{/each}
+			</div>
+		</div>
+	{/if}
+</dialog>
+
+<style>
+	.modal {
+		width: min(28rem, calc(100vw - 2rem));
+		max-height: calc(100vh - 2rem);
+		padding: 0;
+		border: none;
+		border-radius: var(--radius-lg);
+		background: transparent;
+		color: inherit;
+		overflow: visible;
+	}
+
+	.modal::backdrop {
+		background: rgb(0 0 0 / 0.5);
+	}
+
+	.content {
+		position: relative;
+		max-height: calc(100vh - 2rem);
+		overflow-y: auto;
+		padding: var(--space-5);
+		border: 1px solid var(--color-border);
+		border-radius: var(--radius-lg);
+		background: var(--color-surface);
+	}
+
+	.close {
+		position: absolute;
+		top: var(--space-5);
+		right: var(--space-5);
+		width: 2rem;
+		height: 2rem;
+		border: none;
+		border-radius: var(--radius-full);
+		background: var(--color-surface-alt);
+		color: var(--color-text-muted);
+		font-size: var(--text-xl);
+		line-height: 1;
+		cursor: pointer;
+	}
+
+	.close:hover {
+		color: var(--color-text);
+	}
+
+	.event {
+		margin: 0 0 var(--space-2);
+		padding-inline: 2.5rem;
+		color: var(--color-accent);
+		font-size: var(--text-sm);
+		font-weight: 600;
+		text-align: center;
+	}
+
+	.conferenceGame {
+		margin: 0 0 var(--space-2);
+		padding-inline: 2.5rem;
+		color: var(--color-text-muted);
+		font-size: var(--text-sm);
+		text-align: center;
+	}
+
+	.status {
+		margin: 0 0 var(--space-3);
+		padding-inline: 2.5rem;
+		color: var(--color-text-muted);
+		font-size: var(--text-sm);
+		font-weight: 600;
+		text-align: center;
+		text-transform: uppercase;
+		letter-spacing: 0.03em;
+	}
+
+	.status.live {
+		color: var(--color-live);
+	}
+
+	.teams {
+		display: flex;
+		justify-content: space-around;
+		gap: var(--space-3);
+		margin-bottom: var(--space-4);
+	}
+
+	.team {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: var(--space-1);
+		min-width: 0;
+		text-align: center;
+	}
+
+	.team :global(.logo),
+	.team :global(.fallback) {
+		margin-bottom: var(--space-1);
+	}
+
+	.name {
+		font-weight: 600;
+	}
+
+	.winner .name {
+		font-weight: 700;
+	}
+
+	.rank {
+		margin-right: var(--space-1);
+		color: var(--color-text-faint);
+		font-size: var(--text-xs);
+		font-weight: 700;
+	}
+
+	.conference {
+		color: var(--color-text-faint);
+		font-size: var(--text-xs);
+	}
+
+	.record {
+		color: var(--color-text-faint);
+		font-size: var(--text-xs);
+	}
+
+	.strength {
+		color: var(--color-text-faint);
+		font-size: var(--text-xs);
+	}
+
+	.matchupScore {
+		padding: 0 var(--space-2);
+		border-radius: var(--radius-sm);
+		/* Background is set inline per-score (see matchupScoreColor); the fill is
+		   fixed rather than theme-dependent, so the text ink stays fixed too. */
+		color: #1a1a1a;
+		font-weight: 600;
+		font-variant-numeric: tabular-nums;
+	}
+
+	.winPct {
+		color: var(--color-text-muted);
+		font-size: var(--text-xs);
+		font-weight: 600;
+	}
+
+	.score {
+		font-family: var(--font-numeric);
+		font-size: var(--text-2xl);
+		font-variant-numeric: tabular-nums;
+	}
+
+	.winner .score {
+		font-weight: 700;
+	}
+
+	.details {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-2);
+		margin: 0 0 var(--space-4);
+		padding: var(--space-3) 0;
+		border-top: 1px solid var(--color-border);
+		border-bottom: 1px solid var(--color-border);
+		font-size: var(--text-sm);
+	}
+
+	.details > div {
+		display: flex;
+		justify-content: space-between;
+		gap: var(--space-3);
+	}
+
+	dt {
+		color: var(--color-text-muted);
+	}
+
+	dd {
+		margin: 0;
+		text-align: right;
+	}
+
+	.dot {
+		margin: 0 var(--space-1);
+	}
+
+	.muted {
+		color: var(--color-text-faint);
+		font-style: italic;
+	}
+
+	.linksHeading {
+		margin: 0 0 var(--space-2);
+		color: var(--color-text-muted);
+		font-size: var(--text-xs);
+		font-weight: 600;
+		text-align: center;
+		text-transform: uppercase;
+		letter-spacing: 0.03em;
+	}
+
+	.links {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		gap: var(--space-1) var(--space-3);
+		font-size: var(--text-sm);
+	}
+
+	.links a {
+		color: var(--color-accent);
+	}
+
+	.links a:hover {
+		text-decoration: underline;
+	}
+</style>
