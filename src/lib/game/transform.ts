@@ -272,8 +272,12 @@ function toWeekInfo(merged: MergedScoreboard): WeekInfo {
  * The calendar is grouped by season phase; we keep the regular season and the
  * postseason in that order and drop the off season, which has no games. Entries
  * `weekSlug` has no route for are dropped rather than rendered as dead options.
+ *
+ * Exported (not just used internally by `toScoreboard`) so `scripts/fetch-weeks.ts`
+ * can call it directly against a bare calendar fetch, the same way it's produced
+ * here.
  */
-function toWeekOptions(calendar: EspnCalendarType[]): WeekOption[] {
+export function toWeekOptions(calendar: EspnCalendarType[]): WeekOption[] {
 	const options: WeekOption[] = [];
 
 	for (const phaseName of ['regular', 'postseason'] as const) {

@@ -1,12 +1,13 @@
 name: Refresh Data and Deploy
-# Regenerates both static/data/conferences.json (see scripts/fetch-conferences.ts)
-# and static/data/sagarin.json (see scripts/fetch-sagarin-ratings.ts), then deploys
-# the full site, since this is a fully static, adapter-static build. Runs daily —
-# Sagarin re-publishes ratings roughly daily during the season, and refetching
-# conference alignment (which barely ever changes) alongside it daily is a
-# harmless extra cost that avoids needing two independently-scheduled refresh
-# jobs, each of which would otherwise have to carry the other's last output
-# forward so a solo run doesn't ship a build missing one of the two files.
+# Regenerates static/data/conferences.json (see scripts/fetch-conferences.ts),
+# static/data/sagarin.json (see scripts/fetch-sagarin-ratings.ts), and
+# static/data/weeks.json (see scripts/fetch-weeks.ts), then deploys the full site,
+# since this is a fully static, adapter-static build. Runs daily — Sagarin
+# re-publishes ratings roughly daily during the season, and refetching conference
+# alignment and the week schedule (both of which barely ever change) alongside it
+# daily is a harmless extra cost that avoids needing three independently-scheduled
+# refresh jobs, each of which would otherwise have to carry the others' last output
+# forward so a solo run doesn't ship a build missing one of the three files.
 on:
   schedule:
     - cron: '0 11 * * *' # Daily 11:00 UTC — comfortably after Sagarin's typical early-morning update
@@ -33,6 +34,9 @@ jobs:
 
       - name: Refresh Sagarin ratings
         run: npm run fetch:sagarin
+
+      - name: Refresh week schedule
+        run: npm run fetch:weeks
 
       - name: Build
         env:

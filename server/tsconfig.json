@@ -1,0 +1,40 @@
+{
+	"compilerOptions": {
+		"target": "ESNext",
+		"module": "ESNext",
+		// Matches the main project's own generated tsconfig (`.svelte-kit/tsconfig.json`):
+		// extensionless relative imports resolve fine under "bundler", same as they
+		// actually do at runtime via tsx/esbuild. "NodeNext" would demand `.js`
+		// extensions on every relative import, which doesn't match how this repo
+		// (or `scripts/fetch-conferences.ts`) actually writes them.
+		"moduleResolution": "bundler",
+		"strict": true,
+		"esModuleInterop": true,
+		"skipLibCheck": true,
+		"resolveJsonModule": true,
+		"noEmit": true,
+		"allowImportingTsExtensions": true,
+		"types": ["node"],
+		// `src/lib/game/transform.ts` and `types.ts` reference `$lib/...` in `import
+		// type` positions only. tsx erases those at runtime without resolving them, but
+		// this mapping lets the editor and `tsc --noEmit` follow the same imports.
+		"paths": {
+			"$lib/*": ["../src/lib/*"]
+		}
+	},
+	// Only the specific src/lib files the server actually imports — not the whole
+	// tree. Most of src/lib depends on Svelte runes ($state/$derived) or SvelteKit
+	// aliases ($app/paths, $app/environment) that only resolve inside the SvelteKit
+	// build, and reusing those files here was never the plan (see the plan's "Reused
+	// code" section).
+	"include": [
+		"./**/*.ts",
+		"../src/lib/espn/client.ts",
+		"../src/lib/espn/types.ts",
+		"../src/lib/game/transform.ts",
+		"../src/lib/game/sort.ts",
+		"../src/lib/game/weeks.ts",
+		"../src/lib/game/types.ts",
+		"../src/lib/game/storedScoreboard.ts"
+	]
+}

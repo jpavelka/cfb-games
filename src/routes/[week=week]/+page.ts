@@ -1,6 +1,6 @@
 import { error } from '@sveltejs/kit';
 import { loadScoreboard } from '$lib/game/load';
-import { injectOpeningWeekOption, resolveOpeningWeekBoard } from '$lib/game/openingWeek';
+import { resolveOpeningWeekBoard } from '$lib/game/openingWeek';
 import { OPENING_WEEK_SLUG, parseWeekSlug } from '$lib/game/weeks';
 import type { EntryGenerator, PageLoad } from './$types';
 
@@ -18,7 +18,7 @@ export const entries: EntryGenerator = () => [
 	{ week: 'playoff' }
 ];
 
-export const load: PageLoad = ({ params, parent }) => {
+export const load: PageLoad = ({ params, parent, fetch }) => {
 	const target = parseWeekSlug(params.week);
 	// Unreachable while the `week` param matcher is in place, but the loader should
 	// not depend on routing config to be sound.
@@ -35,18 +35,15 @@ export const load: PageLoad = ({ params, parent }) => {
 	// current season, which is exactly the season whose calendar fills the picker.
 	const boardPromise = isOpeningWeek
 		? parent().then(({ openingWeekBoard }) => openingWeekBoard)
-		: loadScoreboard({ week: target.week, seasonType: target.seasonType });
+		: loadScoreboard({ week: target.week, seasonType: target.seasonType }, fetch);
 
 	const splitPromise = parent().then(({ openingWeekSplit }) => openingWeekSplit);
 
-	const scoreboard = Promise.all([boardPromise, splitPromise]).then(([board, split]) => {
-		const resolved =
-			isOpeningWeek && split
-				? resolveOpeningWeekBoard(board, split, params.week as 'week0' | 'week1')
-				: board;
-
-		return { ...resolved, weeks: injectOpeningWeekOption(resolved.weeks, split) };
-	});
+	const scoreboard = Promise.all([boardPromise, splitPromise]).then(([board, split]) =>
+		isOpeningWeek && split
+			? resolveOpeningWeekBoard(board, split, params.week as 'week0' | 'week1')
+			: board
+	);
 
 	return {
 		scoreboard,

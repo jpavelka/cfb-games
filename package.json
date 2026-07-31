@@ -11,7 +11,9 @@
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --config ./vite.config.ts",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --config ./vite.config.ts --watch",
 		"fetch:conferences": "tsx scripts/fetch-conferences.ts",
-		"fetch:sagarin": "tsx scripts/fetch-sagarin-ratings.ts"
+		"fetch:sagarin": "tsx scripts/fetch-sagarin-ratings.ts",
+		"fetch:weeks": "tsx scripts/fetch-weeks.ts",
+		"deploy:server": "bash scripts/deploy.sh"
 	},
 	"devDependencies": {
 		"@sveltejs/adapter-static": "^3.0.10",

@@ -5,4 +5,9 @@
 	let { data }: PageProps = $props();
 </script>
 
-<ScoreboardView scoreboard={data.scoreboard} conferences={data.conferences} ratings={data.ratings} />
+<ScoreboardView
+	scoreboard={data.scoreboard}
+	weeks={data.weeks}
+	conferences={data.conferences}
+	ratings={data.ratings}
+/>

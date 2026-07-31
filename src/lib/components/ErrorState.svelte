@@ -12,8 +12,8 @@
 	<p class="headline">Couldn't load games</p>
 	<p class="detail">{message}</p>
 	<p class="hint">
-		Game data comes from ESPN's unofficial API, which occasionally goes down or changes
-		without notice.
+		Game data comes from a backend service that mirrors ESPN's scoreboard on a schedule —
+		this week's data may not be ready yet, or the service may be temporarily down.
 	</p>
 	<button type="button" onclick={onRetry}>Try again</button>
 </div>

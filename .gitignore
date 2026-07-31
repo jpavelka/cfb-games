@@ -17,6 +17,7 @@ Thumbs.db
 .env.*
 !.env.example
 !.env.test
+!.env.deploy.example
 
 # Data fetched by scripts/*.ts, deployed to gh-pages but never committed to master
 /static/data/
@@ -31,3 +32,7 @@ vite.config.ts.timestamp-*
 previous/
 
 todo.txt
+
+# Project IDs and service account names for deploying server/ — not secrets, but no
+# reason for them to live in the repo either.
+server/GCP_SETUP.md

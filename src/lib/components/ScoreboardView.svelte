@@ -10,15 +10,23 @@
 	import type { RatingMap } from '$lib/game/ratings';
 	import { settings } from '$lib/game/settings.svelte';
 	import type { Scoreboard } from '$lib/game/types';
+	import type { WeekOption } from '$lib/game/weeks';
 
 	let {
 		scoreboard,
+		weeks,
 		requested = null,
 		currentWeekSlug,
 		conferences,
 		ratings
 	}: {
 		scoreboard: Promise<Scoreboard>;
+		/**
+		 * The week picker's option list — loaded independently of any single week's
+		 * own scoreboard fetch (see `+layout.ts`), so the picker can still offer a way
+		 * out when `scoreboard` itself rejects.
+		 */
+		weeks: Promise<WeekOption[]>;
 		/**
 		 * The week slug this route asked for, or null on `/`, which shows whichever
 		 * week ESPN considers current.
@@ -38,6 +46,11 @@
 </script>
 
 {#await scoreboard}
+	<div class="week">
+		{#await weeks then weeksList}
+			<WeekPicker weeks={weeksList} selected={requested} />
+		{/await}
+	</div>
 	<LoadingState />
 {:then board}
 	{@const filteredGames = filterByTeamCategory(
@@ -47,7 +60,9 @@
 	<div class="week">
 		<h2>{board.week.label}</h2>
 		<span class="season">{board.week.seasonYear}</span>
-		<WeekPicker weeks={board.weeks} selected={board.week.slug} />
+		{#await weeks then weeksList}
+			<WeekPicker weeks={weeksList} selected={board.week.slug} />
+		{/await}
 	</div>
 
 	<div class="toolbar">
@@ -100,6 +115,11 @@
 		<GameList games={filteredGames} {conferences} {ratings} />
 	{/if}
 {:catch error}
+	<div class="week">
+		{#await weeks then weeksList}
+			<WeekPicker weeks={weeksList} selected={requested} />
+		{/await}
+	</div>
 	<ErrorState message={error.message} onRetry={() => invalidateAll()} />
 {/await}
 
