@@ -1,5 +1,6 @@
-import type { StoredGame, StoredScoreboard } from './storedScoreboard';
-import type { Game, Scoreboard } from './types';
+import type { StoredGame, StoredGameTeam, StoredScoreboard, StoredTeamFallback } from './storedScoreboard';
+import type { TeamInfo, TeamMap } from './teams';
+import type { Game, GameTeam, Scoreboard } from './types';
 import type { WeekOption } from './weeks';
 
 /**
@@ -54,18 +55,76 @@ export async function loadStoredScoreboard(
 	}
 }
 
+type TeamDisplayInfo = TeamInfo | StoredTeamFallback;
+
+/**
+ * A stored team carries only its id and live game state — its durable display
+ * info (name/colors/logos/conference) is either inline as `fallback` (a team
+ * outside FBS/FCS/D2, see `storedScoreboard.ts`) or has to be looked up from the
+ * already-loaded `teams.json` map by id. Falls back to a minimal id-as-name stand-in
+ * (and a console warning) in the unlikely case neither source has it — e.g. a
+ * `teams.json` directory gap — so a single unresolved team can't blank the page.
+ */
+function resolveTeamDisplay(stored: StoredGameTeam, teams: TeamMap): TeamDisplayInfo {
+	if (stored.fallback) return stored.fallback;
+
+	const info = teams.get(stored.id);
+	if (info) return info;
+
+	console.warn(`No team info found for id ${stored.id} in teams.json — rendering a minimal stand-in`);
+	return { location: stored.id, displayName: stored.id, abbreviation: stored.id };
+}
+
+function toGameTeam(stored: StoredGameTeam, teams: TeamMap): GameTeam {
+	const info = resolveTeamDisplay(stored, teams);
+
+	return {
+		id: stored.id,
+		homeAway: stored.homeAway,
+		location: info.location,
+		name: info.name,
+		displayName: info.displayName,
+		abbreviation: info.abbreviation,
+		logoUrl: info.logoUrl,
+		darkLogoUrl: info.darkLogoUrl,
+		color: info.color,
+		altColor: info.altColor,
+		conferenceId: info.conferenceId,
+		rank: stored.rank,
+		record: stored.record,
+		conferenceRecord: stored.conferenceRecord,
+		score: stored.score,
+		isWinner: stored.isWinner
+	};
+}
+
 /**
  * `toStoredGame` (see `storedScoreboard.ts`) drops a handful of fields no
  * component reads (`Game.name`, `status.completed`, `status.detail`, ...), but
  * `Game`/`GameStatus` still declare them required — widening those types just to
  * accommodate storage would let a real live-data bug (e.g. a genuinely missing
  * name) slip through unnoticed. So they're reconstructed here instead, with
- * cheap stand-ins that are reasonable if anything ever does read them.
+ * cheap stand-ins that are reasonable if anything ever does read them. Team
+ * display info is reconstructed the same way, joined against `teams.json` (or a
+ * game's own `fallback`) via `toGameTeam`.
+ *
+ * `shortName` and `espnUrl` *are* read elsewhere (sort tiebreak, Gamecast link)
+ * but don't need storing: `espnUrl` is a pure function of the game id, and
+ * `shortName` only needs to be a stable per-game string, not ESPN's exact value
+ * — same fallback `transform.ts` uses when ESPN itself omits it.
  */
-function toGame(stored: StoredGame): Game {
+function toGame(stored: StoredGame, teams: TeamMap): Game {
+	const away = toGameTeam(stored.away, teams);
+	const home = toGameTeam(stored.home, teams);
+
 	return {
 		...stored,
-		name: `${stored.away.displayName} at ${stored.home.displayName}`,
+		away,
+		home,
+		teams: [away, home],
+		name: `${away.displayName} at ${home.displayName}`,
+		shortName: `${away.abbreviation} @ ${home.abbreviation}`,
+		espnUrl: `https://www.espn.com/college-football/game/_/gameId/${stored.id}`,
 		status: {
 			...stored.status,
 			completed: stored.status.state === 'post' && !stored.status.canceled,
@@ -79,13 +138,15 @@ function toGame(stored: StoredGame): Game {
  * picker list — the stored file itself has no `weeks` (see `storedScoreboard.ts`
  * for why); `weeks` comes from `loadWeekOptions` instead. `skippedCount` is
  * always 0: unparseable ESPN events are dropped before `server/` ever writes a
- * file, so there's nothing left to count.
+ * file, so there's nothing left to count. `teams` is the already-loaded
+ * `teams.json` map (see `$lib/game/teams`), used to resolve each `StoredGameTeam`
+ * back into a full `GameTeam`.
  */
-export function fromStoredScoreboard(stored: StoredScoreboard, weeks: WeekOption[]): Scoreboard {
+export function fromStoredScoreboard(stored: StoredScoreboard, weeks: WeekOption[], teams: TeamMap): Scoreboard {
 	return {
 		week: stored.week,
 		weeks,
-		games: stored.games.map(toGame),
+		games: stored.games.map((game) => toGame(game, teams)),
 		fetchedAt: stored.fetchedAt,
 		nextRefreshAt: stored.nextRefreshAt,
 		partialErrors: stored.partialErrors,

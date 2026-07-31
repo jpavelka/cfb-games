@@ -96,18 +96,22 @@ export function formatRecord(team: GameTeam): string | undefined {
 	return team.conferenceRecord ? `${team.record} (${team.conferenceRecord})` : team.record;
 }
 
+/** Subdivisions whose conference name gets a parenthetical suffix — FBS conferences are self-evident, so they get none. */
+const SUBDIVISION_SUFFIX = { fcs: 'FCS', d2: 'D2' } as const;
+
 /**
- * e.g. "ACC", or "Big Sky (FCS)" for an FCS conference — absent when the team's
- * conference isn't in `conferences` (see `$lib/game/conferences`).
+ * e.g. "ACC", "Big Sky (FCS)" for an FCS conference, or "GLIAC (D2)" for a D2
+ * conference — absent when the team's conference isn't in `conferences` (see
+ * `$lib/game/conferences`).
  */
 export function formatConferenceName(team: GameTeam, conferences: ConferenceMap): string | undefined {
 	if (!team.conferenceId) return undefined;
 	const conference = conferences.get(team.conferenceId);
 	if (!conference) return undefined;
-	if (conference.subdivision !== 'fcs' || conference.shortName.includes('FCS')) {
-		return conference.shortName;
-	}
-	return `${conference.shortName} (FCS)`;
+
+	const suffix = conference.subdivision === 'fbs' ? undefined : SUBDIVISION_SUFFIX[conference.subdivision];
+	if (!suffix || conference.shortName.includes(suffix)) return conference.shortName;
+	return `${conference.shortName} (${suffix})`;
 }
 
 /** e.g. "TCU -6.5". Falls back to ESPN's own rendering when we can't build one. */

@@ -1,6 +1,7 @@
 import { error } from '@sveltejs/kit';
 import { sortGames } from './sort';
 import { fromStoredScoreboard, loadStoredScoreboard } from './storage';
+import type { TeamMap } from './teams';
 import { loadSeasonYear, loadWeekOptions } from './weekOptions';
 import type { Scoreboard } from './types';
 import type { WeekTarget } from './weeks';
@@ -23,7 +24,11 @@ import type { WeekTarget } from './weeks';
  * awaits it in the template so it can show a loading state, and `invalidateAll()`
  * re-runs the load for a retry.
  */
-export async function loadScoreboard(target: WeekTarget, fetchImpl: typeof fetch = fetch): Promise<Scoreboard> {
+export async function loadScoreboard(
+	target: WeekTarget,
+	teams: Promise<TeamMap> | TeamMap,
+	fetchImpl: typeof fetch = fetch
+): Promise<Scoreboard> {
 	// The GCS key is season-scoped (`games-{seasonYear}-{seasonType}-{week}.json`),
 	// so the season year has to be known before the stored-scoreboard fetch can even
 	// be attempted — see `storage.ts`'s `weekFileName`.
@@ -32,15 +37,16 @@ export async function loadScoreboard(target: WeekTarget, fetchImpl: typeof fetch
 		error(503, 'Current season is not available');
 	}
 
-	const [stored, weeks] = await Promise.all([
+	const [stored, weeks, teamMap] = await Promise.all([
 		loadStoredScoreboard({ ...target, seasonYear }, fetchImpl),
-		loadWeekOptions(fetchImpl)
+		loadWeekOptions(fetchImpl),
+		teams
 	]);
 
 	if (!stored) {
 		error(503, `No stored scoreboard for week ${target.week} (season type ${target.seasonType})`);
 	}
 
-	const board = fromStoredScoreboard(stored, weeks);
+	const board = fromStoredScoreboard(stored, weeks, teamMap);
 	return { ...board, games: sortGames(board.games, 'chronological') };
 }

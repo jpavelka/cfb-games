@@ -10,7 +10,7 @@
 		"prepare": "svelte-kit sync || echo ''",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --config ./vite.config.ts",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --config ./vite.config.ts --watch",
-		"fetch:conferences": "tsx scripts/fetch-conferences.ts",
+		"fetch:teams": "tsx scripts/fetch-teams.ts",
 		"fetch:sagarin": "tsx scripts/fetch-sagarin-ratings.ts",
 		"fetch:weeks": "tsx scripts/fetch-weeks.ts",
 		"fetch:broadcasters": "tsx scripts/fetch-broadcasters.ts",

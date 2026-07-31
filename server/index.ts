@@ -11,6 +11,7 @@ import {
 	hasAnyFileForSeason,
 	deleteWeekFilesForSeason
 } from './gcs';
+import { getKnownTeamIds } from './knownTeamIds';
 import {
 	enqueueRefreshTask,
 	sweepStaleSeasonTasks,
@@ -89,7 +90,8 @@ async function refreshWeek(payload: RefreshWeekPayload): Promise<void> {
 			if (delayMs !== null) nextRefreshAt = new Date(now + delayMs);
 		}
 
-		await saveWeekScoreboard({ seasonYear: payload.seasonYear, seasonType, week }, board, nextRefreshAt);
+		const knownTeamIds = await getKnownTeamIds(payload.seasonYear);
+		await saveWeekScoreboard({ seasonYear: payload.seasonYear, seasonType, week }, board, knownTeamIds, nextRefreshAt);
 	} catch (error) {
 		failed = true;
 		console.error(`refresh-week failed for seasonType=${seasonType} week=${week}`, error);

@@ -31,6 +31,7 @@
 		"./**/*.ts",
 		"../src/lib/espn/client.ts",
 		"../src/lib/espn/types.ts",
+		"../src/lib/espn/teams.ts",
 		"../src/lib/game/transform.ts",
 		"../src/lib/game/sort.ts",
 		"../src/lib/game/weeks.ts",

@@ -1,12 +1,13 @@
 name: Refresh Data and Deploy
-# Regenerates static/data/conferences.json (see scripts/fetch-conferences.ts),
+# Regenerates static/data/teams.json and static/data/conferences.json (both from
+# scripts/fetch-teams.ts, which writes both from one ESPN group walk),
 # static/data/sagarin.json (see scripts/fetch-sagarin-ratings.ts),
 # static/data/weeks.json (see scripts/fetch-weeks.ts), and
 # static/data/broadcasters.json (see scripts/fetch-broadcasters.ts), then deploys
 # the full site, since this is a fully static, adapter-static build. Runs daily —
 # Sagarin re-publishes ratings roughly daily during the season, and refetching
-# conference alignment, the week schedule, and the broadcaster list (all of which
-# barely ever change) alongside it daily is a harmless extra cost that avoids
+# team/conference alignment, the week schedule, and the broadcaster list (all of
+# which barely ever change) alongside it daily is a harmless extra cost that avoids
 # needing four independently-scheduled refresh jobs, each of which would otherwise
 # have to carry the others' last output forward so a solo run doesn't ship a build
 # missing one of the four files.
@@ -31,8 +32,8 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Refresh conference data
-        run: npm run fetch:conferences
+      - name: Refresh team data
+        run: npm run fetch:teams
 
       - name: Refresh Sagarin ratings
         run: npm run fetch:sagarin

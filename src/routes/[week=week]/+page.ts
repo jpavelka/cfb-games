@@ -35,7 +35,11 @@ export const load: PageLoad = ({ params, parent, fetch }) => {
 	// current season, which is exactly the season whose calendar fills the picker.
 	const boardPromise = isOpeningWeek
 		? parent().then(({ openingWeekBoard }) => openingWeekBoard)
-		: loadScoreboard({ week: target.week, seasonType: target.seasonType }, fetch);
+		: loadScoreboard(
+				{ week: target.week, seasonType: target.seasonType },
+				parent().then(({ teams }) => teams),
+				fetch
+			);
 
 	const splitPromise = parent().then(({ openingWeekSplit }) => openingWeekSplit);
 
