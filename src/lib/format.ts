@@ -96,10 +96,18 @@ export function formatRecord(team: GameTeam): string | undefined {
 	return team.conferenceRecord ? `${team.record} (${team.conferenceRecord})` : team.record;
 }
 
-/** e.g. "ACC" — absent when the team's conference isn't in `conferences` (see `$lib/game/conferences`). */
+/**
+ * e.g. "ACC", or "Big Sky (FCS)" for an FCS conference — absent when the team's
+ * conference isn't in `conferences` (see `$lib/game/conferences`).
+ */
 export function formatConferenceName(team: GameTeam, conferences: ConferenceMap): string | undefined {
 	if (!team.conferenceId) return undefined;
-	return conferences.get(team.conferenceId)?.shortName;
+	const conference = conferences.get(team.conferenceId);
+	if (!conference) return undefined;
+	if (conference.subdivision !== 'fcs' || conference.shortName.includes('FCS')) {
+		return conference.shortName;
+	}
+	return `${conference.shortName} (FCS)`;
 }
 
 /** e.g. "TCU -6.5". Falls back to ESPN's own rendering when we can't build one. */

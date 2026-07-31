@@ -95,16 +95,24 @@
 							{#if team.rank}<span class="rank">{team.rank}</span>{/if}
 							{team.location}
 						</span>
-						{#if formatConferenceName(team, conferences)}
-							<span class="conference">{formatConferenceName(team, conferences)}</span>
-						{/if}
-						{#if formatRecord(team)}
-							<span class="record">{formatRecord(team)}</span>
-						{/if}
-						<span class="strength">Strength {teamStrength(team, ratings)}</span>
-						{#if formatWinProbability(game.odds, team)}
-							<span class="winPct">{formatWinProbability(game.odds, team)} to win</span>
-						{/if}
+						<div class="meta">
+							{#if formatRecord(team)}
+								<span class="record">{formatRecord(team)}</span>
+							{:else}
+								<span class="record missing fallback-full">Record not available</span>
+								<span class="record missing fallback-short">Record not found</span>
+							{/if}
+							{#if formatConferenceName(team, conferences)}
+								<span class="conference">{formatConferenceName(team, conferences)}</span>
+							{:else}
+								<span class="conference missing fallback-full">Conference not available</span>
+								<span class="conference missing fallback-short">Conf not found</span>
+							{/if}
+							<span class="strength">Strength {teamStrength(team, ratings)}</span>
+							{#if formatWinProbability(game.odds, team)}
+								<span class="winPct">{formatWinProbability(game.odds, team)} to win</span>
+							{/if}
+						</div>
 						{#if showScore}
 							<span class="score">{team.score ?? '–'}</span>
 						{/if}
@@ -303,6 +311,21 @@
 		font-weight: 700;
 	}
 
+	.meta {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 0;
+		margin-top: -2px;
+		line-height: 1.25;
+	}
+
+	/* Keep every stat to a single line so a long fallback string can't wrap and
+	   push that team's rows out of alignment with the other team's. */
+	.meta > span {
+		white-space: nowrap;
+	}
+
 	.conference {
 		color: var(--color-text-faint);
 		font-size: var(--text-xs);
@@ -316,6 +339,25 @@
 	.strength {
 		color: var(--color-text-faint);
 		font-size: var(--text-xs);
+	}
+
+	.missing {
+		font-style: italic;
+	}
+
+	.fallback-short {
+		display: none;
+	}
+
+	/* Swap in the shorter fallback wording once the modal itself is this narrow. */
+	@media (max-width: 480px) {
+		.fallback-full {
+			display: none;
+		}
+
+		.fallback-short {
+			display: inline;
+		}
 	}
 
 	.matchupScore {
