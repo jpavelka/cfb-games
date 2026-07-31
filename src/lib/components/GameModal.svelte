@@ -68,7 +68,16 @@
 >
 	{#if game}
 		<div class="content">
-			<button class="close" type="button" aria-label="Close" onclick={onClose}>&times;</button>
+			<button class="close" type="button" aria-label="Close" onclick={onClose}>
+				<svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
+					<path
+						d="M2 2l12 12M14 2L2 14"
+						stroke="currentColor"
+						stroke-width="1.5"
+						stroke-linecap="round"
+					/>
+				</svg>
+			</button>
 
 			{#if game.eventName}
 				<p class="event">{game.eventName}</p>
@@ -210,14 +219,15 @@
 		position: absolute;
 		top: var(--space-5);
 		right: var(--space-5);
+		display: flex;
+		align-items: center;
+		justify-content: center;
 		width: 2rem;
 		height: 2rem;
 		border: none;
 		border-radius: var(--radius-full);
 		background: var(--color-surface-alt);
 		color: var(--color-text-muted);
-		font-size: var(--text-xl);
-		line-height: 1;
 		cursor: pointer;
 	}
 

@@ -60,11 +60,30 @@
 
 	let pickerOpen = $state(false);
 	let favoriteSearch = $state('');
+	let reviewOpen = $state(false);
 
 	function closePicker(): void {
 		pickerOpen = false;
 		favoriteSearch = '';
 	}
+
+	// Flat lookup so the "review selections" chips can show a team's name without
+	// re-walking every conference.
+	const teamById = $derived.by(
+		() =>
+			new Map<string, ConferenceTeam>(
+				[...conferences.values()].flatMap((conference) =>
+					conference.teams.map((team): [string, ConferenceTeam] => [team.id, team])
+				)
+			)
+	);
+
+	const favoriteTeams = $derived(
+		settings.favoriteTeamIds
+			.map((id) => teamById.get(id))
+			.filter((team) => team !== undefined)
+			.sort((a, b) => a.location.localeCompare(b.location))
+	);
 
 	function teamMatches(team: ConferenceTeam, query: string): boolean {
 		return (
@@ -148,7 +167,16 @@
 	}}
 >
 	<div class="content">
-		<button class="close" type="button" aria-label="Close" onclick={onClose}>&times;</button>
+		<button class="close" type="button" aria-label="Close" onclick={onClose}>
+			<svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
+				<path
+					d="M2 2l12 12M14 2L2 14"
+					stroke="currentColor"
+					stroke-width="1.5"
+					stroke-linecap="round"
+				/>
+			</svg>
+		</button>
 
 		<h2>Settings</h2>
 
@@ -226,11 +254,33 @@
 					{pickerOpen ? 'Hide teams' : 'Select teams'}
 				</button>
 				{#if settings.favoriteTeamIds.length > 0}
-					<span class="favoriteCount">
+					<button
+						class="favoriteCount"
+						type="button"
+						aria-expanded={reviewOpen}
+						onclick={() => (reviewOpen = !reviewOpen)}
+					>
 						{settings.favoriteTeamIds.length} selected
-					</span>
+					</button>
 				{/if}
 			</div>
+			{#if reviewOpen && favoriteTeams.length > 0}
+				<div class="selectedChips">
+					{#each favoriteTeams as team (team.id)}
+						<span class="chip">
+							{team.location}
+							<button
+								type="button"
+								class="chipRemove"
+								aria-label={`Remove ${team.location}`}
+								onclick={() => toggleFavoriteTeam(team.id)}
+							>
+								&times;
+							</button>
+						</span>
+					{/each}
+				</div>
+			{/if}
 			{#if pickerOpen}
 				<input
 					class="search"
@@ -313,7 +363,7 @@
 					{broadcastPickerOpen ? 'Hide channels' : 'Select channels'}
 				</button>
 				{#if settings.accessibleBroadcasts.length > 0}
-					<span class="favoriteCount">
+					<span class="channelCount">
 						{settings.accessibleBroadcasts.length} selected
 					</span>
 				{/if}
@@ -374,14 +424,15 @@
 		position: absolute;
 		top: var(--space-5);
 		right: var(--space-5);
+		display: flex;
+		align-items: center;
+		justify-content: center;
 		width: 2rem;
 		height: 2rem;
 		border: none;
 		border-radius: var(--radius-full);
 		background: var(--color-surface-alt);
 		color: var(--color-text-muted);
-		font-size: var(--text-xl);
-		line-height: 1;
 		cursor: pointer;
 	}
 
@@ -500,8 +551,69 @@
 	}
 
 	.favoriteCount {
+		padding: 0;
+		border: none;
+		background: none;
 		color: var(--color-text-muted);
+		font: inherit;
 		font-size: var(--text-sm);
+		text-decoration: underline;
+		text-decoration-color: transparent;
+		cursor: pointer;
+	}
+
+	.favoriteCount:hover,
+	.favoriteCount:focus-visible {
+		color: var(--color-accent);
+		text-decoration-color: currentColor;
+	}
+
+	.channelCount {
+		padding: 0;
+		border: none;
+		background: none;
+		color: var(--color-text-muted);
+		font: inherit;
+		font-size: var(--text-sm);
+	}
+
+	.selectedChips {
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--space-2);
+		margin-top: var(--space-2);
+	}
+
+	.chip {
+		display: inline-flex;
+		align-items: center;
+		gap: var(--space-1);
+		padding: var(--space-1) var(--space-1) var(--space-1) var(--space-2);
+		border: 1px solid var(--color-border);
+		border-radius: var(--radius-full);
+		background: var(--color-surface-alt);
+		font-size: var(--text-sm);
+	}
+
+	.chipRemove {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 1.1rem;
+		height: 1.1rem;
+		padding: 0;
+		border: none;
+		border-radius: var(--radius-full);
+		background: none;
+		color: var(--color-text-faint);
+		font-size: var(--text-sm);
+		line-height: 1;
+		cursor: pointer;
+	}
+
+	.chipRemove:hover {
+		background: var(--color-border);
+		color: var(--color-text);
 	}
 
 	.teamGroups {
