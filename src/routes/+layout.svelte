@@ -1,6 +1,7 @@
 <script lang="ts">
 	import '../app.css';
 	import favicon from '$lib/assets/favicon.jpg';
+	import DataStatus from '$lib/components/DataStatus.svelte';
 	import SettingsModal from '$lib/components/SettingsModal.svelte';
 	import { settings } from '$lib/game/settings.svelte';
 	import type { LayoutProps } from './$types';
@@ -35,13 +36,18 @@
 </main>
 
 <footer>
-	<div class="inner">Data from ESPN's unofficial API. Times shown in your local timezone.</div>
+	<div class="inner">
+		<span class="attribution-full">Data from ESPN's unofficial API. Times shown in your local timezone.</span>
+		<span class="attribution-short">Data from ESPN. Times shown locally.</span>
+		<DataStatus />
+	</div>
 </footer>
 
 <SettingsModal
 	open={settingsOpen}
 	onClose={() => (settingsOpen = false)}
 	conferences={data.conferences}
+	broadcasters={data.broadcasters}
 />
 
 <style>
@@ -86,12 +92,52 @@
 	main {
 		max-width: var(--content-width);
 		margin: 0 auto;
-		padding: var(--space-4) var(--space-4) var(--space-6);
+		/* Bottom padding clears the fixed footer so it never covers the last row of content. */
+		padding: var(--space-4) var(--space-4) calc(var(--space-6) + 2.5rem);
 	}
 
 	footer {
+		position: fixed;
+		inset-inline: 0;
+		inset-block-end: 0;
+		z-index: 5;
 		border-top: 1px solid var(--color-border);
+		background: var(--color-surface);
 		color: var(--color-text-faint);
 		font-size: var(--text-xs);
+	}
+
+	footer .inner {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: baseline;
+		justify-content: space-between;
+		gap: var(--space-2) var(--space-4);
+	}
+
+	/* Below this width the two spans wrap onto separate lines; center each
+	   rather than leaving them pinned to opposite edges. */
+	@media (max-width: 640px) {
+		footer .inner {
+			justify-content: center;
+			text-align: center;
+			row-gap: var(--space-1);
+		}
+	}
+
+	.attribution-short {
+		display: none;
+	}
+
+	/* Narrow enough that even the attribution's own line wraps in two; swap
+	   in a shorter message rather than let it break across three lines total. */
+	@media (max-width: 400px) {
+		.attribution-full {
+			display: none;
+		}
+
+		.attribution-short {
+			display: inline;
+		}
 	}
 </style>

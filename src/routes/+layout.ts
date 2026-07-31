@@ -1,3 +1,4 @@
+import { loadBroadcasterList } from '$lib/game/broadcasters';
 import { loadConferenceMap } from '$lib/game/conferences';
 import { loadScoreboard } from '$lib/game/load';
 import { injectOpeningWeekOption, splitOpeningWeek } from '$lib/game/openingWeek';
@@ -51,6 +52,7 @@ export const load: LayoutLoad = async ({ fetch }) => {
 		// Same-origin static file, not an ESPN call — small and reliable enough to
 		// await here rather than thread through every component as a promise.
 		conferences: await loadConferenceMap(fetch),
-		ratings: await loadRatingMap(fetch)
+		ratings: await loadRatingMap(fetch),
+		broadcasters: await loadBroadcasterList(fetch)
 	};
 };

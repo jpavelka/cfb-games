@@ -93,6 +93,8 @@ export interface StoredScoreboard {
 	week: WeekInfo;
 	games: StoredGame[];
 	fetchedAt: Date;
+	/** When the next `/refresh-week` for this week is scheduled. Absent if nothing is scheduled (e.g. a one-off manual refresh, or a chain that just ended). */
+	nextRefreshAt?: Date;
 	partialErrors: Scoreboard['partialErrors'];
 }
 
@@ -169,11 +171,12 @@ function toStoredGame(game: Game): StoredGame {
 }
 
 /** Project a live `Scoreboard` down to what actually gets written to storage. */
-export function toStoredScoreboard(board: Scoreboard): StoredScoreboard {
+export function toStoredScoreboard(board: Scoreboard, nextRefreshAt?: Date): StoredScoreboard {
 	return {
 		week: board.week,
 		games: board.games.map(toStoredGame),
 		fetchedAt: board.fetchedAt,
+		nextRefreshAt,
 		partialErrors: board.partialErrors
 	};
 }

@@ -6,6 +6,7 @@
 	} from '$lib/game/conferences';
 	import {
 		settings,
+		toggleAccessibleBroadcast,
 		toggleFavoriteTeam,
 		updateSettings,
 		type FavoriteHandling,
@@ -16,8 +17,14 @@
 	let {
 		open,
 		onClose,
-		conferences
-	}: { open: boolean; onClose: () => void; conferences: ConferenceMap } = $props();
+		conferences,
+		broadcasters
+	}: {
+		open: boolean;
+		onClose: () => void;
+		conferences: ConferenceMap;
+		broadcasters: string[];
+	} = $props();
 
 	let dialogEl: HTMLDialogElement | undefined = $state();
 
@@ -98,6 +105,8 @@
 			: settings.favoriteBoostAmount;
 		updateSettings({ favoriteBoostAmount: clamped });
 	}
+
+	let broadcastPickerOpen = $state(false);
 </script>
 
 {#snippet teamList(teams: ConferenceTeam[])}
@@ -110,6 +119,21 @@
 					onchange={() => toggleFavoriteTeam(team.id)}
 				/>
 				{team.location}
+			</label>
+		{/each}
+	</div>
+{/snippet}
+
+{#snippet broadcastList(names: string[])}
+	<div class="teamList">
+		{#each names as name (name)}
+			<label class="teamCheckbox">
+				<input
+					type="checkbox"
+					checked={settings.accessibleBroadcasts.includes(name)}
+					onchange={() => toggleAccessibleBroadcast(name)}
+				/>
+				{name}
 			</label>
 		{/each}
 	</div>
@@ -275,6 +299,47 @@
 				</div>
 			{/if}
 			<p class="hint">Affects sort order only — the displayed matchup score doesn't change.</p>
+		</section>
+
+		<section>
+			<span class="field">Channels</span>
+			<div class="pickerHeader">
+				<button
+					class="pickerToggle"
+					type="button"
+					aria-expanded={broadcastPickerOpen}
+					onclick={() => (broadcastPickerOpen = !broadcastPickerOpen)}
+				>
+					{broadcastPickerOpen ? 'Hide channels' : 'Select channels'}
+				</button>
+				{#if settings.accessibleBroadcasts.length > 0}
+					<span class="favoriteCount">
+						{settings.accessibleBroadcasts.length} selected
+					</span>
+				{/if}
+			</div>
+			{#if broadcastPickerOpen}
+				{#if broadcasters.length > 0}
+					<div class="teamGroups">
+						{@render broadcastList(broadcasters)}
+					</div>
+				{:else}
+					<p class="empty">No channel data available yet.</p>
+				{/if}
+			{/if}
+			<label class="radio">
+				<input
+					type="checkbox"
+					checked={settings.filterByAccessibleBroadcasts}
+					onchange={(event) =>
+						updateSettings({ filterByAccessibleBroadcasts: event.currentTarget.checked })}
+				/>
+				Only show games I can watch
+			</label>
+			<p class="hint">
+				Hides games not on a selected channel — including games with no listed national
+				broadcaster.
+			</p>
 		</section>
 	</div>
 </dialog>

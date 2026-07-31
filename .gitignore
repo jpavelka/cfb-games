@@ -32,6 +32,7 @@ vite.config.ts.timestamp-*
 previous/
 
 todo.txt
+local/
 
 # Project IDs and service account names for deploying server/ — not secrets, but no
 # reason for them to live in the repo either.

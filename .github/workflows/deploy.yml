@@ -13,10 +13,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # Conference data, Sagarin ratings, and the week schedule are fetched daily
-      # (refresh-data.yml), not on every push, so a normal code deploy has to carry
-      # the last-known copies forward from gh-pages rather than shipping a build
-      # missing any of them.
+      # Conference data, Sagarin ratings, the week schedule, and the broadcaster
+      # list are fetched daily (refresh-data.yml), not on every push, so a normal
+      # code deploy has to carry the last-known copies forward from gh-pages
+      # rather than shipping a build missing any of them.
       - name: Fetch existing conference data
         run: |
           mkdir -p static/data
@@ -31,6 +31,11 @@ jobs:
         run: |
           mkdir -p static/data
           git fetch origin gh-pages && git checkout origin/gh-pages -- data/weeks.json && mv data/weeks.json static/data/ || true
+
+      - name: Fetch existing broadcaster list
+        run: |
+          mkdir -p static/data
+          git fetch origin gh-pages && git checkout origin/gh-pages -- data/broadcasters.json && mv data/broadcasters.json static/data/ || true
 
       - uses: actions/setup-node@v4
         with:

@@ -41,15 +41,15 @@ function seasonFilePrefix(seasonYear: number): string {
 	return `games-${seasonYear}-`;
 }
 
-export async function saveWeekScoreboard(key: WeekKey, board: Scoreboard): Promise<void> {
+export async function saveWeekScoreboard(key: WeekKey, board: Scoreboard, nextRefreshAt?: Date): Promise<void> {
 	const file = bucket().file(weekFileName(key));
 	// Only what's actually used by the UI gets written — see storedScoreboard.ts for
 	// exactly what's dropped and why (the full `Scoreboard`/`Game` also carry the
 	// season-wide week picker list and a handful of fields no component reads).
 	//
-	// `kickoff`/`fetchedAt` are `Date`s; JSON.stringify serializes them via
-	// `Date#toJSON` to ISO strings, which the frontend loader revives.
-	await file.save(JSON.stringify(toStoredScoreboard(board)), {
+	// `kickoff`/`fetchedAt`/`nextRefreshAt` are `Date`s; JSON.stringify serializes them
+	// via `Date#toJSON` to ISO strings, which the frontend loader revives.
+	await file.save(JSON.stringify(toStoredScoreboard(board, nextRefreshAt)), {
 		contentType: 'application/json',
 		metadata: {
 			// Mirrors ESPN's own `cache-control: max-age=10` so a CDN/browser cache in

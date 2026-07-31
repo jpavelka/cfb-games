@@ -50,6 +50,20 @@ export function filterByMinScore(games: readonly Game[], ratings: RatingMap, min
 	});
 }
 
+/**
+ * Games broadcast on at least one selected channel. Games with no listed
+ * broadcaster are treated as unwatchable and hidden too. `enabled = false` or
+ * an empty `accessibleBroadcasts` passes everything through.
+ */
+export function filterByBroadcastAccess(
+	games: readonly Game[],
+	accessibleBroadcasts: string[],
+	enabled: boolean
+): Game[] {
+	if (!enabled || accessibleBroadcasts.length === 0) return [...games];
+	return games.filter((game) => game.broadcasts.some((b) => accessibleBroadcasts.includes(b)));
+}
+
 /** Games matching the selected team category. `'all'` passes everything through. */
 export function filterByTeamCategory(games: readonly Game[], category: TeamFilter): Game[] {
 	switch (category) {

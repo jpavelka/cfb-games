@@ -13,6 +13,7 @@
 		"fetch:conferences": "tsx scripts/fetch-conferences.ts",
 		"fetch:sagarin": "tsx scripts/fetch-sagarin-ratings.ts",
 		"fetch:weeks": "tsx scripts/fetch-weeks.ts",
+		"fetch:broadcasters": "tsx scripts/fetch-broadcasters.ts",
 		"deploy:server": "bash scripts/deploy.sh"
 	},
 	"devDependencies": {

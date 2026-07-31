@@ -17,6 +17,10 @@ export interface SettingsState {
 	/** Added to a favorite game's matchup score for sorting, when `favoriteHandling` is `'boost'`. */
 	favoriteBoostAmount: number;
 	theme: Theme;
+	/** Channel/network names the user has selected as ones they can watch. */
+	accessibleBroadcasts: string[];
+	/** When true, hide games not on any selected channel (and games with no listed broadcaster). */
+	filterByAccessibleBroadcasts: boolean;
 }
 
 const STORAGE_KEY = 'cfb:settings';
@@ -26,7 +30,9 @@ const DEFAULTS: SettingsState = {
 	favoriteTeamIds: [],
 	favoriteHandling: 'none',
 	favoriteBoostAmount: 15,
-	theme: 'system'
+	theme: 'system',
+	accessibleBroadcasts: [],
+	filterByAccessibleBroadcasts: false
 };
 
 /**
@@ -75,5 +81,14 @@ export function toggleFavoriteTeam(teamId: string): void {
 		favoriteTeamIds: isFavorite
 			? settings.favoriteTeamIds.filter((id) => id !== teamId)
 			: [...settings.favoriteTeamIds, teamId]
+	});
+}
+
+export function toggleAccessibleBroadcast(name: string): void {
+	const isSelected = settings.accessibleBroadcasts.includes(name);
+	updateSettings({
+		accessibleBroadcasts: isSelected
+			? settings.accessibleBroadcasts.filter((n) => n !== name)
+			: [...settings.accessibleBroadcasts, name]
 	});
 }

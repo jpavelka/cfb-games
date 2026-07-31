@@ -170,11 +170,32 @@ export function teamInitials(team: GameTeam): string {
 
 export function formatRelativeUpdate(fetchedAt: Date, now: Date = new Date()): string {
 	const seconds = Math.max(0, Math.round((now.getTime() - fetchedAt.getTime()) / 1000));
-	if (seconds < 60) return 'updated just now';
+	if (seconds < 60) return 'Updated just now';
 
 	const minutes = Math.round(seconds / 60);
-	if (minutes < 60) return `updated ${minutes} min ago`;
+	if (minutes < 60) return `Updated ${minutes} min ago`;
 
 	const hours = Math.round(minutes / 60);
-	return `updated ${hours} hr ago`;
+	return `Updated ${hours} hr ago`;
+}
+
+/**
+ * e.g. "next check in 5 min" or, once it's more than a handful of hours out (an
+ * idle bye week backed all the way off to next Monday — see
+ * `server/reschedule.ts`), "next check Mon, Sep 1 at 6:00 AM" instead of a
+ * meaningless "in 38 hr". Once the scheduled check time has passed without the
+ * page reloading, "refresh for new data" instead of a stale "any moment".
+ */
+export function formatNextRefresh(nextRefreshAt: Date, now: Date = new Date()): string {
+	const seconds = Math.round((nextRefreshAt.getTime() - now.getTime()) / 1000);
+	if (seconds <= 0) return 'Refresh for new data';
+	if (seconds <= 30) return 'Next check any moment';
+
+	const minutes = Math.round(seconds / 60);
+	if (minutes < 60) return `Next check in ${minutes} min`;
+
+	const hours = Math.round(minutes / 60);
+	if (hours < 20) return `Next check in ${hours} hr`;
+
+	return `Next check ${formatKickoffDate(nextRefreshAt)} at ${TIME.format(nextRefreshAt)}`;
 }

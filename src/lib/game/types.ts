@@ -136,6 +136,8 @@ export interface Scoreboard {
 	weeks: WeekOption[];
 	games: Game[];
 	fetchedAt: Date;
+	/** When the next scheduled refresh for this week is expected. Absent if none is scheduled. */
+	nextRefreshAt?: Date;
 	partialErrors: Array<{ subdivision: Subdivision; message: string }>;
 	/** Events ESPN returned that we could not parse. Surfaced for debugging only. */
 	skippedCount: number;

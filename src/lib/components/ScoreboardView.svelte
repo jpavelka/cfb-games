@@ -6,7 +6,13 @@
 	import LoadingState from '$lib/components/LoadingState.svelte';
 	import WeekPicker from '$lib/components/WeekPicker.svelte';
 	import type { ConferenceMap } from '$lib/game/conferences';
-	import { filterByMinScore, filterByTeam, filterByTeamCategory } from '$lib/game/filter';
+	import {
+		filterByBroadcastAccess,
+		filterByMinScore,
+		filterByTeam,
+		filterByTeamCategory
+	} from '$lib/game/filter';
+	import { setDataStatus } from '$lib/game/dataStatus.svelte';
 	import type { RatingMap } from '$lib/game/ratings';
 	import { settings } from '$lib/game/settings.svelte';
 	import type { Scoreboard } from '$lib/game/types';
@@ -43,6 +49,26 @@
 	} = $props();
 
 	let search = $state('');
+
+	// Footer reads `dataStatus` (see `dataStatus.svelte.ts`) rather than the `board`
+	// bound inside the `{:then}` block below, since it's a sibling of this
+	// component in `+layout.svelte` with no direct access to that promise.
+	// Cleared while a new week is loading (or on failure) rather than left showing
+	// the previous week's timing, which would otherwise read as current.
+	$effect(() => {
+		let cancelled = false;
+		setDataStatus(null);
+		scoreboard
+			.then((board) => {
+				if (!cancelled) setDataStatus(board);
+			})
+			.catch(() => {
+				if (!cancelled) setDataStatus(null);
+			});
+		return () => {
+			cancelled = true;
+		};
+	});
 </script>
 
 {#await scoreboard}
@@ -53,9 +79,13 @@
 	</div>
 	<LoadingState />
 {:then board}
-	{@const filteredGames = filterByTeamCategory(
-		filterByMinScore(filterByTeam(board.games, search), ratings, settings.minMatchupScore),
-		settings.teamFilter
+	{@const filteredGames = filterByBroadcastAccess(
+		filterByTeamCategory(
+			filterByMinScore(filterByTeam(board.games, search), ratings, settings.minMatchupScore),
+			settings.teamFilter
+		),
+		settings.accessibleBroadcasts,
+		settings.filterByAccessibleBroadcasts
 	)}
 	<div class="week">
 		<h2>{board.week.label}</h2>

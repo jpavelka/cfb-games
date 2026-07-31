@@ -45,6 +45,7 @@ export async function loadStoredScoreboard(
 		return {
 			...data,
 			fetchedAt: new Date(data.fetchedAt),
+			nextRefreshAt: data.nextRefreshAt ? new Date(data.nextRefreshAt) : undefined,
 			games: data.games.map((game) => ({ ...game, kickoff: new Date(game.kickoff) }))
 		};
 	} catch (error) {
@@ -86,6 +87,7 @@ export function fromStoredScoreboard(stored: StoredScoreboard, weeks: WeekOption
 		weeks,
 		games: stored.games.map(toGame),
 		fetchedAt: stored.fetchedAt,
+		nextRefreshAt: stored.nextRefreshAt,
 		partialErrors: stored.partialErrors,
 		skippedCount: 0
 	};

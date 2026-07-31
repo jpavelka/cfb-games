@@ -53,6 +53,17 @@ function reachableWeeks(calendar: MergedScoreboard['calendar']): Array<{ seasonT
 }
 
 /**
+ * Clamp a proposed delay to `rescheduleCutoff`, if any. `null` means the cutoff
+ * has already passed — the chain should end rather than reschedule.
+ */
+function clampToCutoff(delayMs: number, rescheduleCutoff: string | undefined, now: number): number | null {
+	if (!rescheduleCutoff) return delayMs;
+	const cutoffMs = new Date(rescheduleCutoff).getTime();
+	if (cutoffMs <= now) return null;
+	return Math.min(delayMs, cutoffMs - now);
+}
+
+/**
  * Fetch + store one week, then (if `reschedule`) enqueue the next check for that
  * same week. Wrapped so a failure in the fetch/store step still reschedules — an
  * unhandled error here would otherwise kill this week's chain permanently.
@@ -67,7 +78,18 @@ async function refreshWeek(payload: RefreshWeekPayload): Promise<void> {
 		const board = toScoreboard(merged);
 		board.games = sortGames(board.games);
 		games = board.games;
-		await saveWeekScoreboard({ seasonYear: payload.seasonYear, seasonType, week }, board);
+
+		// Same delay this refresh is about to reschedule itself with (computed again,
+		// moments later, down below) — stored here so the file records when the next
+		// check is expected alongside `fetchedAt`.
+		let nextRefreshAt: Date | undefined;
+		if (reschedule) {
+			const now = Date.now();
+			const delayMs = clampToCutoff(computeNextRefreshDelayMs(games, new Date(now)), rescheduleCutoff, now);
+			if (delayMs !== null) nextRefreshAt = new Date(now + delayMs);
+		}
+
+		await saveWeekScoreboard({ seasonYear: payload.seasonYear, seasonType, week }, board, nextRefreshAt);
 	} catch (error) {
 		failed = true;
 		console.error(`refresh-week failed for seasonType=${seasonType} week=${week}`, error);
@@ -76,13 +98,12 @@ async function refreshWeek(payload: RefreshWeekPayload): Promise<void> {
 	if (!reschedule) return;
 
 	const now = Date.now();
-	let delayMs = failed ? ERROR_BACKOFF_MS : computeNextRefreshDelayMs(games, new Date(now));
-
-	if (rescheduleCutoff) {
-		const cutoffMs = new Date(rescheduleCutoff).getTime();
-		if (cutoffMs <= now) return; // past the cutoff: let this chain end.
-		delayMs = Math.min(delayMs, cutoffMs - now);
-	}
+	const delayMs = clampToCutoff(
+		failed ? ERROR_BACKOFF_MS : computeNextRefreshDelayMs(games, new Date(now)),
+		rescheduleCutoff,
+		now
+	);
+	if (delayMs === null) return; // past the cutoff: let this chain end.
 
 	await enqueueRefreshTask(payload, delayMs);
 }
