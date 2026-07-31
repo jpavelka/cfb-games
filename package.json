@@ -1,36 +1,29 @@
 {
 	"name": "cfb-games",
+	"private": true,
 	"version": "0.0.1",
+	"type": "module",
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build",
-		"package": "svelte-kit package",
 		"preview": "vite preview",
-		"prepare": "svelte-kit sync",
-		"check": "svelte-check --tsconfig ./jsconfig.json",
-		"check:watch": "svelte-check --tsconfig ./jsconfig.json --watch",
-		"test": "playwright test",
-		"lint": "prettier --check --plugin-search-dir=. . && eslint .",
-		"format": "prettier --write --plugin-search-dir=. .",
-		"deploy": "touch ./build/.nojekyll && gh-pages -d build -t true"
+		"prepare": "svelte-kit sync || echo ''",
+		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --config ./vite.config.ts",
+		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --config ./vite.config.ts --watch",
+		"fetch:conferences": "tsx scripts/fetch-conferences.ts",
+		"fetch:sagarin": "tsx scripts/fetch-sagarin-ratings.ts",
+		"fetch:weeks": "tsx scripts/fetch-weeks.ts",
+		"deploy:server": "bash scripts/deploy.sh"
 	},
 	"devDependencies": {
-		"@playwright/test": "^1.22.2",
-		"@sveltejs/adapter-auto": "next",
-		"@sveltejs/adapter-static": "^1.0.0-next.41",
-		"@sveltejs/kit": "next",
-		"eslint": "^8.16.0",
-		"eslint-config-prettier": "^8.3.0",
-		"eslint-plugin-svelte3": "^4.0.0",
-		"prettier": "^2.6.2",
-		"prettier-plugin-svelte": "^2.7.0",
-		"svelte": "^3.49.0",
-		"svelte-check": "^2.7.1",
-		"typescript": "^4.7.2",
-		"vite": "^2.9.17"
-	},
-	"type": "module",
-	"dependencies": {
-		"js-cookie": "^3.0.1"
+		"@sveltejs/adapter-static": "^3.0.10",
+		"@sveltejs/kit": "^2.63.0",
+		"@sveltejs/vite-plugin-svelte": "^7.2.0",
+		"@types/node": "^22.20.1",
+		"svelte": "^5.56.1",
+		"svelte-check": "^4.6.0",
+		"tsx": "^4.23.1",
+		"typescript": "^6.0.3",
+		"vite": "^8.1.5"
 	}
 }

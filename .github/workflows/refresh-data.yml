@@ -1,0 +1,49 @@
+name: Refresh Data and Deploy
+# Regenerates static/data/conferences.json (see scripts/fetch-conferences.ts),
+# static/data/sagarin.json (see scripts/fetch-sagarin-ratings.ts), and
+# static/data/weeks.json (see scripts/fetch-weeks.ts), then deploys the full site,
+# since this is a fully static, adapter-static build. Runs daily — Sagarin
+# re-publishes ratings roughly daily during the season, and refetching conference
+# alignment and the week schedule (both of which barely ever change) alongside it
+# daily is a harmless extra cost that avoids needing three independently-scheduled
+# refresh jobs, each of which would otherwise have to carry the others' last output
+# forward so a solo run doesn't ship a build missing one of the three files.
+on:
+  schedule:
+    - cron: '0 11 * * *' # Daily 11:00 UTC — comfortably after Sagarin's typical early-morning update
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  refresh-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Refresh conference data
+        run: npm run fetch:conferences
+
+      - name: Refresh Sagarin ratings
+        run: npm run fetch:sagarin
+
+      - name: Refresh week schedule
+        run: npm run fetch:weeks
+
+      - name: Build
+        env:
+          BASE_PATH: /cfb-games
+        run: npm run build
+
+      - name: Deploy
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: build

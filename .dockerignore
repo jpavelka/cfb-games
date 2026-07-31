@@ -1,0 +1,10 @@
+node_modules
+.git
+.svelte-kit
+build
+previous
+static
+.idx
+.vscode
+*.md
+todo.txt

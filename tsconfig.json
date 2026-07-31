@@ -1,0 +1,31 @@
+{
+	"extends": "./.svelte-kit/tsconfig.json",
+	"compilerOptions": {
+		"rewriteRelativeImportExtensions": true,
+		"allowJs": true,
+		"checkJs": true,
+		"esModuleInterop": true,
+		"forceConsistentCasingInFileNames": true,
+		"resolveJsonModule": true,
+		"skipLibCheck": true,
+		"sourceMap": true,
+		"strict": true,
+		"moduleResolution": "bundler"
+	},
+	// `previous/` is a read-only reference copy of the pre-rebuild app (Svelte 3 /
+	// SvelteKit next.360). It must stay out of the program: its svelte.config.js
+	// imports svelte-preprocess, which we do not install, and svelte-check will try
+	// to load it if any file under previous/ is in scope.
+	//
+	// `.svelte-kit/` must NOT be listed here. An `exclude` in this file replaces the
+	// generated one wholesale, and the generated `include` pulls in
+	// `.svelte-kit/non-ambient.d.ts` — the augmentation that makes `$app/types`
+	// describe *this* app's routes. Excluding it silently degrades `RouteId` and
+	// `RouteParams` back to `string`, which un-types every `resolve()` call.
+	"exclude": ["previous", "build", "node_modules"]
+	// Path aliases are handled by https://svelte.dev/docs/kit/configuration#alias
+	// except $lib which is handled by https://svelte.dev/docs/kit/configuration#files
+	//
+	// To make changes to top-level options such as include and exclude, we recommend extending
+	// the generated config; see https://svelte.dev/docs/kit/configuration#typescript
+}
