@@ -26,15 +26,15 @@
 
 	<span class="identity">
 		<span class="line">
-			{#if isFavorite}
-				<span class="favorite" title="Favorite team">★</span>
-			{/if}
 			{#if team.rank}
 				<span class="rank">{team.rank}</span>
 			{/if}
 			<span class="name">{team.location}</span>
 			{#if spread}
 				<span class="spread">{spread}</span>
+			{/if}
+			{#if isFavorite}
+				<span class="favorite" title="Favorite team">★</span>
 			{/if}
 		</span>
 		{#if record}
@@ -78,7 +78,7 @@
 
 	.favorite {
 		flex: none;
-		color: var(--color-accent);
+		color: var(--color-favorite);
 		font-size: var(--text-xs);
 	}
 

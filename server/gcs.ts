@@ -1,3 +1,4 @@
+import { gzipSync } from 'node:zlib';
 import { Storage } from '@google-cloud/storage';
 import type { Scoreboard } from '../src/lib/game/types';
 import { toStoredScoreboard } from '../src/lib/game/storedScoreboard';
@@ -54,9 +55,15 @@ export async function saveWeekScoreboard(
 	//
 	// `kickoff`/`fetchedAt`/`nextRefreshAt` are `Date`s; JSON.stringify serializes them
 	// via `Date#toJSON` to ISO strings, which the frontend loader revives.
-	await file.save(JSON.stringify(toStoredScoreboard(board, knownTeamIds, nextRefreshAt)), {
+	//
+	// Stored gzipped (~90% smaller for a full week's games) since the frontend fetches
+	// this straight from GCS every 10s during a live game — every browser decompresses
+	// `Content-Encoding: gzip` transparently, no client changes needed.
+	const json = JSON.stringify(toStoredScoreboard(board, knownTeamIds, nextRefreshAt));
+	await file.save(gzipSync(json), {
 		contentType: 'application/json',
 		metadata: {
+			contentEncoding: 'gzip',
 			// Mirrors ESPN's own `cache-control: max-age=10` so a CDN/browser cache in
 			// front of the bucket can't hold a stale week for long.
 			cacheControl: 'public, max-age=10'

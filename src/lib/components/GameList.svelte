@@ -5,7 +5,7 @@
 	import type { ConferenceMap } from '$lib/game/conferences';
 	import { sortByInterest, type FavoriteSort, type RatingMap } from '$lib/game/ratings';
 	import { settings } from '$lib/game/settings.svelte';
-	import { groupByDay as buildDays } from '$lib/game/sort';
+	import { groupByDay as buildDays, localDayKey } from '$lib/game/sort';
 	import type { Game } from '$lib/game/types';
 
 	let {
@@ -36,9 +36,12 @@
 	const flatGames = $derived(sortByInterest(games, ratings, favorites));
 
 	let groupByDay = $state(true);
-	// Each day starts grouped by kickoff time (the current default behavior);
-	// a day only needs an entry here once its own checkbox is toggled off.
-	let ungroupedByTime: Record<string, boolean> = $state({});
+	// Every day starts ungrouped by kickoff time except today's, which starts
+	// grouped (kickoff time matters most for a game that's about to start or
+	// already underway); a day only needs an entry here once its own checkbox
+	// is toggled away from that default.
+	const todayKey = localDayKey(new Date());
+	let groupedByTime: Record<string, boolean> = $state({});
 
 	// Measured per day so slot headings tuck in right below the day heading
 	// even if it wraps to more than one line.
@@ -91,13 +94,13 @@
 			<label class="toggle timeToggle">
 				<input
 					type="checkbox"
-					checked={!ungroupedByTime[day.key]}
-					onchange={(event) => (ungroupedByTime[day.key] = !event.currentTarget.checked)}
+					checked={groupedByTime[day.key] ?? day.key === todayKey}
+					onchange={(event) => (groupedByTime[day.key] = event.currentTarget.checked)}
 				/>
 				Group by Kickoff Time
 			</label>
 
-			{#if ungroupedByTime[day.key]}
+			{#if !(groupedByTime[day.key] ?? day.key === todayKey)}
 				<div class="games">
 					{#each day.games as game (game.id)}
 						<GameCard {game} {ratings} onSelect={(selected) => (selectedGame = selected)} />

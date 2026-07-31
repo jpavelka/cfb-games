@@ -91,7 +91,7 @@
 	}
 
 	.card.favorite {
-		border-left-color: var(--color-accent);
+		border-left-color: var(--color-favorite);
 	}
 
 	.card:hover {

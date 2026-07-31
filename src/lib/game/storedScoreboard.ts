@@ -92,7 +92,6 @@ export interface StoredGame {
 	status: StoredGameStatus;
 	away: StoredGameTeam;
 	home: StoredGameTeam;
-	teams: readonly [StoredGameTeam, StoredGameTeam];
 	broadcasts: string[];
 	venue?: StoredGameVenue;
 	neutralSite: boolean;
@@ -174,7 +173,6 @@ function toStoredGame(game: Game, knownTeamIds: Set<string>): StoredGame {
 		},
 		away,
 		home,
-		teams: [away, home],
 		broadcasts: game.broadcasts,
 		venue: game.venue
 			? {
