@@ -11,7 +11,7 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       # Team data, Sagarin ratings, the week schedule, and the broadcaster
       # list are fetched daily (refresh-data.yml), not on every push, so a normal
@@ -37,7 +37,7 @@ jobs:
           mkdir -p static/data
           git fetch origin gh-pages && git checkout origin/gh-pages -- data/broadcasters.json && mv data/broadcasters.json static/data/ || true
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: '22'
 
