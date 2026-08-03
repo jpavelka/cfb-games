@@ -26,33 +26,38 @@ export const load: PageLoad = ({ params, parent, fetch }) => {
 
 	const isOpeningWeek = params.week === OPENING_WEEK_SLUG || params.week === 'week1';
 
-	// `week0`/`week1` reuse the root layout's Week 1 fetch (see `+layout.ts`) rather
-	// than fetching it a second time; every other week fetches itself as usual. Kept
-	// as its own promise, started immediately rather than inside the `parent()`
-	// chain below, so a normal week page isn't held up waiting on Week 1's fetch.
+	// Every week, including `week0`/`week1`, loads its own game data the same way —
+	// `week0` and `week1` both resolve to the same GCS-stored merged Week 1 file
+	// (see `parseWeekSlug`) and are sliced down to their own half below, once the
+	// cutoff is known.
 	//
 	// No season year: ESPN honors week + seasontype on their own and answers for the
 	// current season, which is exactly the season whose calendar fills the picker.
-	const boardPromise = isOpeningWeek
-		? parent().then(({ openingWeekBoard }) => openingWeekBoard)
-		: loadScoreboard(
-				{ week: target.week, seasonType: target.seasonType },
-				parent().then(({ teams }) => teams),
-				fetch
-			);
-
-	const splitPromise = parent().then(({ openingWeekSplit }) => openingWeekSplit);
-
-	const scoreboard = Promise.all([boardPromise, splitPromise]).then(([board, split]) =>
-		isOpeningWeek && split
-			? resolveOpeningWeekBoard(board, split, params.week as 'week0' | 'week1')
-			: board
+	const boardPromise = loadScoreboard(
+		{ week: target.week, seasonType: target.seasonType },
+		parent().then(({ teams }) => teams),
+		fetch
 	);
+
+	const cutoffPromise = parent().then(({ openingWeekCutoff }) => openingWeekCutoff);
+
+	const scoreboard = Promise.all([boardPromise, cutoffPromise]).then(([board, cutoff]) =>
+		isOpeningWeek && cutoff ? resolveOpeningWeekBoard(board, cutoff, params.week as 'week0' | 'week1') : board
+	);
+
+	// Reuses the layout's cached `currentWeekSlug` (no extra fetch) rather than
+	// asking ESPN again — recomputed fresh on every navigation since this whole
+	// `load()` reruns per `params.week`, unlike a component-level reactive check
+	// which can lag a navigation that changes weeks faster than it resolves.
+	const isCurrentWeek = parent()
+		.then(({ currentWeekSlug }) => currentWeekSlug)
+		.then((slug) => slug === params.week);
 
 	return {
 		scoreboard,
 		// The slug we *asked* for. ESPN silently clamps a week the season doesn't have
 		// back to week 1 rather than erroring, so the page has to compare.
-		requested: params.week
+		requested: params.week,
+		isCurrentWeek
 	};
 };

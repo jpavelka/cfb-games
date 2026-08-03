@@ -22,7 +22,7 @@
 		scoreboard,
 		weeks,
 		requested = null,
-		currentWeekSlug,
+		isCurrentWeek,
 		conferences,
 		ratings
 	}: {
@@ -39,16 +39,24 @@
 		 */
 		requested?: string | null;
 		/**
-		 * Which week ESPN currently considers current, resolved separately so the
-		 * "← Current week" link can hide itself when `requested` already is that
-		 * week. Undefined on `/`, where the link never shows anyway.
+		 * Whether the week this navigation asked for is the one ESPN currently
+		 * considers current — computed fresh in this route's own `load()` (see
+		 * `+page.ts`), so it's tied to *this* navigation rather than left over from
+		 * whichever week was on screen before. Drives both the "← Current week"
+		 * link and `GameList`'s "Group by Day" default.
 		 */
-		currentWeekSlug?: Promise<string | null>;
+		isCurrentWeek: Promise<boolean>;
 		conferences: ConferenceMap;
 		ratings: RatingMap;
 	} = $props();
 
 	let search = $state('');
+
+	// Bundled so the `{#await}` block below (and everything mounted inside it,
+	// including `GameList`) only (re)creates once per navigation, with both
+	// values already resolved — no separate reactive correction that could race
+	// a fast navigation.
+	const boardAndCurrent = $derived(Promise.all([scoreboard, isCurrentWeek]));
 
 	// Footer reads `dataStatus` (see `dataStatus.svelte.ts`) rather than the `board`
 	// bound inside the `{:then}` block below, since it's a sibling of this
@@ -71,14 +79,14 @@
 	});
 </script>
 
-{#await scoreboard}
+{#await boardAndCurrent}
 	<div class="week">
 		{#await weeks then weeksList}
 			<WeekPicker weeks={weeksList} selected={requested} />
 		{/await}
 	</div>
 	<LoadingState />
-{:then board}
+{:then [board, currentWeek]}
 	{@const filteredGames = filterByBroadcastAccess(
 		filterByTeamCategory(
 			filterByMinScore(filterByTeam(board.games, search), ratings, settings.minMatchupScore),
@@ -106,12 +114,8 @@
 	</div>
 
 	<div class="meta">
-		{#if requested !== null && currentWeekSlug}
-			{#await currentWeekSlug then currentSlug}
-				{#if currentSlug !== requested}
-					<a class="current" href={resolve('/')}>← Current week</a>
-				{/if}
-			{/await}
+		{#if requested !== null && !currentWeek}
+			<a class="current" href={resolve('/')}>← Current week</a>
 		{/if}
 		<span class="count">{filteredGames.length} games</span>
 	</div>
@@ -142,7 +146,7 @@
 			{/if}
 		</p>
 	{:else}
-		<GameList games={filteredGames} {conferences} {ratings} />
+		<GameList games={filteredGames} {conferences} {ratings} isCurrentWeek={currentWeek} />
 	{/if}
 {:catch error}
 	<div class="week">

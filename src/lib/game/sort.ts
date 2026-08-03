@@ -177,3 +177,54 @@ export function groupByDay(games: readonly Game[]): GameDay[] {
 
 	return days;
 }
+
+export type StatusGroupKey = 'current' | 'upcoming' | 'completed' | 'postponed' | 'canceled';
+
+const STATUS_GROUP_ORDER: readonly StatusGroupKey[] = [
+	'current',
+	'upcoming',
+	'completed',
+	'postponed',
+	'canceled'
+];
+
+export const STATUS_GROUP_LABELS: Record<StatusGroupKey, string> = {
+	current: 'Current',
+	upcoming: 'Upcoming',
+	completed: 'Completed',
+	postponed: 'Postponed',
+	canceled: 'Canceled'
+};
+
+/** Mirrors `formatStatusLine`'s canceled → postponed → post → in → pre ordering. */
+function statusGroupKey({ status }: Game): StatusGroupKey {
+	if (status.canceled) return 'canceled';
+	if (status.postponed) return 'postponed';
+	if (status.state === 'in') return 'current';
+	if (status.state === 'post') return 'completed';
+	return 'upcoming';
+}
+
+export interface GameStatusGroup {
+	key: StatusGroupKey;
+	label: string;
+	games: Game[];
+}
+
+/** Bucket games by status into a fixed order (Current, Upcoming, Completed, Postponed, Canceled), omitting empty sections. */
+export function groupByStatus(games: readonly Game[]): GameStatusGroup[] {
+	const buckets = new Map<StatusGroupKey, Game[]>();
+
+	for (const game of games) {
+		const key = statusGroupKey(game);
+		const bucket = buckets.get(key);
+		if (bucket) bucket.push(game);
+		else buckets.set(key, [game]);
+	}
+
+	return STATUS_GROUP_ORDER.filter((key) => buckets.has(key)).map((key) => ({
+		key,
+		label: STATUS_GROUP_LABELS[key],
+		games: buckets.get(key)!
+	}));
+}

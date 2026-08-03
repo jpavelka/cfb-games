@@ -20,14 +20,14 @@ import type { LayoutLoad } from './$types';
  */
 export const load: LayoutLoad = ({ parent, fetch }) => ({
 	currentWeekSlug: Promise.all([loadCurrentWeek(fetch), parent()]).then(
-		async ([currentWeek, { openingWeekSplit }]) => {
+		async ([currentWeek, { openingWeekCutoff }]) => {
 			if (!currentWeek) return null;
 			if (currentWeek.week !== 1 || currentWeek.seasonType !== REGULAR_SEASON) {
 				return currentWeek.slug;
 			}
 
-			const split = await openingWeekSplit;
-			return split ? pickCurrentOpeningWeekSlug(split) : currentWeek.slug;
+			const cutoff = await openingWeekCutoff;
+			return cutoff ? pickCurrentOpeningWeekSlug(cutoff) : currentWeek.slug;
 		}
 	)
 });

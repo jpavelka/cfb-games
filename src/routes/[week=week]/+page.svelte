@@ -9,7 +9,7 @@
 	scoreboard={data.scoreboard}
 	weeks={data.weeks}
 	requested={data.requested}
-	currentWeekSlug={data.currentWeekSlug}
+	isCurrentWeek={data.isCurrentWeek}
 	conferences={data.conferences}
 	ratings={data.ratings}
 />

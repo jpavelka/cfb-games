@@ -8,6 +8,7 @@
 <ScoreboardView
 	scoreboard={data.scoreboard}
 	weeks={data.weeks}
+	isCurrentWeek={data.isCurrentWeek}
 	conferences={data.conferences}
 	ratings={data.ratings}
 />

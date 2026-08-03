@@ -77,12 +77,17 @@ function toTeam(competitor: EspnCompetitor, odds: EspnOdds | undefined): GameTea
 
 	const oddsSide = homeAway === 'home' ? odds?.homeTeamOdds : odds?.awayTeamOdds;
 
+	// ESPN sometimes uses "TBA" instead of our usual "TBD" placeholder for
+	// not-yet-determined participants (e.g. an unset conference championship
+	// slot); normalize it so downstream TBD checks catch it consistently.
+	const normalizeTbd = (value: string | undefined) => (value === 'TBA' ? 'TBD' : value);
+
 	return {
 		id: team.id ?? competitor.id ?? '',
 		homeAway,
-		location: team.location ?? team.shortDisplayName ?? team.displayName ?? 'TBD',
+		location: normalizeTbd(team.location ?? team.shortDisplayName ?? team.displayName) ?? 'TBD',
 		name: team.name,
-		displayName: team.displayName ?? team.location ?? 'TBD',
+		displayName: normalizeTbd(team.displayName ?? team.location) ?? 'TBD',
 		abbreviation: team.abbreviation ?? team.shortDisplayName ?? '',
 		logoUrl: team.logo,
 		darkLogoUrl: toDarkLogoUrl(team.logo),

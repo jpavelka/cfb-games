@@ -55,25 +55,28 @@ export function splitOpeningWeek(games: readonly Game[]): OpeningWeekSplit | nul
  * ever runs after ESPN itself has already told us its answer for "current week"
  * is the merged Week 1 — we're not computing what week it is, only which half of
  * an ESPN-confirmed week we're in.
+ *
+ * Takes just the `cutoff` (not a full `OpeningWeekSplit`) because the split
+ * itself is now precomputed once daily by `scripts/fetch-weeks.ts` and shipped
+ * as `openingWeekCutoff` in `weeks.json` — the client never has (or needs) the
+ * pre-partitioned `week0`/`week1` game arrays, only the one cutoff date.
  */
-export function pickCurrentOpeningWeekSlug(
-	split: OpeningWeekSplit,
-	now: Date = new Date()
-): 'week0' | 'week1' {
-	return localDayKey(now) <= split.cutoff ? 'week0' : 'week1';
+export function pickCurrentOpeningWeekSlug(cutoff: string, now: Date = new Date()): 'week0' | 'week1' {
+	return localDayKey(now) <= cutoff ? 'week0' : 'week1';
 }
 
-/** Reshape a Week 1 board to show just one half of a detected split. */
-export function resolveOpeningWeekBoard(
-	board: Scoreboard,
-	split: OpeningWeekSplit,
-	requested: 'week0' | 'week1'
-): Scoreboard {
+/**
+ * Reshape a full Week 1 board to show just one half of a detected split, by
+ * filtering its games against `cutoff` directly rather than requiring a
+ * pre-partitioned `OpeningWeekSplit` — see `pickCurrentOpeningWeekSlug` above
+ * for why only the cutoff is needed here.
+ */
+export function resolveOpeningWeekBoard(board: Scoreboard, cutoff: string, requested: 'week0' | 'week1'): Scoreboard {
 	const isWeek0 = requested === OPENING_WEEK_SLUG;
 
 	return {
 		...board,
-		games: isWeek0 ? split.week0 : split.week1,
+		games: board.games.filter((game) => (dayKey(game) <= cutoff) === isWeek0),
 		week: {
 			...board.week,
 			label: isWeek0 ? 'Week 0' : 'Week 1',
