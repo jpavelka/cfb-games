@@ -1,7 +1,7 @@
 <script lang="ts">
 	import TeamLogo from './TeamLogo.svelte';
+	import { broadcastLink } from '$lib/game/broadcastLinks';
 	import {
-		formatBroadcasts,
 		formatConferenceName,
 		formatKickoffDate,
 		formatKickoffTime,
@@ -39,7 +39,6 @@
 	const showScore = $derived(game ? game.status.state !== 'pre' : false);
 	const isLive = $derived(game?.status.state === 'in');
 	const statusLine = $derived(game ? formatStatusLine(game) : '');
-	const broadcasts = $derived(game ? formatBroadcasts(game) : undefined);
 	const venue = $derived(game ? formatVenue(game) : undefined);
 	const spreadText = $derived(game ? formatSpread(game) : undefined);
 	const moneylineText = $derived.by(() => {
@@ -135,10 +134,20 @@
 					<dt>Kickoff</dt>
 					<dd>{formatKickoffDate(game.kickoff)} · {formatKickoffTime(game)}</dd>
 				</div>
-				{#if broadcasts}
+				{#if game.broadcasts.length}
 					<div>
 						<dt>Broadcast</dt>
-						<dd>{broadcasts}</dd>
+						<dd>
+							{#each game.broadcasts as name, i (name)}
+								{#if i > 0}<span class="dot">·</span>{/if}
+								{@const link = broadcastLink(name, game)}
+								{#if link}
+									<a href={link} target="_blank" rel="noopener noreferrer">{name}</a>
+								{:else}
+									{name}
+								{/if}
+							{/each}
+						</dd>
 					</div>
 				{/if}
 				{#if venue}
@@ -410,6 +419,14 @@
 	dd {
 		margin: 0;
 		text-align: right;
+	}
+
+	dd a {
+		color: var(--color-accent);
+	}
+
+	dd a:hover {
+		text-decoration: underline;
 	}
 
 	.dot {
