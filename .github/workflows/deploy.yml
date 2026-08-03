@@ -22,6 +22,11 @@ jobs:
           mkdir -p static/data
           git fetch origin gh-pages && git checkout origin/gh-pages -- data/teams.json && mv data/teams.json static/data/ || true
 
+      - name: Fetch existing conference data
+        run: |
+          mkdir -p static/data
+          git fetch origin gh-pages && git checkout origin/gh-pages -- data/conferences.json && mv data/conferences.json static/data/ || true
+
       - name: Fetch existing Sagarin data
         run: |
           mkdir -p static/data
