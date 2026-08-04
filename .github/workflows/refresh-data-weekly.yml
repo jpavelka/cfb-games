@@ -1,0 +1,130 @@
+name: Refresh Data (Weekly)
+# Sibling to refresh-data-daily.yml for data/checks that only need a weekly
+# cadence rather than daily. Two jobs bundled into one workflow run:
+#
+# 1. Regenerates static/data/teams.json and static/data/conferences.json (both
+#    from scripts/fetch-teams.ts, one ESPN group walk) and
+#    static/data/broadcasters.json (scripts/fetch-broadcasters.ts), then deploys
+#    the full site — these barely ever change, so daily was wasted work; see
+#    refresh-data-daily.yml, which now carries the last-known copies of these
+#    three files forward from gh-pages instead of refetching them itself.
+#    static/data/ is gitignored, and the deploy step replaces gh-pages wholesale
+#    (single-commit), so this job has to carry sagarin.json and weeks.json (the
+#    daily-cadence files) forward the same way, in the other direction.
+#
+# 2. Checks Winsipedia link coverage: diffs winsipediaLink.ts's SLUGS table
+#    (against the teams.json just fetched above) and files or updates a
+#    `winsipedia-slugs`-labeled issue when an FBS/FCS team is missing a slug.
+#    Realignment (promotions, relegations, program cuts) only happens in the
+#    offseason, so weekly is plenty here too.
+#
+# Add other weekly-cadence work as its own step/job in this file rather than
+# spinning up more workflows.
+on:
+  schedule:
+    # Sundays 11:30 UTC — 30 min after refresh-data-daily.yml's 11:00 run, so this job's
+    # carry-forward of sagarin/weeks picks up that day's fresh deploy instead of racing it.
+    - cron: '30 11 * * 0'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  refresh-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Fetch existing Sagarin data
+        run: |
+          mkdir -p static/data
+          git fetch origin gh-pages && git checkout origin/gh-pages -- data/sagarin.json && mv data/sagarin.json static/data/ || true
+
+      - name: Fetch existing week schedule
+        run: |
+          mkdir -p static/data
+          git fetch origin gh-pages && git checkout origin/gh-pages -- data/weeks.json && mv data/weeks.json static/data/ || true
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Refresh team data
+        run: npm run fetch:teams
+
+      - name: Refresh broadcaster list
+        run: npm run fetch:broadcasters
+
+      - name: Check Winsipedia link coverage
+        id: winsipedia-check
+        run: npm run check:winsipedia-slugs
+
+      - name: Report Winsipedia link drift
+        uses: actions/github-script@v8
+        env:
+          MISSING_COUNT: ${{ steps.winsipedia-check.outputs.missing_count }}
+          REPORT: ${{ steps.winsipedia-check.outputs.report }}
+        with:
+          script: |
+            const missingCount = Number(process.env.MISSING_COUNT);
+            const report = process.env.REPORT;
+            const label = 'winsipedia-slugs';
+
+            const { data: existing } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: label
+            });
+            const openIssue = existing[0];
+
+            if (missingCount > 0) {
+              const title = `Winsipedia link coverage drift (${missingCount} team${missingCount === 1 ? '' : 's'})`;
+              const body = `${report}\n\nFound by the \`refresh-data-weekly\` workflow comparing \`static/data/teams.json\` against \`src/lib/game/winsipediaLink.ts\`'s \`SLUGS\` table.`;
+              if (openIssue) {
+                await github.rest.issues.update({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: openIssue.number,
+                  title,
+                  body
+                });
+              } else {
+                await github.rest.issues.create({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  title,
+                  body,
+                  labels: [label]
+                });
+              }
+            } else if (openIssue) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: openIssue.number,
+                body: 'Resolved — the SLUGS table now covers every FBS/FCS team as of the latest check.'
+              });
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: openIssue.number,
+                state: 'closed'
+              });
+            }
+
+      - name: Build
+        env:
+          BASE_PATH: /cfb-games
+        run: npm run build
+
+      - name: Deploy
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: build
+          single-commit: true

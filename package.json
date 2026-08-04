@@ -14,6 +14,7 @@
 		"fetch:sagarin": "tsx scripts/fetch-sagarin-ratings.ts",
 		"fetch:weeks": "tsx scripts/fetch-weeks.ts",
 		"fetch:broadcasters": "tsx scripts/fetch-broadcasters.ts",
+		"check:winsipedia-slugs": "tsx scripts/check-winsipedia-slugs.ts",
 		"deploy:server": "bash scripts/deploy.sh"
 	},
 	"devDependencies": {

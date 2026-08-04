@@ -1,0 +1,68 @@
+name: Refresh Data (Daily)
+# Regenerates static/data/sagarin.json (see scripts/fetch-sagarin-ratings.ts) and
+# static/data/weeks.json (see scripts/fetch-weeks.ts) — the two files that actually
+# change often enough to be worth a daily refetch — then deploys the full site,
+# since this is a fully static, adapter-static build. Sagarin re-publishes ratings
+# roughly daily during the season; the week schedule barely changes but is cheap
+# to refetch alongside it.
+#
+# Team data, conference alignment, and the broadcaster list (see
+# scripts/fetch-teams.ts and scripts/fetch-broadcasters.ts) barely ever change and
+# are only refetched weekly, in refresh-data-weekly.yml — but static/data/ is
+# gitignored (never committed to master) and the deploy step below replaces
+# gh-pages wholesale (single-commit), so this job has to carry the last-known
+# copies of those three files forward from gh-pages rather than shipping a build
+# that's silently missing them. Mirrors the same carry-forward deploy.yml already
+# does for a plain push-triggered deploy.
+on:
+  schedule:
+    - cron: '0 11 * * *' # Daily 11:00 UTC — comfortably after Sagarin's typical early-morning update
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  refresh-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Fetch existing team data
+        run: |
+          mkdir -p static/data
+          git fetch origin gh-pages && git checkout origin/gh-pages -- data/teams.json && mv data/teams.json static/data/ || true
+
+      - name: Fetch existing conference data
+        run: |
+          mkdir -p static/data
+          git fetch origin gh-pages && git checkout origin/gh-pages -- data/conferences.json && mv data/conferences.json static/data/ || true
+
+      - name: Fetch existing broadcaster list
+        run: |
+          mkdir -p static/data
+          git fetch origin gh-pages && git checkout origin/gh-pages -- data/broadcasters.json && mv data/broadcasters.json static/data/ || true
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Refresh Sagarin ratings
+        run: npm run fetch:sagarin
+
+      - name: Refresh week schedule
+        run: npm run fetch:weeks
+
+      - name: Build
+        env:
+          BASE_PATH: /cfb-games
+        run: npm run build
+
+      - name: Deploy
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: build
+          single-commit: true

@@ -15,6 +15,7 @@
 	import type { ConferenceMap } from '$lib/game/conferences';
 	import { matchupScore, matchupScoreColor, teamStrength, type RatingMap } from '$lib/game/ratings';
 	import type { Game } from '$lib/game/types';
+	import { winsipediaLink } from '$lib/game/winsipediaLink';
 
 	let {
 		game,
@@ -52,6 +53,7 @@
 		return parts.length === 2 ? parts.join(' · ') : undefined;
 	});
 	const matchup = $derived(game ? matchupScore(game, ratings) : null);
+	const winsipedia = $derived(game ? winsipediaLink(game) : undefined);
 </script>
 
 <dialog
@@ -202,6 +204,15 @@
 					{/if}
 				{/each}
 			</div>
+
+			{#if winsipedia}
+				<p class="linksHeading">History</p>
+				<div class="links">
+					<a href={winsipedia} target="_blank" rel="noopener noreferrer">
+						Winsipedia: all-time series
+					</a>
+				</div>
+			{/if}
 		</div>
 	{/if}
 </dialog>
@@ -439,7 +450,7 @@
 	}
 
 	.linksHeading {
-		margin: 0 0 var(--space-2);
+		margin: var(--space-3) 0 var(--space-2);
 		color: var(--color-text-muted);
 		font-size: var(--text-xs);
 		font-weight: 600;
