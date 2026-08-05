@@ -142,11 +142,14 @@ export function formatMoneyline(odds: GameOdds | undefined, team: GameTeam): str
 	return value > 0 ? `+${value}` : `${value}`;
 }
 
-/** e.g. "68%" — implied win probability, vig removed, for this team. */
+/** e.g. "68%" — implied win probability, vig removed, for this team. Never shows 100% or 0%. */
 export function formatWinProbability(odds: GameOdds | undefined, team: GameTeam): string | undefined {
 	const pct = team.homeAway === 'home' ? odds?.homeWinPct : odds?.awayWinPct;
 	if (pct === undefined) return undefined;
-	return `${Math.round(pct)}%`;
+	const rounded = Math.round(pct);
+	if (rounded >= 100) return '>99%';
+	if (rounded <= 0) return '<1%';
+	return `${rounded}%`;
 }
 
 /** e.g. "Aviva Stadium · Dublin, Ireland". */

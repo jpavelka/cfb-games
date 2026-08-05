@@ -37,7 +37,9 @@
 		}
 	});
 
-	const showScore = $derived(game ? game.status.state !== 'pre' : false);
+	const showScore = $derived(
+		game ? game.status.state !== 'pre' && !game.status.canceled && !game.status.postponed : false
+	);
 	const isLive = $derived(game?.status.state === 'in');
 	const statusLine = $derived(game ? formatStatusLine(game) : '');
 	const venue = $derived(game ? formatVenue(game) : undefined);
@@ -89,7 +91,7 @@
 			<p class="status" class:live={isLive}>{statusLine}</p>
 
 			<div class="teams">
-				{#each game.teams as team (team.homeAway)}
+				{#each game.teams as team, i (team.homeAway)}
 					<div class="team" class:winner={team.isWinner === true}>
 						<TeamLogo {team} size={56} />
 						<span class="name">
@@ -114,10 +116,18 @@
 								<span class="winPct">{formatWinProbability(game.odds, team)} to win</span>
 							{/if}
 						</div>
-						{#if showScore}
-							<span class="score">{team.score ?? '–'}</span>
-						{/if}
 					</div>
+					{#if i === 0 && showScore}
+						<div class="scoreCenter">
+							<span class="score" class:winner={game.teams[0].isWinner === true}>
+								{game.teams[0].score ?? '–'}
+							</span>
+							<span class="scoreDash">–</span>
+							<span class="score" class:winner={game.teams[1].isWinner === true}>
+								{game.teams[1].score ?? '–'}
+							</span>
+						</div>
+					{/if}
 				{/each}
 			</div>
 
@@ -304,6 +314,7 @@
 
 	.team {
 		display: flex;
+		flex: 1 1 0;
 		flex-direction: column;
 		align-items: center;
 		gap: var(--space-1);
@@ -317,7 +328,9 @@
 	}
 
 	.name {
+		min-width: 0;
 		font-weight: 600;
+		overflow-wrap: break-word;
 	}
 
 	.winner .name {
@@ -396,14 +409,24 @@
 		font-weight: 600;
 	}
 
-	.score {
+	.scoreCenter {
+		display: flex;
+		align-items: center;
+		align-self: flex-start;
+		gap: var(--space-1);
+		height: 56px;
+		margin-inline: calc(var(--space-3) * -1);
 		font-family: var(--font-numeric);
-		font-size: var(--text-2xl);
+		font-size: var(--text-3xl);
 		font-variant-numeric: tabular-nums;
 	}
 
-	.winner .score {
+	.score.winner {
 		font-weight: 700;
+	}
+
+	.scoreDash {
+		color: var(--color-text-faint);
 	}
 
 	.details {

@@ -19,8 +19,11 @@
 	}: { game: Game; ratings: RatingMap; showDate?: boolean; onSelect: (game: Game) => void } =
 		$props();
 
-	// Scores only exist once a game has started.
-	const showScore = $derived(game.status.state !== 'pre');
+	// Scores only exist once a game has started, and are meaningless for games
+	// that never finished.
+	const showScore = $derived(
+		game.status.state !== 'pre' && !game.status.canceled && !game.status.postponed
+	);
 	const isLive = $derived(game.status.state === 'in');
 	const statusLine = $derived(formatStatusLine(game));
 	const broadcasts = $derived(formatBroadcasts(game));
