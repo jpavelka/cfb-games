@@ -116,6 +116,23 @@ function impliedProbability(americanOdds: number): number {
 	return americanOdds < 0 ? -americanOdds / (-americanOdds + 100) : 100 / (americanOdds + 100);
 }
 
+/**
+ * A pair of American moneylines -> win probabilities (0-100) with the
+ * bookmaker's vig removed, so the two sides sum back to 100. `undefined` in the
+ * degenerate case where both implied probabilities are zero. Shared with
+ * `$lib/game/bettingFallback`, which runs the same math over CFBD's moneylines.
+ */
+export function devigMoneyline(
+	moneylineHome: number,
+	moneylineAway: number
+): { homeWinPct: number; awayWinPct: number } | undefined {
+	const pHome = impliedProbability(moneylineHome);
+	const pAway = impliedProbability(moneylineAway);
+	const total = pHome + pAway;
+	if (total <= 0) return undefined;
+	return { homeWinPct: (pHome / total) * 100, awayWinPct: (pAway / total) * 100 };
+}
+
 function toOdds(raw: EspnOdds | undefined): GameOdds | undefined {
 	if (!raw) return undefined;
 
@@ -128,19 +145,10 @@ function toOdds(raw: EspnOdds | undefined): GameOdds | undefined {
 	const moneylineHome = parseAmericanOdds(raw.moneyline?.home?.close?.odds);
 	const moneylineAway = parseAmericanOdds(raw.moneyline?.away?.close?.odds);
 
-	// Both legs sum to over 100% because of the bookmaker's vig; normalize them back
-	// down to 100% so the two numbers read as a genuine probability split.
-	let homeWinPct: number | undefined;
-	let awayWinPct: number | undefined;
-	if (moneylineHome !== undefined && moneylineAway !== undefined) {
-		const pHome = impliedProbability(moneylineHome);
-		const pAway = impliedProbability(moneylineAway);
-		const total = pHome + pAway;
-		if (total > 0) {
-			homeWinPct = (pHome / total) * 100;
-			awayWinPct = (pAway / total) * 100;
-		}
-	}
+	const winPct =
+		moneylineHome !== undefined && moneylineAway !== undefined
+			? devigMoneyline(moneylineHome, moneylineAway)
+			: undefined;
 
 	const odds: GameOdds = {
 		provider: raw.provider?.name,
@@ -150,8 +158,8 @@ function toOdds(raw: EspnOdds | undefined): GameOdds | undefined {
 		details: raw.details,
 		moneylineHome,
 		moneylineAway,
-		homeWinPct,
-		awayWinPct
+		homeWinPct: winPct?.homeWinPct,
+		awayWinPct: winPct?.awayWinPct
 	};
 
 	// Nothing worth showing if ESPN gave us an empty odds object.

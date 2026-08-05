@@ -22,6 +22,10 @@ Thumbs.db
 # Data fetched by scripts/*.ts, deployed to gh-pages but never committed to master
 /static/data/
 
+# Locally-captured dev-only scoreboard snapshots (scripts/fetch-dev-snapshot.ts) —
+# never deployed, never committed; each developer captures their own.
+/static/dev-data/
+
 # Vite
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*

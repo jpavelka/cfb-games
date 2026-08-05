@@ -1,3 +1,4 @@
+import { loadBettingFallback } from '$lib/game/bettingFallback';
 import { loadBroadcasterList } from '$lib/game/broadcasters';
 import { buildConferenceMap, loadConferenceData } from '$lib/game/conferences';
 import { loadRatingMap } from '$lib/game/ratings';
@@ -37,6 +38,9 @@ export const load: LayoutLoad = async ({ fetch }) => {
 		teams: await teams,
 		conferences: buildConferenceMap(await teams, await conferenceData),
 		ratings: await loadRatingMap(fetch),
-		broadcasters: await loadBroadcasterList(fetch)
+		broadcasters: await loadBroadcasterList(fetch),
+		// Fills in whatever betting info the ESPN scoreboard is missing — see
+		// `$lib/game/bettingFallback` and `storage.ts`'s `toGame`.
+		bettingFallback: await loadBettingFallback(fetch)
 	};
 };

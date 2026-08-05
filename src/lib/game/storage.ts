@@ -1,3 +1,4 @@
+import { applyBettingFallback, type BettingFallbackMap } from './bettingFallback';
 import type { StoredGame, StoredGameTeam, StoredScoreboard, StoredTeamFallback } from './storedScoreboard';
 import type { TeamInfo, TeamMap } from './teams';
 import type { Game, GameTeam, Scoreboard } from './types';
@@ -25,6 +26,22 @@ function weekFileName({ seasonYear, seasonType, week }: WeekKey): string {
 }
 
 /**
+ * Revive a `StoredScoreboard`'s `Date`-typed fields from the ISO strings
+ * `JSON.parse` actually produces (`fetchedAt`, `nextRefreshAt`, each game's
+ * `kickoff`). Shared by `loadStoredScoreboard` below (GCS) and the dev-only
+ * `/dev-snapshot` routes (a local static fixture) — same wire format, two
+ * different sources.
+ */
+export function reviveStoredScoreboard(data: StoredScoreboard): StoredScoreboard {
+	return {
+		...data,
+		fetchedAt: new Date(data.fetchedAt),
+		nextRefreshAt: data.nextRefreshAt ? new Date(data.nextRefreshAt) : undefined,
+		games: data.games.map((game) => ({ ...game, kickoff: new Date(game.kickoff) }))
+	};
+}
+
+/**
  * Fetch one week's scoreboard from storage instead of live from ESPN.
  *
  * Mirrors `loadConferenceMap`'s failure style: returns `null` on any problem
@@ -43,12 +60,7 @@ export async function loadStoredScoreboard(
 		if (!response.ok) return null;
 
 		const data = (await response.json()) as StoredScoreboard;
-		return {
-			...data,
-			fetchedAt: new Date(data.fetchedAt),
-			nextRefreshAt: data.nextRefreshAt ? new Date(data.nextRefreshAt) : undefined,
-			games: data.games.map((game) => ({ ...game, kickoff: new Date(game.kickoff) }))
-		};
+		return reviveStoredScoreboard(data);
 	} catch (error) {
 		console.warn('Could not load stored scoreboard', error);
 		return null;
@@ -112,8 +124,11 @@ function toGameTeam(stored: StoredGameTeam, teams: TeamMap): GameTeam {
  * but don't need storing: `espnUrl` is a pure function of the game id, and
  * `shortName` only needs to be a stable per-game string, not ESPN's exact value
  * — same fallback `transform.ts` uses when ESPN itself omits it.
+ *
+ * `bettingFallback` (see `$lib/game/bettingFallback`) fills in whatever pieces
+ * of `stored.odds` ESPN didn't have, keyed by `stored.id`.
  */
-function toGame(stored: StoredGame, teams: TeamMap): Game {
+function toGame(stored: StoredGame, teams: TeamMap, bettingFallback: BettingFallbackMap): Game {
 	const away = toGameTeam(stored.away, teams);
 	const home = toGameTeam(stored.home, teams);
 
@@ -129,7 +144,8 @@ function toGame(stored: StoredGame, teams: TeamMap): Game {
 			...stored.status,
 			completed: stored.status.state === 'post' && !stored.status.canceled,
 			detail: stored.status.shortDetail
-		}
+		},
+		odds: applyBettingFallback(stored.odds, bettingFallback.get(stored.id), home, away)
 	};
 }
 
@@ -140,13 +156,19 @@ function toGame(stored: StoredGame, teams: TeamMap): Game {
  * always 0: unparseable ESPN events are dropped before `server/` ever writes a
  * file, so there's nothing left to count. `teams` is the already-loaded
  * `teams.json` map (see `$lib/game/teams`), used to resolve each `StoredGameTeam`
- * back into a full `GameTeam`.
+ * back into a full `GameTeam`. `bettingFallback` is threaded straight through
+ * to `toGame`.
  */
-export function fromStoredScoreboard(stored: StoredScoreboard, weeks: WeekOption[], teams: TeamMap): Scoreboard {
+export function fromStoredScoreboard(
+	stored: StoredScoreboard,
+	weeks: WeekOption[],
+	teams: TeamMap,
+	bettingFallback: BettingFallbackMap
+): Scoreboard {
 	return {
 		week: stored.week,
 		weeks,
-		games: stored.games.map((game) => toGame(game, teams)),
+		games: stored.games.map((game) => toGame(game, teams, bettingFallback)),
 		fetchedAt: stored.fetchedAt,
 		nextRefreshAt: stored.nextRefreshAt,
 		partialErrors: stored.partialErrors,

@@ -36,6 +36,7 @@ export const load: PageLoad = ({ params, parent, fetch }) => {
 	const boardPromise = loadScoreboard(
 		{ week: target.week, seasonType: target.seasonType },
 		parent().then(({ teams }) => teams),
+		parent().then(({ bettingFallback }) => bettingFallback),
 		fetch
 	);
 

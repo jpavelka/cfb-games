@@ -43,7 +43,8 @@
 		 * considers current — computed fresh in this route's own `load()` (see
 		 * `+page.ts`), so it's tied to *this* navigation rather than left over from
 		 * whichever week was on screen before. Drives both the "← Current week"
-		 * link and `GameList`'s "Group by Day" default.
+		 * link and `GameList`'s "Group by Day" default for the Upcoming section
+		 * (Completed always defaults to ungrouped).
 		 */
 		isCurrentWeek: Promise<boolean>;
 		conferences: ConferenceMap;

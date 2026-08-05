@@ -53,7 +53,12 @@
 
 	// Each day-groupable section (Upcoming, Completed) has its own independent
 	// "Group by Day" toggle, keyed by section — flipping one doesn't affect the
-	// other. Both default to `isCurrentWeek` until their own checkbox is touched.
+	// other. Upcoming defaults to `isCurrentWeek`; Completed always defaults to
+	// off, since a finished day's games don't need the same at-a-glance framing
+	// upcoming ones do.
+	function defaultGroupByDay(sectionKey: string): boolean {
+		return sectionKey === 'completed' ? false : isCurrentWeek;
+	}
 	let groupByDayBySection: Record<string, boolean> = $state({});
 
 	// Every day starts ungrouped by kickoff time except today's, which starts
@@ -124,14 +129,14 @@
 			<label class="toggle">
 				<input
 					type="checkbox"
-					checked={groupByDayBySection[section.key] ?? isCurrentWeek}
+					checked={groupByDayBySection[section.key] ?? defaultGroupByDay(section.key)}
 					onchange={(event) => (groupByDayBySection[section.key] = event.currentTarget.checked)}
 				/>
 				Group by Day
 			</label>
 		{/if}
 
-		{#if DAY_GROUPABLE.has(section.key) && (groupByDayBySection[section.key] ?? isCurrentWeek)}
+		{#if DAY_GROUPABLE.has(section.key) && (groupByDayBySection[section.key] ?? defaultGroupByDay(section.key))}
 			{@const sectionOffset = sectionHeadingHeights[section.key] ?? 0}
 			{#each section.days as day (day.key)}
 				{@const stateKey = dayStateKey(section.key, day.key)}

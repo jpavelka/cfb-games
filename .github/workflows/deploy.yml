@@ -13,10 +13,10 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      # Team data, Sagarin ratings, the week schedule, and the broadcaster
-      # list are fetched daily (refresh-data.yml), not on every push, so a normal
-      # code deploy has to carry the last-known copies forward from gh-pages
-      # rather than shipping a build missing any of them.
+      # Team data, Sagarin ratings, the week schedule, betting fallback data, and
+      # the broadcaster list are fetched daily (refresh-data.yml), not on every
+      # push, so a normal code deploy has to carry the last-known copies forward
+      # from gh-pages rather than shipping a build missing any of them.
       - name: Fetch existing team data
         run: |
           mkdir -p static/data
@@ -36,6 +36,11 @@ jobs:
         run: |
           mkdir -p static/data
           git fetch origin gh-pages && git checkout origin/gh-pages -- data/weeks.json && mv data/weeks.json static/data/ || true
+
+      - name: Fetch existing betting data
+        run: |
+          mkdir -p static/data
+          git fetch origin gh-pages && git checkout origin/gh-pages -- data/betting.json && mv data/betting.json static/data/ || true
 
       - name: Fetch existing broadcaster list
         run: |
