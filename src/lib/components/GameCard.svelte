@@ -1,5 +1,7 @@
 <script lang="ts">
 	import TeamRow from './TeamRow.svelte';
+	import matchupIcon from '$lib/assets/matchup.svg';
+	import surpriseIcon from '$lib/assets/surprised.svg';
 	import {
 		formatBroadcasts,
 		formatGameDate,
@@ -11,6 +13,7 @@
 	} from '$lib/format';
 	import { matchupScore, matchupScoreColor, type RatingMap } from '$lib/game/ratings';
 	import { settings } from '$lib/game/settings.svelte';
+	import { surpriseScore, surpriseScoreColor } from '$lib/game/surprise';
 	import { winProbBarColors } from '$lib/game/teamColors';
 	import type { Game } from '$lib/game/types';
 
@@ -36,6 +39,7 @@
 
 	const meta = $derived([broadcasts, spread].filter((part): part is string => Boolean(part)));
 	const matchup = $derived(matchupScore(game, ratings));
+	const surprise = $derived(surpriseScore(game));
 	const hasFavorite = $derived(
 		game.teams.some((team) => settings.favoriteTeamIds.includes(team.id))
 	);
@@ -72,8 +76,15 @@
 			<span class="badge">Live</span>
 		{/if}
 		{#if matchup !== null}
-			<span class="matchupScore" style:background={matchupScoreColor(matchup)} title="Matchup score">
-				{matchup}
+			<span class="scoreBadge" title="Matchup score">
+				<img class="scoreIcon" src={matchupIcon} alt="" />
+				<span class="matchupScore" style:background={matchupScoreColor(matchup)}>{matchup}</span>
+			</span>
+		{/if}
+		{#if surprise !== null}
+			<span class="scoreBadge" title="Surprise score">
+				<img class="scoreIcon" src={surpriseIcon} alt="" />
+				<span class="matchupScore" style:background={surpriseScoreColor(surprise)}>{surprise}</span>
 			</span>
 		{/if}
 	</div>
@@ -192,15 +203,27 @@
 		text-transform: uppercase;
 	}
 
+	.scoreBadge {
+		display: flex;
+		align-items: center;
+		gap: var(--space-1);
+	}
+
 	.matchupScore {
 		padding: 0 var(--space-1);
 		border-radius: var(--radius-sm);
-		/* Background is set inline per-score (see matchupScoreColor); the fill is
-		   fixed rather than theme-dependent, so the text ink stays fixed too. */
+		/* Background is set inline per-score (see matchupScoreColor/
+		   surpriseScoreColor); the fill is fixed rather than theme-dependent, so
+		   the text ink stays fixed too. */
 		color: #1a1a1a;
 		font-size: var(--text-xs);
 		font-weight: 600;
 		font-variant-numeric: tabular-nums;
+	}
+
+	.scoreIcon {
+		width: 16px;
+		height: 16px;
 	}
 
 	.right {

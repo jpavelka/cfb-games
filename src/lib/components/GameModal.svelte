@@ -1,5 +1,7 @@
 <script lang="ts">
 	import TeamLogo from './TeamLogo.svelte';
+	import matchupIcon from '$lib/assets/matchup.svg';
+	import surpriseIcon from '$lib/assets/surprised.svg';
 	import { broadcastLink } from '$lib/game/broadcastLinks';
 	import {
 		formatConferenceName,
@@ -14,6 +16,7 @@
 	} from '$lib/format';
 	import type { ConferenceMap } from '$lib/game/conferences';
 	import { matchupScore, matchupScoreColor, teamStrength, type RatingMap } from '$lib/game/ratings';
+	import { surpriseScore, surpriseScoreColor } from '$lib/game/surprise';
 	import { winProbBarColors } from '$lib/game/teamColors';
 	import type { Game } from '$lib/game/types';
 	import { winsipediaLink } from '$lib/game/winsipediaLink';
@@ -56,17 +59,20 @@
 		return parts.length === 2 ? parts.join(' · ') : undefined;
 	});
 	const matchup = $derived(game ? matchupScore(game, ratings) : null);
+	const surprise = $derived(game ? surpriseScore(game) : null);
 	const winsipedia = $derived(game ? winsipediaLink(game) : undefined);
-	// Once the game is live or final, the actual score speaks for itself — a
-	// pregame odds snapshot would be stale and misleading next to it.
+	// Always the pregame snapshot, regardless of where the game is now — it's
+	// always labeled as such (see `.pregameLabel`), so it stays honest whether
+	// the game hasn't started, is live, or is final.
 	const winProb = $derived(
-		game &&
-			game.status.state === 'pre' &&
-			game.odds?.homeWinPct !== undefined &&
-			game.odds?.awayWinPct !== undefined
+		game && game.odds?.homeWinPct !== undefined && game.odds?.awayWinPct !== undefined
 			? { home: game.odds.homeWinPct, away: game.odds.awayWinPct }
 			: undefined
 	);
+	// Once the game has actually started, the snapshot is aging rather than
+	// current — dim it and dash its border (see `.winProbBar.stale`) so it
+	// doesn't read as live info.
+	const isStale = $derived(game?.status.state !== 'pre');
 	const winProbColors = $derived(game ? winProbBarColors(game.home, game.away) : undefined);
 </script>
 
@@ -124,9 +130,6 @@
 								<span class="conference missing fallback-short">Conf not found</span>
 							{/if}
 							<span class="strength">Strength {teamStrength(team, ratings)}</span>
-							{#if winProb && formatWinProbability(game.odds, team)}
-								<span class="winPct">{formatWinProbability(game.odds, team)} to win</span>
-							{/if}
 						</div>
 					</div>
 					{#if i === 0 && showScore}
@@ -144,7 +147,12 @@
 			</div>
 
 			{#if winProb && winProbColors}
-				<div class="winProbBar" title="Win probability">
+				<div class="winProbBar" class:stale={isStale} title="Win probability">
+					<div class="winProbHeader">
+						<span class="winPct">{formatWinProbability(game.odds, game.away)} to win</span>
+						<span class="pregameLabel">Pregame projection</span>
+						<span class="winPct">{formatWinProbability(game.odds, game.home)} to win</span>
+					</div>
 					<div class="bar">
 						<span
 							class="segment"
@@ -165,8 +173,20 @@
 					<div>
 						<dt>Matchup score</dt>
 						<dd>
-							<span class="matchupScore" style:background={matchupScoreColor(matchup)}>
-								{matchup}
+							<span class="scoreBadge">
+								<img class="scoreIcon" src={matchupIcon} alt="" />
+								<span class="matchupScore" style:background={matchupScoreColor(matchup)}>{matchup}</span>
+							</span>
+						</dd>
+					</div>
+				{/if}
+				{#if surprise !== null}
+					<div>
+						<dt>Surprise score</dt>
+						<dd>
+							<span class="scoreBadge">
+								<img class="scoreIcon" src={surpriseIcon} alt="" />
+								<span class="matchupScore" style:background={surpriseScoreColor(surprise)}>{surprise}</span>
 							</span>
 						</dd>
 					</div>
@@ -345,6 +365,26 @@
 		margin: 0 0 var(--space-4);
 	}
 
+	.winProbBar.stale {
+		opacity: 0.7;
+	}
+
+	.winProbHeader {
+		display: flex;
+		justify-content: space-between;
+		align-items: baseline;
+		gap: var(--space-2);
+		margin: 0 0 var(--space-1);
+	}
+
+	.pregameLabel {
+		color: var(--color-text-faint);
+		font-size: var(--text-xs);
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.03em;
+	}
+
 	.winProbBar .bar {
 		display: flex;
 		height: 10px;
@@ -352,6 +392,10 @@
 		border: 1px solid var(--color-border);
 		border-radius: var(--radius-full);
 		background: var(--color-surface-alt);
+	}
+
+	.winProbBar.stale .bar {
+		border-style: dashed;
 	}
 
 	.team {
@@ -435,14 +479,26 @@
 		}
 	}
 
+	.scoreBadge {
+		display: inline-flex;
+		align-items: center;
+		gap: var(--space-1);
+	}
+
 	.matchupScore {
 		padding: 0 var(--space-2);
 		border-radius: var(--radius-sm);
-		/* Background is set inline per-score (see matchupScoreColor); the fill is
-		   fixed rather than theme-dependent, so the text ink stays fixed too. */
+		/* Background is set inline per-score (see matchupScoreColor/
+		   surpriseScoreColor); the fill is fixed rather than theme-dependent, so
+		   the text ink stays fixed too. */
 		color: #1a1a1a;
 		font-weight: 600;
 		font-variant-numeric: tabular-nums;
+	}
+
+	.scoreIcon {
+		width: 18px;
+		height: 18px;
 	}
 
 	.winPct {
