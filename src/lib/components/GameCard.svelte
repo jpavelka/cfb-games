@@ -78,6 +78,12 @@
 			? formatPeriodLabels(Math.max(periodScores.away.length, periodScores.home.length))
 			: undefined
 	);
+
+	const possessionTeam = $derived(
+		game.situation?.possessionTeamId
+			? game.teams.find((team) => team.id === game.situation?.possessionTeamId)
+			: undefined
+	);
 </script>
 
 <button type="button" class="card" class:favorite={hasFavorite} onclick={() => onSelect(game)}>
@@ -141,6 +147,23 @@
 						<span>{game.away.abbreviation || game.away.location} {formatWinProbability(game.odds, game.away)}</span>
 						<span>{game.home.abbreviation || game.home.location} {formatWinProbability(game.odds, game.home)}</span>
 					</div>
+				</div>
+			{/if}
+			{#if isLive && game.situation}
+				<div class="situation" class:redZone={game.situation.isRedZone}>
+					{#if game.situation.downDistance || game.situation.possessionText}
+						<p class="downDistance">
+							{[game.situation.downDistance, game.situation.possessionText]
+								.filter(Boolean)
+								.join(' at ')}
+							{#if possessionTeam}
+								<span class="possession">{possessionTeam.abbreviation || possessionTeam.location}</span>
+							{/if}
+						</p>
+					{/if}
+					{#if game.situation.lastPlay}
+						<p class="lastPlay">{game.situation.lastPlay}</p>
+					{/if}
 				</div>
 			{/if}
 			{#if periodScores && periodLabels}
@@ -412,6 +435,32 @@
 
 	.linescore tbody th {
 		font-weight: 600;
+	}
+
+	.situation {
+		margin-bottom: var(--space-1);
+	}
+
+	.situation.redZone .downDistance {
+		color: var(--color-live);
+	}
+
+	.downDistance {
+		margin: 0;
+		font-weight: 600;
+	}
+
+	.possession {
+		margin-left: var(--space-1);
+		font-weight: 400;
+		text-transform: uppercase;
+	}
+
+	.lastPlay {
+		margin: 2px 0 0;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
 	}
 
 	.context,

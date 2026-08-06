@@ -146,7 +146,8 @@ function toGame(stored: StoredGame, teams: TeamMap, bettingFallback: BettingFall
 			completed: stored.status.state === 'post' && !stored.status.canceled,
 			detail: stored.status.shortDetail
 		},
-		odds: applyBettingFallback(stored.odds, bettingFallback.get(stored.id), home, away)
+		odds: applyBettingFallback(stored.odds, bettingFallback.get(stored.id), home, away),
+		situation: stored.situation
 	};
 }
 

@@ -86,6 +86,18 @@ export interface GameOdds {
 	awayWinPct?: number;
 }
 
+export interface GameSituation {
+	/** e.g. "2nd & 7" */
+	downDistance?: string;
+	/** e.g. "OU 35" */
+	possessionText?: string;
+	/** Team id of the team with possession. */
+	possessionTeamId?: string;
+	isRedZone?: boolean;
+	/** Text description of the most recent play. */
+	lastPlay?: string;
+}
+
 export interface GameVenue {
 	name?: string;
 	city?: string;
@@ -118,6 +130,8 @@ export interface Game {
 	/** Bowl or showcase name, from the event notes. */
 	eventName?: string;
 	odds?: GameOdds;
+	/** Only present while the game is live. */
+	situation?: GameSituation;
 	subdivisions: Subdivision[];
 	espnUrl: string;
 }

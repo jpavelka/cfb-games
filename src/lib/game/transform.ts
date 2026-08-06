@@ -3,10 +3,20 @@ import type {
 	EspnCalendarType,
 	EspnCompetitor,
 	EspnOdds,
+	EspnSituation,
 	EspnStatus,
 	EspnTeam
 } from '$lib/espn/types';
-import type { Game, GameOdds, GameState, GameStatus, GameTeam, Scoreboard, WeekInfo } from './types';
+import type {
+	Game,
+	GameOdds,
+	GameSituation,
+	GameState,
+	GameStatus,
+	GameTeam,
+	Scoreboard,
+	WeekInfo
+} from './types';
 import { POSTSEASON, REGULAR_SEASON, weekSlug, type WeekOption } from './weeks';
 
 /** ESPN uses rank 99 to mean "not ranked" rather than omitting the field. */
@@ -77,6 +87,29 @@ function toStatus(status: EspnStatus | undefined): GameStatus {
 		canceled: state === 'post' && /^cancel/i.test(description),
 		postponed: state === 'post' && /^postpon/i.test(description)
 	};
+}
+
+function toSituation(situation: EspnSituation | undefined): GameSituation | undefined {
+	if (!situation) return undefined;
+
+	const mapped: GameSituation = {
+		downDistance: situation.shortDownDistanceText,
+		possessionText: situation.possessionText,
+		possessionTeamId: situation.possession,
+		isRedZone: situation.isRedZone,
+		lastPlay: situation.lastPlay?.text
+	};
+
+	// Nothing worth showing if ESPN gave us an empty situation object.
+	if (
+		!mapped.downDistance &&
+		!mapped.possessionText &&
+		!mapped.possessionTeamId &&
+		!mapped.lastPlay
+	) {
+		return undefined;
+	}
+	return mapped;
 }
 
 function toTeam(competitor: EspnCompetitor, odds: EspnOdds | undefined): GameTeam {
@@ -267,6 +300,7 @@ export function toGame({ event, subdivisions }: MergedEvent): Game {
 		conferenceGame: competition.conferenceCompetition ?? false,
 		eventName,
 		odds: toOdds(odds),
+		situation: toSituation(competition.situation),
 		subdivisions,
 		espnUrl: `https://www.espn.com/college-football/game/_/gameId/${event.id}`
 	};

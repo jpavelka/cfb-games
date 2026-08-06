@@ -74,6 +74,24 @@ export interface EspnCompetition {
 	geoBroadcasts?: EspnGeoBroadcast[];
 	/** Absent on most games and explicitly `null` on some — always use `odds?.[0]`. */
 	odds?: EspnOdds[] | null;
+	/** Only present while a game is live. */
+	situation?: EspnSituation;
+}
+
+export interface EspnSituation {
+	down?: number;
+	distance?: number;
+	yardLine?: number;
+	/** e.g. "2nd & 7 at OU 35" */
+	downDistanceText?: string;
+	/** e.g. "2nd & 7" */
+	shortDownDistanceText?: string;
+	/** e.g. "OU 35" */
+	possessionText?: string;
+	/** Team id of the team with possession. */
+	possession?: string;
+	isRedZone?: boolean;
+	lastPlay?: { text?: string };
 }
 
 export interface EspnStatus {

@@ -1,5 +1,5 @@
 import type { Subdivision } from '$lib/espn/client';
-import type { Game, GameOdds, GameState, GameTeam, Scoreboard, WeekInfo } from './types';
+import type { Game, GameOdds, GameSituation, GameState, GameTeam, Scoreboard, WeekInfo } from './types';
 
 /**
  * The on-disk/wire contract between `server/` (writes this to GCS) and
@@ -80,6 +80,8 @@ export interface StoredGameOdds {
 	awayWinPct?: number;
 }
 
+export type StoredGameSituation = GameSituation;
+
 export interface StoredGameVenue {
 	name?: string;
 	city?: string;
@@ -100,6 +102,8 @@ export interface StoredGame {
 	conferenceGame: boolean;
 	eventName?: string;
 	odds?: StoredGameOdds;
+	/** Only present while the game is live. */
+	situation?: StoredGameSituation;
 	subdivisions: Subdivision[];
 }
 
@@ -189,6 +193,7 @@ function toStoredGame(game: Game, knownTeamIds: Set<string>): StoredGame {
 		conferenceGame: game.conferenceGame,
 		eventName: game.eventName,
 		odds: game.odds ? toStoredOdds(game.odds) : undefined,
+		situation: game.situation,
 		subdivisions: game.subdivisions
 	};
 }
