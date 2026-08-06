@@ -59,6 +59,8 @@ export interface GameTeam {
 	/** Opaque id ESPN never names in this payload — resolve via `$lib/game/conferences`. */
 	conferenceId?: string;
 	score?: number;
+	/** Score by period (quarter, then OT), flattened from ESPN's linescores. Present once the game has started. */
+	periodScores?: number[];
 	/** Only meaningful once the game is complete. */
 	isWinner?: boolean;
 	isOddsFavorite?: boolean;

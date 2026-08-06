@@ -7,6 +7,9 @@ export type FavoriteHandling = 'top' | 'boost' | 'none';
 
 export type Theme = 'system' | 'light' | 'dark';
 
+/** How the Completed section is ordered: by matchup score, by surprise score (the other breaks ties), or a custom weighted blend of both. */
+export type CompletedSortMode = 'matchup' | 'surprise' | 'custom';
+
 export interface SettingsState {
 	/** Hide games below this matchup score. 0 = no filter. */
 	minMatchupScore: number;
@@ -21,6 +24,14 @@ export interface SettingsState {
 	accessibleBroadcasts: string[];
 	/** When true, hide games not on any selected channel (and games with no listed broadcaster). */
 	filterByAccessibleBroadcasts: boolean;
+	completedSortMode: CompletedSortMode;
+	/**
+	 * Position of the Custom-mode slider, 0 (all matchup) to 100 (all
+	 * surprise) — only used when `completedSortMode` is `'custom'`. Converted
+	 * to a `ScoreWeights` pair (`{ matchup: (100 - mix) / 100, surprise: mix /
+	 * 100 }`) for `combinedScore` in `game/ratings.ts`.
+	 */
+	customSortMix: number;
 }
 
 const STORAGE_KEY = 'cfb:settings';
@@ -32,7 +43,9 @@ const DEFAULTS: SettingsState = {
 	favoriteBoostAmount: 15,
 	theme: 'system',
 	accessibleBroadcasts: [],
-	filterByAccessibleBroadcasts: false
+	filterByAccessibleBroadcasts: false,
+	completedSortMode: 'matchup',
+	customSortMix: 50
 };
 
 /**

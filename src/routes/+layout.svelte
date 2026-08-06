@@ -9,6 +9,11 @@
 	let { children, data }: LayoutProps = $props();
 
 	let settingsOpen = $state(false);
+	// Measured rather than guessed, since the fixed footer's height varies with
+	// content length and can wrap to extra lines on narrow phone screens —
+	// a hardcoded padding-bottom on <main> falls short there and lets the
+	// footer cover interactive content underneath it.
+	let footerHeight = $state(0);
 
 	$effect(() => {
 		if (settings.theme === 'system') {
@@ -31,11 +36,11 @@
 	</div>
 </header>
 
-<main>
+<main style="padding-bottom: calc({footerHeight}px + var(--space-4))">
 	{@render children()}
 </main>
 
-<footer>
+<footer bind:clientHeight={footerHeight}>
 	<div class="inner">
 		<span class="attribution-full">Data from ESPN's unofficial API. Times shown in your local timezone.</span>
 		<span class="attribution-short">Data from ESPN. Times shown locally.</span>
@@ -92,8 +97,9 @@
 	main {
 		max-width: var(--content-width);
 		margin: 0 auto;
-		/* Bottom padding clears the fixed footer so it never covers the last row of content. */
-		padding: var(--space-4) var(--space-4) calc(var(--space-6) + 2.5rem);
+		padding: var(--space-4);
+		/* Bottom padding clears the fixed footer (its real height is measured via
+		   bind:clientHeight, since it can wrap to extra lines on narrow screens). */
 	}
 
 	footer {
@@ -105,6 +111,7 @@
 		background: var(--color-surface);
 		color: var(--color-text-faint);
 		font-size: var(--text-xs);
+		padding-bottom: env(safe-area-inset-bottom);
 	}
 
 	footer .inner {

@@ -106,6 +106,7 @@ function toGameTeam(stored: StoredGameTeam, teams: TeamMap): GameTeam {
 		record: stored.record,
 		conferenceRecord: stored.conferenceRecord,
 		score: stored.score,
+		periodScores: stored.periodScores,
 		isWinner: stored.isWinner
 	};
 }

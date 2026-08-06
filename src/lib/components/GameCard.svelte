@@ -6,6 +6,7 @@
 		formatBroadcasts,
 		formatGameDate,
 		formatKickoffTime,
+		formatPeriodLabels,
 		formatSpread,
 		formatStatusLine,
 		formatVenue,
@@ -64,6 +65,19 @@
 			: undefined
 	);
 	const winProbColors = $derived(winProbBarColors(game.home, game.away));
+
+	// Quarter-by-quarter score, once a game is complete. `.length` on both sides
+	// guards the (very rare) case where ESPN omits linescores for one competitor.
+	const periodScores = $derived(
+		game.status.state === 'post' && game.away.periodScores?.length && game.home.periodScores?.length
+			? { away: game.away.periodScores, home: game.home.periodScores }
+			: undefined
+	);
+	const periodLabels = $derived(
+		periodScores
+			? formatPeriodLabels(Math.max(periodScores.away.length, periodScores.home.length))
+			: undefined
+	);
 </script>
 
 <button type="button" class="card" class:favorite={hasFavorite} onclick={() => onSelect(game)}>
@@ -127,6 +141,37 @@
 						<span>{game.away.abbreviation || game.away.location} {formatWinProbability(game.odds, game.away)}</span>
 						<span>{game.home.abbreviation || game.home.location} {formatWinProbability(game.odds, game.home)}</span>
 					</div>
+				</div>
+			{/if}
+			{#if periodScores && periodLabels}
+				<div class="linescoreScroll">
+					<table class="linescore" title="Score by quarter">
+						<thead>
+							<tr>
+								<th class="teamCol"></th>
+								{#each periodLabels as label (label)}
+									<th>{label}</th>
+								{/each}
+								<th class="totalCol">T</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<th class="teamCol" scope="row">{game.away.abbreviation || game.away.location}</th>
+								{#each periodLabels as _, index (index)}
+									<td>{periodScores.away[index] ?? '–'}</td>
+								{/each}
+								<td class="totalCol">{game.away.score}</td>
+							</tr>
+							<tr>
+								<th class="teamCol" scope="row">{game.home.abbreviation || game.home.location}</th>
+								{#each periodLabels as _, index (index)}
+									<td>{periodScores.home[index] ?? '–'}</td>
+								{/each}
+								<td class="totalCol">{game.home.score}</td>
+							</tr>
+						</tbody>
+					</table>
 				</div>
 			{/if}
 			<p class="context">{context}</p>
@@ -269,6 +314,10 @@
 	}
 
 	@media (min-width: 46rem) {
+		.right {
+			gap: var(--space-3);
+		}
+
 		.side {
 			display: flex;
 			flex: 1 1 auto;
@@ -277,6 +326,8 @@
 			gap: var(--space-1);
 			min-width: 0;
 			padding-top: 2px;
+			padding-left: var(--space-3);
+			border-left: 1px solid var(--color-border);
 			color: var(--color-text-faint);
 			font-size: var(--text-xs);
 		}
@@ -303,6 +354,64 @@
 		justify-content: space-between;
 		font-weight: 600;
 		font-variant-numeric: tabular-nums;
+	}
+
+	/* Scrolls horizontally rather than wrapping/shrinking columns when a game
+	   has gone to enough overtimes to outgrow `.side`'s width. */
+	.linescoreScroll {
+		overflow-x: auto;
+		margin-bottom: var(--space-1);
+	}
+
+	.linescore {
+		border-collapse: collapse;
+		table-layout: fixed;
+		font-variant-numeric: tabular-nums;
+	}
+
+	/* Fixed, equal-width period columns so scores line up under their header
+	   regardless of digit count — with the default auto layout, each column
+	   sized to its own widest content, so the gap before each (right-aligned)
+	   number varied column to column. */
+	.linescore th,
+	.linescore td {
+		width: 1.5em;
+		padding: 0 5pt;
+		font-weight: 400;
+		text-align: center;
+	}
+
+	/* Pinned to the left edge of the scroll container so the team abbreviation
+	   stays visible no matter how far a many-overtime game scrolls. */
+	.linescore .teamCol {
+		position: sticky;
+		left: 0;
+		width: 2.75em;
+		padding-right: var(--space-2);
+		background: var(--color-surface);
+		text-align: left;
+		white-space: nowrap;
+	}
+
+	/* Pinned to the right edge of the scroll container so the final score stays
+	   visible no matter how far a many-overtime game scrolls. */
+	.linescore .totalCol {
+		position: sticky;
+		right: 0;
+		padding-left: var(--space-2);
+		border-left: 1px solid var(--color-border);
+		background: var(--color-surface);
+		font-weight: 600;
+	}
+
+	.linescore thead th {
+		padding-bottom: 2px;
+		border-bottom: 1px solid var(--color-border);
+		color: var(--color-text-faint);
+	}
+
+	.linescore tbody th {
+		font-weight: 600;
 	}
 
 	.context,

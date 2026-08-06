@@ -28,8 +28,15 @@ function computeS1(game: Game): number | undefined {
  * The margin component, in "possessions" (see `POINTS_PER_POSSESSION`). When
  * the underdog wins outright, this is just their winning margin — s1 already
  * credits the upset itself, so this only needs to add the extra "and they
- * won by this much" on top. Otherwise (the favorite won, or it was a tie),
- * it's how far the final margin missed the spread, same as before.
+ * won by this much" on top, weighted at the standard 15 points/possession.
+ *
+ * When the favorite wins (or it's a tie), it's how far the final margin
+ * missed the spread, weighted by a coefficient that shrinks the more
+ * possessions the favorite was already expected to win by — covering a
+ * given team by 4 possessions is a bigger surprise for a 1-possession
+ * favorite than for a 4-possession favorite, even though both missed the
+ * spread by the same amount. Floored at `0` so a lopsided favorite winning
+ * even bigger than expected can't drag the score negative.
  *
  * `undefined` when the spread or either team's final score isn't available,
  * or when the spread is non-zero but which side is favored isn't known
@@ -49,10 +56,15 @@ function computeS2(game: Game): number | undefined {
 	const underdogScore = favoriteHomeAway === 'away' ? homeScore : awayScore;
 	const favoriteMargin = favoriteScore - underdogScore;
 
-	const possessions =
-		favoriteMargin < 0 ? -favoriteMargin : Math.abs(favoriteMargin - spread);
+	if (favoriteMargin < 0) {
+		return (15 * -favoriteMargin) / POINTS_PER_POSSESSION;
+	}
 
-	return (15 * possessions) / POINTS_PER_POSSESSION;
+	const possessionsFavored = spread / POINTS_PER_POSSESSION;
+	const coefficient = Math.max(0, 15 - 2 * possessionsFavored);
+	const possessions = Math.abs(favoriteMargin - spread) / POINTS_PER_POSSESSION;
+
+	return coefficient * possessions;
 }
 
 /**

@@ -3,8 +3,14 @@
 	import GameModal from './GameModal.svelte';
 	import { formatDayHeading } from '$lib/format';
 	import type { ConferenceMap } from '$lib/game/conferences';
-	import { sortByInterest, type FavoriteSort, type RatingMap } from '$lib/game/ratings';
-	import { settings } from '$lib/game/settings.svelte';
+	import {
+		sortByCombinedScore,
+		sortByInterest,
+		type FavoriteSort,
+		type RatingMap,
+		type ScoreWeights
+	} from '$lib/game/ratings';
+	import { settings, updateSettings } from '$lib/game/settings.svelte';
 	import { groupByDay as buildDays, groupByStatus, localDayKey } from '$lib/game/sort';
 	import type { Game } from '$lib/game/types';
 
@@ -28,6 +34,42 @@
 		boostAmount: settings.favoriteBoostAmount
 	});
 
+	// The Custom-mode slider runs 0 (all matchup) to 100 (all surprise); each
+	// side's weight is how close the slider sits to that side.
+	const weights: ScoreWeights = $derived({
+		matchup: (100 - settings.customSortMix) / 100,
+		surprise: settings.customSortMix / 100
+	});
+
+	// Every section sorts by matchup score, except Completed, where the user
+	// picks matchup, surprise, or a custom weighted blend of both — see
+	// `completedSortMode` in settings and the "Sort by" control below.
+	function sortSection(sectionGames: Game[], sectionKey: string): Game[] {
+		if (sectionKey !== 'completed') return sortByInterest(sectionGames, ratings, favorites);
+
+		if (settings.completedSortMode === 'custom') {
+			return sortByCombinedScore(sectionGames, ratings, weights, favorites);
+		}
+		return settings.completedSortMode === 'surprise'
+			? sortByInterest(sectionGames, ratings, favorites, {
+					metric: 'surprise',
+					tiebreakMetric: 'matchup'
+				})
+			: sortByInterest(sectionGames, ratings, favorites, {
+					metric: 'matchup',
+					tiebreakMetric: 'surprise'
+				});
+	}
+
+	function setCustomSortMix(raw: string): void {
+		const parsed = Number(raw);
+		updateSettings({
+			customSortMix: Number.isFinite(parsed)
+				? Math.min(100, Math.max(0, parsed))
+				: settings.customSortMix
+		});
+	}
+
 	// Games are first split into status sections (Current, Upcoming, Completed,
 	// Postponed, Canceled — see `groupByStatus`); only Upcoming/Completed go on to
 	// the day/slot breakdown below, since the other sections are usually small
@@ -40,13 +82,13 @@
 			...section,
 			days: buildDays(section.games).map((day) => ({
 				...day,
-				games: sortByInterest(day.games, ratings, favorites),
+				games: sortSection(day.games, section.key),
 				slots: day.slots.map((slot) => ({
 					...slot,
-					games: sortByInterest(slot.games, ratings, favorites)
+					games: sortSection(slot.games, section.key)
 				}))
 			})),
-			flatGames: sortByInterest(section.games, ratings, favorites)
+			flatGames: sortSection(section.games, section.key)
 		}))
 	);
 	const DAY_GROUPABLE = new Set(['upcoming', 'completed']);
@@ -124,6 +166,58 @@
 				<span class="count">{section.games.length}</span>
 			</h2>
 		</summary>
+
+		{#if section.key === 'completed'}
+			<div class="sortToggle">
+				<span>Sort by</span>
+				<label class="radio">
+					<input
+						type="radio"
+						name="completedSortMode"
+						value="matchup"
+						checked={settings.completedSortMode === 'matchup'}
+						onchange={() => updateSettings({ completedSortMode: 'matchup' })}
+					/>
+					Matchup
+				</label>
+				<label class="radio">
+					<input
+						type="radio"
+						name="completedSortMode"
+						value="surprise"
+						checked={settings.completedSortMode === 'surprise'}
+						onchange={() => updateSettings({ completedSortMode: 'surprise' })}
+					/>
+					Surprise
+				</label>
+				<label class="radio">
+					<input
+						type="radio"
+						name="completedSortMode"
+						value="custom"
+						checked={settings.completedSortMode === 'custom'}
+						onchange={() => updateSettings({ completedSortMode: 'custom' })}
+					/>
+					Custom
+				</label>
+			</div>
+
+			{#if settings.completedSortMode === 'custom'}
+				<div class="mixRow">
+					<span>Matchup</span>
+					<input
+						class="mixSlider"
+						type="range"
+						min="0"
+						max="100"
+						aria-label="Matchup vs. surprise weight"
+						value={settings.customSortMix}
+						oninput={(event) => setCustomSortMix(event.currentTarget.value)}
+					/>
+					<span>Surprise</span>
+				</div>
+			{/if}
+		{/if}
 
 		{#if DAY_GROUPABLE.has(section.key)}
 			<label class="toggle">
@@ -205,6 +299,37 @@
 
 	.timeToggle {
 		margin-bottom: var(--space-3);
+	}
+
+	.sortToggle {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: var(--space-3);
+		margin-bottom: var(--space-3);
+		color: var(--color-text-muted);
+		font-size: var(--text-sm);
+	}
+
+	.sortToggle .radio {
+		display: flex;
+		align-items: center;
+		gap: var(--space-1);
+		cursor: pointer;
+	}
+
+	.mixRow {
+		display: flex;
+		align-items: center;
+		gap: var(--space-2);
+		margin-bottom: var(--space-3);
+		color: var(--color-text-muted);
+		font-size: var(--text-sm);
+	}
+
+	.mixSlider {
+		flex: 1;
+		max-width: 16rem;
 	}
 
 	.statusSection {

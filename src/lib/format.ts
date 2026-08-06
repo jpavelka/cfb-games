@@ -90,6 +90,14 @@ function ordinalPeriod(period: number): string {
 	return `${period}${suffix}`;
 }
 
+/** Column headers for a by-quarter line score, e.g. ["1","2","3","4"] or ["1","2","3","4","OT","2O"]. */
+export function formatPeriodLabels(count: number): string[] {
+	return Array.from({ length: count }, (_, index) => {
+		const period = index + 1;
+		return period <= 4 ? `${period}` : period === 5 ? 'OT' : `${period - 4}O`;
+	});
+}
+
 /** Overall record, with the conference record in parentheses when we have it. */
 export function formatRecord(team: GameTeam): string | undefined {
 	if (!team.record) return undefined;
@@ -157,9 +165,13 @@ export function formatVenue(game: Game): string | undefined {
 	const { venue } = game;
 	if (!venue) return undefined;
 
+	// Strip trailing parenthesized disambiguation (e.g. "(Lincoln, NE)") since we
+	// already display city/state alongside the venue name.
+	const name = venue.name?.replace(/\s*\([^)]*\)\s*$/, '');
+
 	// International venues carry a country and no state; domestic ones the reverse.
 	const place = [venue.city, venue.state ?? venue.country].filter(Boolean).join(', ');
-	const parts = [venue.name, place].filter(Boolean);
+	const parts = [name, place].filter(Boolean);
 
 	return parts.length ? parts.join(' · ') : undefined;
 }

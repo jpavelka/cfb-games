@@ -45,6 +45,14 @@ function findRecord(competitor: EspnCompetitor, type: 'total' | 'vsconf'): strin
 	return competitor.records?.find((record) => record.type === type)?.summary || undefined;
 }
 
+/** Flattens ESPN's `[{value, period}, ...]` into a plain per-period array, ordered by period. */
+function toPeriodScores(competitor: EspnCompetitor): number[] | undefined {
+	if (!competitor.linescores?.length) return undefined;
+	return [...competitor.linescores]
+		.sort((a, b) => (a.period ?? 0) - (b.period ?? 0))
+		.map((line) => line.value ?? 0);
+}
+
 function toRank(competitor: EspnCompetitor): number | undefined {
 	const rank = competitor.curatedRank?.current;
 	if (rank === undefined || rank <= 0 || rank >= UNRANKED_SENTINEL) return undefined;
@@ -98,6 +106,7 @@ function toTeam(competitor: EspnCompetitor, odds: EspnOdds | undefined): GameTea
 		conferenceRecord: findRecord(competitor, 'vsconf'),
 		conferenceId: team.conferenceId,
 		score: parseScore(competitor.score),
+		periodScores: toPeriodScores(competitor),
 		// Read ESPN's own flag rather than recomputing from scores, which would
 		// mislabel ties as wins for both sides.
 		isWinner: competitor.winner,

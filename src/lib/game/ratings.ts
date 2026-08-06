@@ -1,4 +1,5 @@
 import { base } from '$app/paths';
+import { surpriseScore } from './surprise';
 import type { Game, GameTeam } from './types';
 
 interface RatingsFile {
@@ -134,21 +135,66 @@ function isFavoriteGame(game: Game, teamIds: ReadonlySet<string>): boolean {
 	return game.teams.some((team) => teamIds.has(team.id));
 }
 
+/** Which 0-99 score `sortByInterest` ranks on — see `matchupScore` and `surpriseScore`. */
+export type InterestMetric = 'matchup' | 'surprise';
+
+function metricScore(metric: InterestMetric, game: Game, ratings: RatingMap): number | null {
+	return metric === 'matchup' ? matchupScore(game, ratings) : surpriseScore(game);
+}
+
 /**
- * The score `sortByInterest` compares on: the plain matchup score, boosted for
- * favorite teams when `favorites.handling` is `'boost'`. A TBD side (`null`
- * score) can't be boosted — there's no team to be a favorite of yet.
+ * The score `sortByInterest` compares on: `metric`, boosted for favorite teams
+ * when `favorites.handling` is `'boost'`. A TBD side (`null` score) can't be
+ * boosted — there's no team to be a favorite of yet.
  */
-function sortScore(game: Game, ratings: RatingMap, favorites: FavoriteSort | undefined): number | null {
-	const base = matchupScore(game, ratings);
+function sortScore(
+	metric: InterestMetric,
+	game: Game,
+	ratings: RatingMap,
+	favorites: FavoriteSort | undefined
+): number | null {
+	const base = metricScore(metric, game, ratings);
+	if (base === null || favorites?.handling !== 'boost') return base;
+	return isFavoriteGame(game, favorites.teamIds) ? base + favorites.boostAmount : base;
+}
+
+/** User-adjustable multipliers for `matchupScore` and `surpriseScore` when blending them into the Completed section's sort key — see `combinedScore`. */
+export interface ScoreWeights {
+	matchup: number;
+	surprise: number;
+}
+
+/**
+ * `weights.matchup * matchupScore + weights.surprise * surpriseScore`. A null
+ * component (a TBD side, or no odds data to compute a surprise score) counts
+ * as `0` rather than dropping the game, so a game missing just one score
+ * still sorts by whichever it has. `null` only when both are null — nothing
+ * at all to rank the game on.
+ */
+function combinedScore(game: Game, ratings: RatingMap, weights: ScoreWeights): number | null {
+	const matchup = matchupScore(game, ratings);
+	const surprise = surpriseScore(game);
+	if (matchup === null && surprise === null) return null;
+	return weights.matchup * (matchup ?? 0) + weights.surprise * (surprise ?? 0);
+}
+
+/** `combinedScore`, boosted for favorite teams — mirrors `sortScore`. */
+function combinedSortScore(
+	game: Game,
+	ratings: RatingMap,
+	weights: ScoreWeights,
+	favorites: FavoriteSort | undefined
+): number | null {
+	const base = combinedScore(game, ratings, weights);
 	if (base === null || favorites?.handling !== 'boost') return base;
 	return isFavoriteGame(game, favorites.teamIds) ? base + favorites.boostAmount : base;
 }
 
 /**
  * Most interesting matchup first. Games with no score yet (a TBD side) sink to
- * the end rather than being guessed at; ties break on `shortName` so the order
- * stays stable across re-renders.
+ * the end rather than being guessed at; ties on `metric` fall through to
+ * `tiebreakMetric` (unboosted — the boost only applies to the primary sort)
+ * when given, then to `shortName` so the order stays stable across re-renders.
  *
  * When `favorites.handling` is `'top'`, games involving a favorite team are
  * pinned ahead of every other game (favorite-vs-favorite and non-favorite
@@ -156,7 +202,15 @@ function sortScore(game: Game, ratings: RatingMap, favorites: FavoriteSort | und
  * `favorites.boostAmount` to a favorite game's score before comparing, so it
  * outranks similarly-appealing games without always winning outright.
  */
-export function sortByInterest(games: readonly Game[], ratings: RatingMap, favorites?: FavoriteSort): Game[] {
+export function sortByInterest(
+	games: readonly Game[],
+	ratings: RatingMap,
+	favorites?: FavoriteSort,
+	options?: { metric?: InterestMetric; tiebreakMetric?: InterestMetric }
+): Game[] {
+	const metric = options?.metric ?? 'matchup';
+	const tiebreakMetric = options?.tiebreakMetric;
+
 	return [...games].sort((a, b) => {
 		if (favorites?.handling === 'top') {
 			const favA = isFavoriteGame(a, favorites.teamIds);
@@ -164,11 +218,56 @@ export function sortByInterest(games: readonly Game[], ratings: RatingMap, favor
 			if (favA !== favB) return favA ? -1 : 1;
 		}
 
-		const scoreA = sortScore(a, ratings, favorites);
-		const scoreB = sortScore(b, ratings, favorites);
-		if (scoreA === null && scoreB === null) return a.shortName.localeCompare(b.shortName);
-		if (scoreA === null) return 1;
-		if (scoreB === null) return -1;
-		return scoreB - scoreA;
+		const scoreA = sortScore(metric, a, ratings, favorites);
+		const scoreB = sortScore(metric, b, ratings, favorites);
+		if (scoreA !== scoreB) {
+			if (scoreA === null) return 1;
+			if (scoreB === null) return -1;
+			return scoreB - scoreA;
+		}
+
+		if (tiebreakMetric) {
+			const tieA = metricScore(tiebreakMetric, a, ratings);
+			const tieB = metricScore(tiebreakMetric, b, ratings);
+			if (tieA !== tieB) {
+				if (tieA === null) return 1;
+				if (tieB === null) return -1;
+				return tieB - tieA;
+			}
+		}
+
+		return a.shortName.localeCompare(b.shortName);
+	});
+}
+
+/**
+ * Completed-section sort driven by a user-tunable blend of matchup and
+ * surprise scores — see `combinedScore`. Otherwise mirrors `sortByInterest`:
+ * a null combined score (both components null) sinks to the end, `favorites`
+ * pinning/boosting works the same way, and ties fall through to `shortName`
+ * for a stable order.
+ */
+export function sortByCombinedScore(
+	games: readonly Game[],
+	ratings: RatingMap,
+	weights: ScoreWeights,
+	favorites?: FavoriteSort
+): Game[] {
+	return [...games].sort((a, b) => {
+		if (favorites?.handling === 'top') {
+			const favA = isFavoriteGame(a, favorites.teamIds);
+			const favB = isFavoriteGame(b, favorites.teamIds);
+			if (favA !== favB) return favA ? -1 : 1;
+		}
+
+		const scoreA = combinedSortScore(a, ratings, weights, favorites);
+		const scoreB = combinedSortScore(b, ratings, weights, favorites);
+		if (scoreA !== scoreB) {
+			if (scoreA === null) return 1;
+			if (scoreB === null) return -1;
+			return scoreB - scoreA;
+		}
+
+		return a.shortName.localeCompare(b.shortName);
 	});
 }

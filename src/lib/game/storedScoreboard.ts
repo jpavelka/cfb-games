@@ -62,6 +62,8 @@ export interface StoredGameTeam {
 	record?: string;
 	conferenceRecord?: string;
 	score?: number;
+	/** Score by period (quarter, then OT). Present once the game has started. */
+	periodScores?: number[];
 	isWinner?: boolean;
 	/** Present only when `id` isn't a known FBS/FCS/D2 team — see `knownTeamIds`. */
 	fallback?: StoredTeamFallback;
@@ -136,6 +138,7 @@ function toStoredTeam(team: GameTeam, knownTeamIds: Set<string>, eventId: string
 		record: team.record,
 		conferenceRecord: team.conferenceRecord,
 		score: team.score,
+		periodScores: team.periodScores,
 		isWinner: team.isWinner,
 		fallback
 	};

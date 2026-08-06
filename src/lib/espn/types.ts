@@ -111,6 +111,8 @@ export interface EspnCompetitor {
 	 */
 	records?: Array<{ name?: string; type?: string; summary?: string }>;
 	team?: EspnTeam;
+	/** Score by period (quarter, then OT). Present once the game has started. */
+	linescores?: Array<{ value?: number; period?: number }>;
 }
 
 export interface EspnTeam {
