@@ -1,7 +1,7 @@
 import { mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fetchMergedScoreboard } from '../src/lib/espn/client';
-import type { BettingFallbackEntry } from '../src/lib/game/bettingFallback';
+import { mergeCfbdBetting, type CfbdGameLines, type CfbdPregameWinProbability } from './cfbdBetting';
 
 /**
  * Fetches collegefootballdata.com's betting lines and pregame win probability
@@ -18,24 +18,6 @@ import type { BettingFallbackEntry } from '../src/lib/game/bettingFallback';
 
 const CFBD_BASE_URL = 'https://api.collegefootballdata.com';
 const OUTPUT_PATH = path.join(import.meta.dirname, '..', 'static', 'data', 'betting.json');
-
-interface CfbdLine {
-	provider: string;
-	spread: number | null;
-	overUnder: number | null;
-	homeMoneyline: number | null;
-	awayMoneyline: number | null;
-}
-
-interface CfbdGameLines {
-	id: number;
-	lines: CfbdLine[];
-}
-
-interface CfbdPregameWinProbability {
-	gameId: number;
-	homeWinProbability: number;
-}
 
 async function fetchCfbd<T>(endpoint: string, params: Record<string, string>, apiKey: string): Promise<T> {
 	const url = new URL(endpoint, CFBD_BASE_URL);
@@ -65,27 +47,7 @@ async function main() {
 		fetchCfbd<CfbdPregameWinProbability[]>('/metrics/wp/pregame', { year }, apiKey)
 	]);
 
-	const betting: Record<string, BettingFallbackEntry> = {};
-
-	for (const game of lines) {
-		// Only the first-listed provider — this is a fallback for missing ESPN
-		// odds, not a full odds-comparison feature, so one provider is enough.
-		const first = game.lines[0];
-		if (!first) continue;
-
-		betting[String(game.id)] = {
-			provider: first.provider,
-			spread: first.spread ?? undefined,
-			overUnder: first.overUnder ?? undefined,
-			homeMoneyline: first.homeMoneyline ?? undefined,
-			awayMoneyline: first.awayMoneyline ?? undefined
-		};
-	}
-
-	for (const wp of winProbabilities) {
-		const key = String(wp.gameId);
-		betting[key] = { ...betting[key], homeWinProbability: wp.homeWinProbability };
-	}
+	const betting = mergeCfbdBetting(lines, winProbabilities);
 
 	await mkdir(path.dirname(OUTPUT_PATH), { recursive: true });
 	await writeFile(OUTPUT_PATH, JSON.stringify(betting, null, '\t') + '\n');

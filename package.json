@@ -16,6 +16,7 @@
 		"fetch:broadcasters": "tsx scripts/fetch-broadcasters.ts",
 		"fetch:betting": "tsx --env-file-if-exists=.env scripts/fetch-betting.ts",
 		"fetch:dev-snapshot": "tsx scripts/fetch-dev-snapshot.ts",
+		"build:local-betting-backup": "tsx scripts/build-local-betting-backup.ts",
 		"check:winsipedia-slugs": "tsx scripts/check-winsipedia-slugs.ts",
 		"deploy:server": "bash scripts/deploy.sh"
 	},

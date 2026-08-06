@@ -9,6 +9,13 @@ export interface SnapshotIndexEntry {
 	name: string;
 	label: string;
 	capturedAt: string;
+	/**
+	 * Filename under `static/dev-data/` (e.g. `betting-backup-2025.json`, see
+	 * `scripts/build-local-betting-backup.ts`) to use as this snapshot's betting
+	 * fallback instead of the live `static/data/betting.json` — a manual,
+	 * per-entry opt-in for snapshots captured from a past season.
+	 */
+	bettingFile?: string;
 }
 
 /**

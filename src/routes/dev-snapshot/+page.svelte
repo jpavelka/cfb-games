@@ -24,7 +24,12 @@
 		{#each data.snapshots as snapshot (snapshot.name)}
 			<li>
 				<a href={resolve('/dev-snapshot/[name]', { name: snapshot.name })}>{snapshot.label}</a>
-				<span class="meta">{snapshot.name} · captured {new Date(snapshot.capturedAt).toLocaleString()}</span>
+				<span class="meta">
+					{snapshot.name} · captured {new Date(snapshot.capturedAt).toLocaleString()}
+					{#if snapshot.bettingFile}
+						· betting: {snapshot.bettingFile}
+					{/if}
+				</span>
 			</li>
 		{/each}
 	</ul>

@@ -24,13 +24,20 @@ export interface BettingFallbackEntry {
 export type BettingFallbackMap = Map<string, BettingFallbackEntry>;
 
 /**
- * Loaded from `static/data/betting.json`, refreshed daily by GitHub Actions —
- * not fetched live at view time (same rule as `sagarin.json`/`loadRatingMap`).
- * A missing/unreadable file yields an empty map rather than failing the page.
+ * Loaded from `static/data/betting.json` by default, refreshed daily by GitHub
+ * Actions — not fetched live at view time (same rule as `sagarin.json`/
+ * `loadRatingMap`). A missing/unreadable file yields an empty map rather than
+ * failing the page.
+ *
+ * `path` can be overridden to point at a dev-only backup instead — see
+ * `/dev-snapshot/[name]` and `scripts/build-local-betting-backup.ts`.
  */
-export async function loadBettingFallback(fetchImpl: typeof fetch = fetch): Promise<BettingFallbackMap> {
+export async function loadBettingFallback(
+	fetchImpl: typeof fetch = fetch,
+	path: string = `${base}/data/betting.json`
+): Promise<BettingFallbackMap> {
 	try {
-		const response = await fetchImpl(`${base}/data/betting.json`);
+		const response = await fetchImpl(path);
 		if (!response.ok) return new Map();
 
 		const data = (await response.json()) as Record<string, BettingFallbackEntry>;
