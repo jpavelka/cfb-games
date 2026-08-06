@@ -14,6 +14,7 @@
 	} from '$lib/format';
 	import type { ConferenceMap } from '$lib/game/conferences';
 	import { matchupScore, matchupScoreColor, teamStrength, type RatingMap } from '$lib/game/ratings';
+	import { winProbBarColors } from '$lib/game/teamColors';
 	import type { Game } from '$lib/game/types';
 	import { winsipediaLink } from '$lib/game/winsipediaLink';
 
@@ -56,6 +57,17 @@
 	});
 	const matchup = $derived(game ? matchupScore(game, ratings) : null);
 	const winsipedia = $derived(game ? winsipediaLink(game) : undefined);
+	// Once the game is live or final, the actual score speaks for itself — a
+	// pregame odds snapshot would be stale and misleading next to it.
+	const winProb = $derived(
+		game &&
+			game.status.state === 'pre' &&
+			game.odds?.homeWinPct !== undefined &&
+			game.odds?.awayWinPct !== undefined
+			? { home: game.odds.homeWinPct, away: game.odds.awayWinPct }
+			: undefined
+	);
+	const winProbColors = $derived(game ? winProbBarColors(game.home, game.away) : undefined);
 </script>
 
 <dialog
@@ -112,7 +124,7 @@
 								<span class="conference missing fallback-short">Conf not found</span>
 							{/if}
 							<span class="strength">Strength {teamStrength(team, ratings)}</span>
-							{#if formatWinProbability(game.odds, team)}
+							{#if winProb && formatWinProbability(game.odds, team)}
 								<span class="winPct">{formatWinProbability(game.odds, team)} to win</span>
 							{/if}
 						</div>
@@ -130,6 +142,23 @@
 					{/if}
 				{/each}
 			</div>
+
+			{#if winProb && winProbColors}
+				<div class="winProbBar" title="Win probability">
+					<div class="bar">
+						<span
+							class="segment"
+							style:width="{winProb.away}%"
+							style:background={winProbColors.away}
+						></span>
+						<span
+							class="segment"
+							style:width="{winProb.home}%"
+							style:background={winProbColors.home}
+						></span>
+					</div>
+				</div>
+			{/if}
 
 			<dl class="details">
 				{#if matchup !== null}
@@ -309,7 +338,20 @@
 		display: flex;
 		justify-content: space-around;
 		gap: var(--space-3);
-		margin-bottom: var(--space-4);
+		margin-bottom: var(--space-2);
+	}
+
+	.winProbBar {
+		margin: 0 0 var(--space-4);
+	}
+
+	.winProbBar .bar {
+		display: flex;
+		height: 10px;
+		overflow: hidden;
+		border: 1px solid var(--color-border);
+		border-radius: var(--radius-full);
+		background: var(--color-surface-alt);
 	}
 
 	.team {
