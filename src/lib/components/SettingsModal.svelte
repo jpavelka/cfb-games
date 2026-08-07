@@ -4,6 +4,7 @@
 		type ConferenceMap,
 		type ConferenceTeam
 	} from '$lib/game/conferences';
+	import { describeActiveFilters } from '$lib/game/filterSummary';
 	import {
 		settings,
 		toggleAccessibleBroadcast,
@@ -120,12 +121,14 @@
 	function setBoostAmount(raw: string): void {
 		const parsed = Number(raw);
 		const clamped = Number.isFinite(parsed)
-			? Math.max(0, Math.round(parsed))
+			? Math.min(99, Math.max(0, Math.round(parsed)))
 			: settings.favoriteBoostAmount;
 		updateSettings({ favoriteBoostAmount: clamped });
 	}
 
 	let broadcastPickerOpen = $state(false);
+
+	const activeFilters = $derived(describeActiveFilters(settings));
 </script>
 
 {#snippet teamList(teams: ConferenceTeam[])}
@@ -180,26 +183,15 @@
 
 		<h2>Settings</h2>
 
-		<section>
-			<span class="field">Appearance</span>
-			<div class="radioGroup">
-				{#each themes as option (option.value)}
-					<label class="radio">
-						<input
-							type="radio"
-							name="theme"
-							value={option.value}
-							checked={settings.theme === option.value}
-							onchange={() => updateSettings({ theme: option.value })}
-						/>
-						{option.label}
-					</label>
-				{/each}
-			</div>
-		</section>
+		{#if activeFilters.length > 0}
+			<p class="currentFilters">
+				<strong>Current customizations:</strong>
+				{activeFilters.join(' · ')}
+			</p>
+		{/if}
 
-		<section>
-			<span class="field">Teams</span>
+		<details class="section">
+			<summary class="field">Teams filter</summary>
 			<div class="radioGroup">
 				{#each teamFilters as option (option.value)}
 					<label class="radio">
@@ -215,16 +207,17 @@
 				{/each}
 			</div>
 			<p class="hint">Show only games involving a team from the selected category.</p>
-		</section>
+		</details>
 
-		<section>
-			<label class="field" for="minMatchupScore">Minimum matchup score</label>
+		<details class="section">
+			<summary class="field">Matchup score filter</summary>
 			<div class="scoreRow">
 				<input
 					id="minMatchupScore"
 					type="range"
 					min="0"
 					max="99"
+					aria-label="Matchup score filter"
 					value={settings.minMatchupScore}
 					oninput={(event) =>
 						updateSettings({ minMatchupScore: Number(event.currentTarget.value) })}
@@ -240,10 +233,10 @@
 				/>
 			</div>
 			<p class="hint">Hide games below this score. Set to 0 to show every game.</p>
-		</section>
+		</details>
 
-		<section>
-			<span class="field">Favorite teams</span>
+		<details class="section">
+			<summary class="field">Favorite teams</summary>
 			<div class="pickerHeader">
 				<button
 					class="pickerToggle"
@@ -315,11 +308,7 @@
 					{/each}
 				</div>
 			{/if}
-			<p class="hint">Favorite teams get special treatment in the sort order.</p>
-		</section>
-
-		<section>
-			<span class="field">Favorite team sort</span>
+			<p class="hint">How are favorite teams treated in the sort order?</p>
 			<div class="radioGroup">
 				{#each favoriteHandlings as option (option.value)}
 					<label class="radio">
@@ -336,23 +325,34 @@
 			</div>
 			{#if settings.favoriteHandling === 'boost'}
 				<div class="boostRow">
-					<label for="favoriteBoostAmount">Boost amount</label>
-					<input
-						id="favoriteBoostAmount"
-						class="scoreNumber"
-						type="number"
-						min="0"
-						max="99"
-						value={settings.favoriteBoostAmount}
-						onchange={(event) => setBoostAmount(event.currentTarget.value)}
-					/>
+					<label class="boostLabel" for="favoriteBoostAmount">Boost amount</label>
+					<div class="scoreRow">
+						<input
+							type="range"
+							min="0"
+							max="99"
+							aria-label="Boost amount"
+							value={settings.favoriteBoostAmount}
+							oninput={(event) =>
+								updateSettings({ favoriteBoostAmount: Number(event.currentTarget.value) })}
+						/>
+						<input
+							id="favoriteBoostAmount"
+							class="scoreNumber"
+							type="number"
+							min="0"
+							max="99"
+							value={settings.favoriteBoostAmount}
+							onchange={(event) => setBoostAmount(event.currentTarget.value)}
+						/>
+					</div>
 				</div>
 			{/if}
 			<p class="hint">Affects sort order only — the displayed matchup score doesn't change.</p>
-		</section>
+		</details>
 
-		<section>
-			<span class="field">Channels</span>
+		<details class="section">
+			<summary class="field">Broadcasts filter</summary>
 			<div class="pickerHeader">
 				<button
 					class="pickerToggle"
@@ -390,7 +390,25 @@
 				Hides games not on a selected channel — including games with no listed national
 				broadcaster.
 			</p>
-		</section>
+		</details>
+
+		<details class="section">
+			<summary class="field">Theme</summary>
+			<div class="radioGroup">
+				{#each themes as option (option.value)}
+					<label class="radio">
+						<input
+							type="radio"
+							name="theme"
+							value={option.value}
+							checked={settings.theme === option.value}
+							onchange={() => updateSettings({ theme: option.value })}
+						/>
+						{option.label}
+					</label>
+				{/each}
+			</div>
+		</details>
 	</div>
 </dialog>
 
@@ -442,26 +460,70 @@
 
 	h2 {
 		margin: 0 0 var(--space-4);
-		padding-inline: 2.5rem 0;
+		padding-inline-end: 2.5rem;
 		font-size: var(--text-xl);
 		letter-spacing: -0.01em;
 	}
 
-	section {
-		margin-bottom: var(--space-5);
+	.currentFilters {
+		margin: calc(-1 * var(--space-2)) 0 var(--space-4);
+		padding: var(--space-2) var(--space-3);
+		border-radius: var(--radius-sm);
+		background: var(--color-surface-alt);
+		color: var(--color-text-muted);
+		font-size: var(--text-sm);
 	}
 
-	section:last-child {
+	.currentFilters strong {
+		color: inherit;
+		font-weight: 600;
+	}
+
+	.section {
+		margin-bottom: var(--space-3);
+	}
+
+	.section:last-child {
 		margin-bottom: 0;
+	}
+
+	.section:not(:first-child) {
+		padding-top: var(--space-3);
+		border-top: 1px solid var(--color-border);
 	}
 
 	.field {
 		display: flex;
 		align-items: baseline;
 		gap: var(--space-2);
-		margin-bottom: var(--space-2);
+		margin-bottom: 0;
 		font-size: var(--text-sm);
 		font-weight: 600;
+		list-style: none;
+		cursor: pointer;
+	}
+
+	.field::-webkit-details-marker {
+		display: none;
+	}
+
+	.field::after {
+		width: 0.4rem;
+		height: 0.4rem;
+		margin-left: auto;
+		border-right: 1.5px solid var(--color-text-faint);
+		border-bottom: 1.5px solid var(--color-text-faint);
+		transform: rotate(-45deg);
+		transition: transform 0.15s ease;
+		content: '';
+	}
+
+	.section[open] > .field {
+		margin-bottom: var(--space-2);
+	}
+
+	.section[open] > .field::after {
+		transform: rotate(45deg);
 	}
 
 	.scoreRow {
@@ -690,9 +752,12 @@
 
 	.boostRow {
 		display: flex;
-		align-items: center;
+		flex-direction: column;
 		gap: var(--space-2);
 		margin-top: var(--space-3);
+	}
+
+	.boostLabel {
 		font-size: var(--text-sm);
 	}
 </style>

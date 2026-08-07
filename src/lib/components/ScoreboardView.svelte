@@ -13,8 +13,10 @@
 		filterByTeamCategory
 	} from '$lib/game/filter';
 	import { setDataStatus } from '$lib/game/dataStatus.svelte';
+	import { describeActiveFilters } from '$lib/game/filterSummary';
 	import type { RatingMap } from '$lib/game/ratings';
 	import { settings } from '$lib/game/settings.svelte';
+	import { openSettingsModal } from '$lib/game/settingsModal.svelte';
 	import type { Scoreboard } from '$lib/game/types';
 	import type { WeekOption } from '$lib/game/weeks';
 
@@ -50,6 +52,13 @@
 	} = $props();
 
 	let search = $state('');
+
+	// Counted (not spelled out) here, since a customization set in Settings but
+	// out of view shouldn't silently read as "ESPN just has fewer games this
+	// week" — the "see settings" link is where the actual breakdown lives
+	// (shared text, see `filterSummary.ts`, so it can't drift from what's shown
+	// there).
+	const activeFilters = $derived(describeActiveFilters(settings));
 
 	// Bundled so the `{#await}` block below (and everything mounted inside it,
 	// including `GameList`) only (re)creates once per navigation, with both
@@ -111,6 +120,15 @@
 			bind:value={search}
 		/>
 	</div>
+
+	{#if activeFilters.length > 0}
+		<p class="filters">
+			<button type="button" class="filtersLink" onclick={openSettingsModal}>
+				{activeFilters.length} customization{activeFilters.length === 1 ? '' : 's'} applied — see
+				settings
+			</button>
+		</p>
+	{/if}
 
 	<div class="meta">
 		{#if requested !== null && !currentWeek}
@@ -198,6 +216,29 @@
 	.search:hover,
 	.search:focus-visible {
 		border-color: var(--color-accent);
+	}
+
+	.filters {
+		margin: calc(-1 * var(--space-2)) 0 var(--space-3);
+	}
+
+	.filtersLink {
+		padding: 0;
+		border: none;
+		background: none;
+		color: var(--color-text-faint);
+		font: inherit;
+		font-size: var(--text-xs);
+		text-align: left;
+		text-decoration: underline;
+		text-decoration-color: transparent;
+		cursor: pointer;
+	}
+
+	.filtersLink:hover,
+	.filtersLink:focus-visible {
+		color: var(--color-text-muted);
+		text-decoration-color: currentColor;
 	}
 
 	.meta {

@@ -1,19 +1,49 @@
 <script lang="ts">
 	import '../app.css';
 	import favicon from '$lib/assets/favicon.jpg';
+	import AboutModal from '$lib/components/AboutModal.svelte';
 	import DataStatus from '$lib/components/DataStatus.svelte';
+	import { formatTimeZoneAbbreviation, formatUtcOffset } from '$lib/format';
 	import SettingsModal from '$lib/components/SettingsModal.svelte';
 	import { settings } from '$lib/game/settings.svelte';
+	import { closeSettingsModal, openSettingsModal, settingsModalState } from '$lib/game/settingsModal.svelte';
 	import type { LayoutProps } from './$types';
 
 	let { children, data }: LayoutProps = $props();
 
-	let settingsOpen = $state(false);
+	let aboutOpen = $state(false);
 	// Measured rather than guessed, since the fixed footer's height varies with
 	// content length and can wrap to extra lines on narrow phone screens —
 	// a hardcoded padding-bottom on <main> falls short there and lets the
 	// footer cover interactive content underneath it.
 	let footerHeight = $state(0);
+
+	// Detected rather than approximated with a viewport-width media query:
+	// the two footer items' natural widths (and thus the point they no
+	// longer fit side by side) vary with content, so a fixed breakpoint
+	// either centers them early — while they're still on one line, causing
+	// a visible "snap" — or lets them stay spread too long. Comparing their
+	// offsetTop tracks the real wrap point exactly. Watching the wrapper
+	// (rather than the items) catches both a viewport resize and a content
+	// change (e.g. the relative-time text growing) flipping the wrap state,
+	// since either shows up as a height/width change on the wrapper itself.
+	let footerInner: HTMLElement | undefined = $state();
+	let footerFirstItem: HTMLElement | undefined = $state();
+	let footerSecondItem: HTMLElement | undefined = $state();
+	let footerWrapped = $state(false);
+
+	function checkFooterWrap() {
+		if (footerFirstItem && footerSecondItem) {
+			footerWrapped = footerSecondItem.offsetTop > footerFirstItem.offsetTop;
+		}
+	}
+
+	$effect(() => {
+		if (!footerInner) return;
+		const observer = new ResizeObserver(checkFooterWrap);
+		observer.observe(footerInner);
+		return () => observer.disconnect();
+	});
 
 	$effect(() => {
 		if (settings.theme === 'system') {
@@ -31,8 +61,11 @@
 
 <header>
 	<div class="inner">
-		<h1>College Football</h1>
-		<button class="settings" type="button" onclick={() => (settingsOpen = true)}>Settings</button>
+		<h1>CFB Games</h1>
+		<nav class="headerActions">
+			<button class="settings" type="button" onclick={openSettingsModal}>Settings</button>
+			<button class="settings" type="button" onclick={() => (aboutOpen = true)}>About</button>
+		</nav>
 	</div>
 </header>
 
@@ -41,19 +74,22 @@
 </main>
 
 <footer bind:clientHeight={footerHeight}>
-	<div class="inner">
-		<span class="attribution-full">Data from ESPN's unofficial API. Times shown in your local timezone.</span>
-		<span class="attribution-short">Data from ESPN. Times shown locally.</span>
-		<DataStatus />
+	<div class="inner" class:wrapped={footerWrapped} bind:this={footerInner}>
+		<span bind:this={footerFirstItem}
+			>Timezone: {formatTimeZoneAbbreviation()} ({formatUtcOffset()})</span
+		>
+		<span bind:this={footerSecondItem}><DataStatus /></span>
 	</div>
 </footer>
 
 <SettingsModal
-	open={settingsOpen}
-	onClose={() => (settingsOpen = false)}
+	open={settingsModalState.open}
+	onClose={closeSettingsModal}
 	conferences={data.conferences}
 	broadcasters={data.broadcasters}
 />
+
+<AboutModal open={aboutOpen} onClose={() => (aboutOpen = false)} sagarinAsOf={data.sagarinAsOf} />
 
 <style>
 	header {
@@ -79,8 +115,19 @@
 		letter-spacing: -0.01em;
 	}
 
-	.settings {
+	.headerActions {
+		display: flex;
+		align-items: baseline;
+		gap: var(--space-3);
 		margin-left: auto;
+	}
+
+	.headerActions .settings:not(:first-child) {
+		padding-left: var(--space-3);
+		border-left: 1px solid var(--color-border);
+	}
+
+	.settings {
 		padding: 0;
 		border: none;
 		background: none;
@@ -122,29 +169,13 @@
 		gap: var(--space-2) var(--space-4);
 	}
 
-	/* Below this width the two spans wrap onto separate lines; center each
-	   rather than leaving them pinned to opposite edges. */
-	@media (max-width: 640px) {
-		footer .inner {
-			justify-content: center;
-			text-align: center;
-			row-gap: var(--space-1);
-		}
+	/* Applied only once the two spans have actually wrapped onto separate
+	   lines (see footerWrapped in the script) — centers each line instead
+	   of leaving it pinned to the edge it held on the shared line. */
+	footer .inner.wrapped {
+		justify-content: center;
+		text-align: center;
+		row-gap: var(--space-1);
 	}
 
-	.attribution-short {
-		display: none;
-	}
-
-	/* Narrow enough that even the attribution's own line wraps in two; swap
-	   in a shorter message rather than let it break across three lines total. */
-	@media (max-width: 400px) {
-		.attribution-full {
-			display: none;
-		}
-
-		.attribution-short {
-			display: inline;
-		}
-	}
 </style>

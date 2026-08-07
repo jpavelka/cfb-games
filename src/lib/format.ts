@@ -28,6 +28,22 @@ const DAY_HEADING = new Intl.DateTimeFormat(undefined, {
 const RANGE_MONTH_DAY = new Intl.DateTimeFormat(undefined, { month: 'short', day: 'numeric' });
 const RANGE_DAY = new Intl.DateTimeFormat(undefined, { day: 'numeric' });
 
+const LONG_DATE = new Intl.DateTimeFormat(undefined, {
+	year: 'numeric',
+	month: 'long',
+	day: 'numeric'
+});
+
+/**
+ * e.g. "January 19, 2026" from a "YYYY-MM-DD" string. Built from the date's own
+ * year/month/day components rather than `new Date(iso)`, which parses bare
+ * dates as UTC midnight and can print a day early west of UTC.
+ */
+export function formatIsoDate(iso: string): string {
+	const [year, month, day] = iso.split('-').map(Number);
+	return LONG_DATE.format(new Date(year, month - 1, day));
+}
+
 /** Kickoff clock time, or `TBD` when ESPN doesn't know it yet. */
 export function formatKickoffTime(game: Game): string {
 	return game.kickoffTbd ? 'TBD' : TIME.format(game.kickoff);
@@ -35,6 +51,22 @@ export function formatKickoffTime(game: Game): string {
 
 export function formatKickoffDate(date: Date): string {
 	return SHORT_DATE.format(date);
+}
+
+/** e.g. "UTC-5" or "UTC+5:30" — the viewer's own offset from UTC. */
+export function formatUtcOffset(date: Date = new Date()): string {
+	const minutes = -date.getTimezoneOffset();
+	const sign = minutes >= 0 ? '+' : '-';
+	const hours = Math.floor(Math.abs(minutes) / 60);
+	const remainder = Math.abs(minutes) % 60;
+	return remainder ? `UTC${sign}${hours}:${String(remainder).padStart(2, '0')}` : `UTC${sign}${hours}`;
+}
+
+const TZ_NAME = new Intl.DateTimeFormat(undefined, { timeZoneName: 'short' });
+
+/** e.g. "EST"/"EDT" — the viewer's own zone abbreviation, DST-aware. */
+export function formatTimeZoneAbbreviation(date: Date = new Date()): string {
+	return TZ_NAME.formatToParts(date).find((part) => part.type === 'timeZoneName')?.value ?? '';
 }
 
 /**
@@ -222,6 +254,10 @@ export function teamInitials(team: GameTeam): string {
 	return team.location.slice(0, 3).toUpperCase();
 }
 
+/**
+ * e.g. "Updated 5 min ago" or, once it's a full day or more out, "Updated 3
+ * days ago" instead of an oddly large hour count.
+ */
 export function formatRelativeUpdate(fetchedAt: Date, now: Date = new Date()): string {
 	const seconds = Math.max(0, Math.round((now.getTime() - fetchedAt.getTime()) / 1000));
 	if (seconds < 60) return 'Updated just now';
@@ -230,15 +266,20 @@ export function formatRelativeUpdate(fetchedAt: Date, now: Date = new Date()): s
 	if (minutes < 60) return `Updated ${minutes} min ago`;
 
 	const hours = Math.round(minutes / 60);
-	return `Updated ${hours} hr ago`;
+	if (hours < 24) return `Updated ${hours} hr ago`;
+
+	const days = Math.round(hours / 24);
+	return `Updated ${days} day${days === 1 ? '' : 's'} ago`;
 }
 
 /**
  * e.g. "next check in 5 min" or, once it's more than a handful of hours out (an
  * idle bye week backed all the way off to next Monday — see
  * `server/reschedule.ts`), "next check Mon, Sep 1 at 6:00 AM" instead of a
- * meaningless "in 38 hr". Once the scheduled check time has passed without the
- * page reloading, "refresh for new data" instead of a stale "any moment".
+ * meaningless "in 38 hr" — or, once that's a full day or more out, "next check
+ * in 3 days" instead of an oddly specific date/time. Once the scheduled check
+ * time has passed without the page reloading, "refresh for new data" instead
+ * of a stale "any moment".
  */
 export function formatNextRefresh(nextRefreshAt: Date, now: Date = new Date()): string {
 	const seconds = Math.round((nextRefreshAt.getTime() - now.getTime()) / 1000);
@@ -246,10 +287,11 @@ export function formatNextRefresh(nextRefreshAt: Date, now: Date = new Date()): 
 	if (seconds <= 30) return 'Next check any moment';
 
 	const minutes = Math.round(seconds / 60);
-	if (minutes < 60) return `Next check in ${minutes} min`;
+	if (minutes < 60) return `Next check ${minutes} min`;
 
 	const hours = Math.round(minutes / 60);
-	if (hours < 20) return `Next check in ${hours} hr`;
+	if (hours < 24) return `Next check ${hours} hr`;
 
-	return `Next check ${formatKickoffDate(nextRefreshAt)} at ${TIME.format(nextRefreshAt)}`;
+	const days = Math.round(hours / 24);
+	return `Next check ${days} day${days === 1 ? '' : 's'}`;
 }

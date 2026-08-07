@@ -3,11 +3,24 @@ import { surpriseScore } from './surprise';
 import type { Game, GameTeam } from './types';
 
 interface RatingsFile {
+	/** YYYY-MM-DD, the date Sagarin's site says these ratings are current through. */
+	asOf?: string;
 	teams: Record<string, { rating: number }>;
 }
 
 /** ESPN team id -> team strength, rescaled to 1-99. */
 export type RatingMap = Map<string, number>;
+
+async function loadRatingsFile(fetchImpl: typeof fetch): Promise<RatingsFile | undefined> {
+	try {
+		const response = await fetchImpl(`${base}/data/sagarin.json`);
+		if (!response.ok) return undefined;
+		return (await response.json()) as RatingsFile;
+	} catch (error) {
+		console.warn('Could not load Sagarin rating data', error);
+		return undefined;
+	}
+}
 
 /**
  * Loaded from `static/data/sagarin.json` (see `scripts/fetch-sagarin-ratings.ts`),
@@ -17,28 +30,32 @@ export type RatingMap = Map<string, number>;
  * yields an empty map rather than failing the page (mirrors `loadConferenceMap`).
  */
 export async function loadRatingMap(fetchImpl: typeof fetch = fetch): Promise<RatingMap> {
-	try {
-		const response = await fetchImpl(`${base}/data/sagarin.json`);
-		if (!response.ok) return new Map();
+	const data = await loadRatingsFile(fetchImpl);
+	if (!data) return new Map();
 
-		const data = (await response.json()) as RatingsFile;
-		const ratings = Object.values(data.teams).map((team) => team.rating);
-		if (ratings.length === 0) return new Map();
+	const ratings = Object.values(data.teams).map((team) => team.rating);
+	if (ratings.length === 0) return new Map();
 
-		const min = Math.min(...ratings);
-		const max = Math.max(...ratings);
-		const span = max - min;
+	const min = Math.min(...ratings);
+	const max = Math.max(...ratings);
+	const span = max - min;
 
-		return new Map(
-			Object.entries(data.teams).map(([id, team]) => [
-				id,
-				span === 0 ? 50 : 1 + ((team.rating - min) / span) * 98
-			])
-		);
-	} catch (error) {
-		console.warn('Could not load Sagarin rating data', error);
-		return new Map();
-	}
+	return new Map(
+		Object.entries(data.teams).map(([id, team]) => [
+			id,
+			span === 0 ? 50 : 1 + ((team.rating - min) / span) * 98
+		])
+	);
+}
+
+/**
+ * The date (YYYY-MM-DD) Sagarin's ratings are current through, shown in the
+ * About modal — same source file as `loadRatingMap`, SvelteKit's `fetch`
+ * dedupes the two calls during a single `load` into one request.
+ */
+export async function loadSagarinAsOf(fetchImpl: typeof fetch = fetch): Promise<string | undefined> {
+	const data = await loadRatingsFile(fetchImpl);
+	return data?.asOf;
 }
 
 /** This team's strength (1-99), or 0 when it isn't in `ratings`. */
