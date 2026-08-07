@@ -250,7 +250,7 @@ function toBroadcasts(
  * Throws if the event is too malformed to display — `toScoreboard` catches that per
  * event so one bad record cannot blank the page.
  */
-export function toGame({ event, subdivisions }: MergedEvent): Game {
+export function toGame({ event, subdivisions }: MergedEvent, seasonType: number): Game {
 	const competition = event.competitions?.[0];
 	if (!competition) throw new Error(`Event ${event.id} has no competition`);
 
@@ -298,6 +298,7 @@ export function toGame({ event, subdivisions }: MergedEvent): Game {
 		venue,
 		neutralSite: competition.neutralSite ?? false,
 		conferenceGame: competition.conferenceCompetition ?? false,
+		seasonType,
 		eventName,
 		odds: toOdds(odds),
 		situation: toSituation(competition.situation),
@@ -373,7 +374,7 @@ export function toScoreboard(merged: MergedScoreboard, fetchedAt: Date = new Dat
 
 	for (const entry of merged.events) {
 		try {
-			games.push(toGame(entry));
+			games.push(toGame(entry, merged.season.type));
 		} catch (error) {
 			skippedCount += 1;
 			console.warn('Skipping unparseable ESPN event', entry.event?.id, error);

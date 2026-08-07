@@ -127,6 +127,8 @@ export interface Game {
 	venue?: GameVenue;
 	neutralSite: boolean;
 	conferenceGame: boolean;
+	/** ESPN's season phase for this game (`REGULAR_SEASON` or `POSTSEASON`, see `$lib/game/weeks`). */
+	seasonType: number;
 	/** Bowl or showcase name, from the event notes. */
 	eventName?: string;
 	odds?: GameOdds;

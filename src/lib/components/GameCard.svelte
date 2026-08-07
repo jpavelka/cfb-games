@@ -4,6 +4,7 @@
 	import surpriseIcon from '$lib/assets/surprised.svg';
 	import {
 		formatBroadcasts,
+		formatConferenceContext,
 		formatGameDate,
 		formatKickoffTime,
 		formatPeriodLabels,
@@ -49,7 +50,7 @@
 	// matchup column — see `.side` below.
 	const venueText = $derived(formatVenue(game));
 	const context = $derived(
-		[game.conferenceGame ? 'Conference game' : 'Non-conference game', game.neutralSite ? 'Neutral site' : undefined]
+		[formatConferenceContext(game), game.neutralSite ? 'Neutral site' : undefined]
 			.filter((part): part is string => Boolean(part))
 			.join(' · ')
 	);
@@ -143,8 +144,9 @@
 							style:background={winProbColors.home}
 						></span>
 					</div>
-					<div class="winProbLabels">
+					<div class="teamWinProbLabels">
 						<span>{game.away.abbreviation || game.away.location} {formatWinProbability(game.odds, game.away)}</span>
+						<span class="winProbLabel">Projected Winner</span>
 						<span>{game.home.abbreviation || game.home.location} {formatWinProbability(game.odds, game.home)}</span>
 					</div>
 				</div>
@@ -363,6 +365,13 @@
 		margin-bottom: var(--space-1);
 	}
 
+	.winProbLabel {
+		color: var(--color-text-faint);
+		font-size: var(--text-xs);
+		font-weight: 200;
+		opacity: 0.9;
+	}
+
 	.bar {
 		display: flex;
 		height: 6px;
@@ -372,7 +381,7 @@
 		background: var(--color-surface-alt);
 	}
 
-	.winProbLabels {
+	.teamWinProbLabels {
 		display: flex;
 		justify-content: space-between;
 		font-weight: 600;

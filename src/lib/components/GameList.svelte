@@ -17,15 +17,11 @@
 	let {
 		games,
 		conferences,
-		ratings,
-		isCurrentWeek = true
+		ratings
 	}: {
 		games: Game[];
 		conferences: ConferenceMap;
 		ratings: RatingMap;
-		/** Whether this week is the one ESPN currently considers current — the
-		 * only week that starts grouped by day; every other week starts flat. */
-		isCurrentWeek?: boolean;
 	} = $props();
 
 	const favorites: FavoriteSort = $derived({
@@ -93,21 +89,26 @@
 	);
 	const DAY_GROUPABLE = new Set(['upcoming', 'completed']);
 
-	// Each day-groupable section (Upcoming, Completed) has its own independent
-	// "Group by Day" toggle, keyed by section — flipping one doesn't affect the
-	// other. Upcoming defaults to `isCurrentWeek`; Completed always defaults to
-	// off, since a finished day's games don't need the same at-a-glance framing
-	// upcoming ones do.
-	function defaultGroupByDay(sectionKey: string): boolean {
-		return sectionKey === 'completed' ? false : isCurrentWeek;
-	}
-	let groupByDayBySection: Record<string, boolean> = $state({});
-
 	// Every day starts ungrouped by kickoff time except today's, which starts
 	// grouped (kickoff time matters most for a game that's about to start or
 	// already underway); a day only needs an entry here once its own checkbox
 	// is toggled away from that default.
 	const todayKey = localDayKey(new Date());
+
+	// Each day-groupable section (Upcoming, Completed) has its own independent
+	// "Group by Day" toggle, keyed by section — flipping one doesn't affect the
+	// other. Upcoming defaults on only when it actually has a game kicking off
+	// today (per the browser's clock) — that's the one case where the day
+	// breakdown adds anything on first load. Completed always defaults to off,
+	// since a finished day's games don't need the same at-a-glance framing.
+	function defaultGroupByDay(sectionKey: string): boolean {
+		if (sectionKey === 'completed') return false;
+		return sections.some(
+			(section) => section.key === 'upcoming' && section.days.some((day) => day.key === todayKey)
+		);
+	}
+	let groupByDayBySection: Record<string, boolean> = $state({});
+
 	// Composite section+day key, since Upcoming and Completed can each have a
 	// day group for the same calendar date.
 	const dayStateKey = (sectionKey: string, key: string) => `${sectionKey}:${key}`;

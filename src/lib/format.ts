@@ -1,6 +1,7 @@
 import type { ConferenceMap } from '$lib/game/conferences';
 import { dayKey, dayKeyToLocalDate } from '$lib/game/sort';
 import type { Game, GameOdds, GameTeam } from '$lib/game/types';
+import { POSTSEASON } from '$lib/game/weeks';
 
 /**
  * Every user-facing string lives here.
@@ -178,6 +179,32 @@ export function formatVenue(game: Game): string | undefined {
 
 export function formatBroadcasts(game: Game): string | undefined {
 	return game.broadcasts.length ? game.broadcasts.join(', ') : undefined;
+}
+
+const CFP_EVENT = /^college football playoff/i;
+const FCS_PLAYOFF_EVENT = /^fcs championship/i;
+const CHAMPIONSHIP_EVENT = /championship/i;
+
+/**
+ * "Conference game"/"Non-conference game" is misleading or redundant for games
+ * that were never about conference standings in the first place, so this swaps
+ * in a more specific label wherever ESPN's data lets us identify one. ESPN has
+ * no per-game flag for any of these — `seasonType` (regular vs. postseason) and
+ * the free-text event note headline (`eventName`) are all that's available, but
+ * in practice the headline follows a consistent naming convention: "College
+ * Football Playoff ..." for CFP games, "FCS Championship ..." for FCS playoff
+ * rounds (some of which fall in the regular season's last week, others in the
+ * postseason, depending how far the bracket has progressed), and "<Conference>
+ * Championship" for conference title games (also a regular-season week). Any
+ * other postseason game is a plain bowl.
+ */
+export function formatConferenceContext(game: Game): string {
+	const eventName = game.eventName ?? '';
+	if (CFP_EVENT.test(eventName)) return 'CFP';
+	if (FCS_PLAYOFF_EVENT.test(eventName)) return 'FCS playoff';
+	if (game.seasonType === POSTSEASON) return 'Bowl game';
+	if (CHAMPIONSHIP_EVENT.test(eventName)) return 'Conference championship';
+	return game.conferenceGame ? 'Conference game' : 'Non-conference game';
 }
 
 /** Short stand-in shown when a team has no logo (or the image fails to load). */

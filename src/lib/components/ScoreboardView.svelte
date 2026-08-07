@@ -42,9 +42,7 @@
 		 * Whether the week this navigation asked for is the one ESPN currently
 		 * considers current — computed fresh in this route's own `load()` (see
 		 * `+page.ts`), so it's tied to *this* navigation rather than left over from
-		 * whichever week was on screen before. Drives both the "← Current week"
-		 * link and `GameList`'s "Group by Day" default for the Upcoming section
-		 * (Completed always defaults to ungrouped).
+		 * whichever week was on screen before. Drives the "← Current week" link.
 		 */
 		isCurrentWeek: Promise<boolean>;
 		conferences: ConferenceMap;
@@ -147,7 +145,7 @@
 			{/if}
 		</p>
 	{:else}
-		<GameList games={filteredGames} {conferences} {ratings} isCurrentWeek={currentWeek} />
+		<GameList games={filteredGames} {conferences} {ratings} />
 	{/if}
 {:catch error}
 	<div class="week">

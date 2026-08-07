@@ -100,6 +100,7 @@ export interface StoredGame {
 	venue?: StoredGameVenue;
 	neutralSite: boolean;
 	conferenceGame: boolean;
+	seasonType: number;
 	eventName?: string;
 	odds?: StoredGameOdds;
 	/** Only present while the game is live. */
@@ -191,6 +192,7 @@ function toStoredGame(game: Game, knownTeamIds: Set<string>): StoredGame {
 			: undefined,
 		neutralSite: game.neutralSite,
 		conferenceGame: game.conferenceGame,
+		seasonType: game.seasonType,
 		eventName: game.eventName,
 		odds: game.odds ? toStoredOdds(game.odds) : undefined,
 		situation: game.situation,

@@ -41,7 +41,7 @@ async function loadOpeningWeekSplit(): Promise<OpeningWeekSplit | null> {
 		const week1 = await fetchMergedScoreboard({ week: 1, seasonType: REGULAR_SEASON });
 		const games = week1.events.flatMap((entry) => {
 			try {
-				return [toGame(entry)];
+				return [toGame(entry, week1.season.type)];
 			} catch (error) {
 				console.warn('Skipping unparseable ESPN event while computing opening-week split', entry.event?.id, error);
 				return [];

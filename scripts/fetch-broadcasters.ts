@@ -33,7 +33,7 @@ async function main() {
 
 		for (const entry of merged.events) {
 			try {
-				for (const name of toGame(entry).broadcasts) {
+				for (const name of toGame(entry, merged.season.type).broadcasts) {
 					broadcasters.add(name);
 				}
 			} catch (error) {

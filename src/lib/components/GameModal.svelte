@@ -4,6 +4,7 @@
 	import surpriseIcon from '$lib/assets/surprised.svg';
 	import { broadcastLink } from '$lib/game/broadcastLinks';
 	import {
+		formatConferenceContext,
 		formatConferenceName,
 		formatKickoffDate,
 		formatKickoffTime,
@@ -47,6 +48,7 @@
 	);
 	const isLive = $derived(game?.status.state === 'in');
 	const statusLine = $derived(game ? formatStatusLine(game) : '');
+	const conferenceContext = $derived(game ? formatConferenceContext(game) : '');
 	const venue = $derived(game ? formatVenue(game) : undefined);
 	const spreadText = $derived(game ? formatSpread(game) : undefined);
 	const moneylineText = $derived.by(() => {
@@ -118,7 +120,7 @@
 				<p class="event">{game.eventName}</p>
 			{/if}
 
-			<p class="conferenceGame">{game.conferenceGame ? 'Conference game' : 'Non-conference game'}</p>
+			<p class="conferenceGame">{conferenceContext}</p>
 
 			<p class="status" class:live={isLive}>{statusLine}</p>
 
