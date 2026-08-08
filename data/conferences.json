@@ -1,0 +1,301 @@
+{
+	"season": {
+		"year": 2026
+	},
+	"conferences": [
+		{
+			"id": "1",
+			"name": "Atlantic Coast Conference",
+			"shortName": "ACC",
+			"abbreviation": "acc",
+			"subdivision": "fbs"
+		},
+		{
+			"id": "4",
+			"name": "Big 12 Conference",
+			"shortName": "Big 12",
+			"abbreviation": "big12",
+			"subdivision": "fbs"
+		},
+		{
+			"id": "5",
+			"name": "Big Ten Conference",
+			"shortName": "Big Ten",
+			"abbreviation": "big10",
+			"subdivision": "fbs"
+		},
+		{
+			"id": "8",
+			"name": "Southeastern Conference",
+			"shortName": "SEC",
+			"abbreviation": "sec",
+			"subdivision": "fbs"
+		},
+		{
+			"id": "9",
+			"name": "Pac-12 Conference",
+			"shortName": "Pac-12",
+			"abbreviation": "pac12",
+			"subdivision": "fbs"
+		},
+		{
+			"id": "12",
+			"name": "Conference USA",
+			"shortName": "CUSA",
+			"abbreviation": "usa",
+			"subdivision": "fbs"
+		},
+		{
+			"id": "15",
+			"name": "Mid-American Conference",
+			"shortName": "MAC",
+			"abbreviation": "midam",
+			"subdivision": "fbs"
+		},
+		{
+			"id": "17",
+			"name": "Mountain West Conference",
+			"shortName": "Mountain West",
+			"abbreviation": "mwest",
+			"subdivision": "fbs"
+		},
+		{
+			"id": "18",
+			"name": "FBS Independents",
+			"shortName": "FBS Indep.",
+			"abbreviation": "ind",
+			"subdivision": "fbs"
+		},
+		{
+			"id": "20",
+			"name": "Big Sky Conference",
+			"shortName": "Big Sky",
+			"abbreviation": "bsky",
+			"subdivision": "fcs"
+		},
+		{
+			"id": "21",
+			"name": "Missouri Valley Football Conference",
+			"shortName": "MVFC",
+			"abbreviation": "mvfc",
+			"subdivision": "fcs"
+		},
+		{
+			"id": "22",
+			"name": "Ivy League",
+			"shortName": "Ivy",
+			"abbreviation": "ivy",
+			"subdivision": "fcs"
+		},
+		{
+			"id": "24",
+			"name": "Mid-Eastern Athletic Conference",
+			"shortName": "MEAC",
+			"abbreviation": "meac",
+			"subdivision": "fcs"
+		},
+		{
+			"id": "25",
+			"name": "Northeast Conference",
+			"shortName": "NEC",
+			"abbreviation": "neast",
+			"subdivision": "fcs"
+		},
+		{
+			"id": "27",
+			"name": "Patriot League",
+			"shortName": "Patriot",
+			"abbreviation": "pat",
+			"subdivision": "fcs"
+		},
+		{
+			"id": "28",
+			"name": "Pioneer Football League",
+			"shortName": "Pioneer",
+			"abbreviation": "pfl",
+			"subdivision": "fcs"
+		},
+		{
+			"id": "29",
+			"name": "Southern Conference",
+			"shortName": "Southern",
+			"abbreviation": "south",
+			"subdivision": "fcs"
+		},
+		{
+			"id": "30",
+			"name": "Southland Conference",
+			"shortName": "Southland",
+			"abbreviation": "land",
+			"subdivision": "fcs"
+		},
+		{
+			"id": "31",
+			"name": "Southwestern Athletic Conference",
+			"shortName": "SWAC",
+			"abbreviation": "swac",
+			"subdivision": "fcs"
+		},
+		{
+			"id": "32",
+			"name": "FCS Independents",
+			"shortName": "FCS Indep.",
+			"abbreviation": "indaa",
+			"subdivision": "fcs"
+		},
+		{
+			"id": "37",
+			"name": "Sun Belt Conference",
+			"shortName": "Sun Belt",
+			"abbreviation": "belt",
+			"subdivision": "fbs"
+		},
+		{
+			"id": "48",
+			"name": "Coastal Athletic Association",
+			"shortName": "CAA",
+			"abbreviation": "caa",
+			"subdivision": "fcs"
+		},
+		{
+			"id": "104",
+			"name": "CIAA",
+			"shortName": "CIAA",
+			"abbreviation": "ciaa",
+			"subdivision": "d2"
+		},
+		{
+			"id": "107",
+			"name": "GLIAC",
+			"shortName": "GLIAC",
+			"abbreviation": "gliac",
+			"subdivision": "d2"
+		},
+		{
+			"id": "108",
+			"name": "Great Lakes",
+			"shortName": "Great Lakes",
+			"abbreviation": "gl",
+			"subdivision": "d2"
+		},
+		{
+			"id": "110",
+			"name": "Gulf South",
+			"shortName": "Gulf South",
+			"abbreviation": "gs",
+			"subdivision": "d2"
+		},
+		{
+			"id": "112",
+			"name": "Independent DII",
+			"shortName": "Independent DII",
+			"abbreviation": "ind2",
+			"subdivision": "d2"
+		},
+		{
+			"id": "116",
+			"name": "Lone Star",
+			"shortName": "Lone Star",
+			"abbreviation": "lone",
+			"subdivision": "d2"
+		},
+		{
+			"id": "118",
+			"name": "Mid America",
+			"shortName": "Mid America",
+			"abbreviation": "mid",
+			"subdivision": "d2"
+		},
+		{
+			"id": "127",
+			"name": "Northeast 10",
+			"shortName": "Northeast 10",
+			"abbreviation": "neten",
+			"subdivision": "d2"
+		},
+		{
+			"id": "129",
+			"name": "Northern Sun",
+			"shortName": "Northern Sun",
+			"abbreviation": "norsun",
+			"subdivision": "d2"
+		},
+		{
+			"id": "133",
+			"name": "Pennsylvania State Athletic Conference",
+			"shortName": "Pennsylvania State Athletic",
+			"abbreviation": "psac",
+			"subdivision": "d2"
+		},
+		{
+			"id": "135",
+			"name": "Rocky Mountain",
+			"shortName": "Rocky Mountain",
+			"abbreviation": "rock",
+			"subdivision": "d2"
+		},
+		{
+			"id": "136",
+			"name": "SIAC",
+			"shortName": "SIAC",
+			"abbreviation": "siac",
+			"subdivision": "d2"
+		},
+		{
+			"id": "139",
+			"name": "South Atlantic",
+			"shortName": "South Atlantic",
+			"abbreviation": "souatl",
+			"subdivision": "d2"
+		},
+		{
+			"id": "144",
+			"name": "Mountain East Conference",
+			"shortName": "Mountain East",
+			"abbreviation": "mec",
+			"subdivision": "d2"
+		},
+		{
+			"id": "146",
+			"name": "Great American Conference",
+			"shortName": "Great American",
+			"abbreviation": "gamc",
+			"subdivision": "d2"
+		},
+		{
+			"id": "151",
+			"name": "American Conference",
+			"shortName": "American",
+			"abbreviation": "American",
+			"subdivision": "fbs"
+		},
+		{
+			"id": "165",
+			"name": "Great Midwest Athletic Conference",
+			"shortName": "Great Midwest Athletic",
+			"abbreviation": "G-MAC",
+			"subdivision": "d2"
+		},
+		{
+			"id": "177",
+			"name": "United Athletic Conference",
+			"shortName": "UAC",
+			"abbreviation": "UAC",
+			"subdivision": "fcs"
+		},
+		{
+			"id": "179",
+			"name": "Ohio Valley Conference",
+			"shortName": "OVC",
+			"abbreviation": "OVC",
+			"subdivision": "fcs"
+		},
+		{
+			"id": "187",
+			"name": "Conference Carolinas",
+			"shortName": "Conference Carolinas",
+			"abbreviation": "CC",
+			"subdivision": "d2"
+		}
+	]
+}

@@ -1,0 +1,158 @@
+{
+	"season": {
+		"year": 2026,
+		"type": 2
+	},
+	"weeks": [
+		{
+			"slug": "week0",
+			"label": "Week 0",
+			"detail": "Aug 27-31",
+			"seasonType": 2,
+			"weekNumber": 0,
+			"phase": "regular"
+		},
+		{
+			"slug": "week1",
+			"label": "Week 1",
+			"detail": "Sep 1-7",
+			"seasonType": 2,
+			"weekNumber": 1,
+			"phase": "regular"
+		},
+		{
+			"slug": "week2",
+			"label": "Week 2",
+			"detail": "Sep 8-13",
+			"seasonType": 2,
+			"weekNumber": 2,
+			"phase": "regular"
+		},
+		{
+			"slug": "week3",
+			"label": "Week 3",
+			"detail": "Sep 14-20",
+			"seasonType": 2,
+			"weekNumber": 3,
+			"phase": "regular"
+		},
+		{
+			"slug": "week4",
+			"label": "Week 4",
+			"detail": "Sep 21-27",
+			"seasonType": 2,
+			"weekNumber": 4,
+			"phase": "regular"
+		},
+		{
+			"slug": "week5",
+			"label": "Week 5",
+			"detail": "Sep 28-Oct 4",
+			"seasonType": 2,
+			"weekNumber": 5,
+			"phase": "regular"
+		},
+		{
+			"slug": "week6",
+			"label": "Week 6",
+			"detail": "Oct 5-11",
+			"seasonType": 2,
+			"weekNumber": 6,
+			"phase": "regular"
+		},
+		{
+			"slug": "week7",
+			"label": "Week 7",
+			"detail": "Oct 12-18",
+			"seasonType": 2,
+			"weekNumber": 7,
+			"phase": "regular"
+		},
+		{
+			"slug": "week8",
+			"label": "Week 8",
+			"detail": "Oct 19-25",
+			"seasonType": 2,
+			"weekNumber": 8,
+			"phase": "regular"
+		},
+		{
+			"slug": "week9",
+			"label": "Week 9",
+			"detail": "Oct 26-Nov 1",
+			"seasonType": 2,
+			"weekNumber": 9,
+			"phase": "regular"
+		},
+		{
+			"slug": "week10",
+			"label": "Week 10",
+			"detail": "Nov 2-8",
+			"seasonType": 2,
+			"weekNumber": 10,
+			"phase": "regular"
+		},
+		{
+			"slug": "week11",
+			"label": "Week 11",
+			"detail": "Nov 9-15",
+			"seasonType": 2,
+			"weekNumber": 11,
+			"phase": "regular"
+		},
+		{
+			"slug": "week12",
+			"label": "Week 12",
+			"detail": "Nov 16-22",
+			"seasonType": 2,
+			"weekNumber": 12,
+			"phase": "regular"
+		},
+		{
+			"slug": "week13",
+			"label": "Week 13",
+			"detail": "Nov 23-29",
+			"seasonType": 2,
+			"weekNumber": 13,
+			"phase": "regular"
+		},
+		{
+			"slug": "week14",
+			"label": "Week 14",
+			"detail": "Nov 30-Dec 6",
+			"seasonType": 2,
+			"weekNumber": 14,
+			"phase": "regular"
+		},
+		{
+			"slug": "week15",
+			"label": "Week 15",
+			"detail": "Dec 7-12",
+			"seasonType": 2,
+			"weekNumber": 15,
+			"phase": "regular"
+		},
+		{
+			"slug": "bowls",
+			"label": "Bowls",
+			"detail": "Dec 13-Jan 27",
+			"seasonType": 3,
+			"weekNumber": 1,
+			"phase": "postseason"
+		},
+		{
+			"slug": "playoff",
+			"label": "CFP",
+			"detail": "Dec 18-Jan 28",
+			"seasonType": 3,
+			"weekNumber": 999,
+			"phase": "postseason"
+		}
+	],
+	"currentWeek": {
+		"slug": "week1",
+		"week": 1,
+		"seasonType": 2
+	},
+	"openingWeekCutoff": "2026-08-31"
+}

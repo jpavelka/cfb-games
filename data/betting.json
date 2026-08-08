@@ -1,0 +1,347 @@
+{
+	"401856634": {
+		"provider": "DraftKings",
+		"spread": -25.5,
+		"homeWinProbability": 0.975
+	},
+	"401856636": {
+		"provider": "DraftKings",
+		"spread": -6.5,
+		"overUnder": 59.5,
+		"homeMoneyline": -285,
+		"awayMoneyline": 230,
+		"homeWinProbability": 0.685
+	},
+	"401856637": {
+		"provider": "Bovada",
+		"spread": -26.5,
+		"overUnder": 58.5,
+		"homeMoneyline": -7000,
+		"awayMoneyline": 1300,
+		"homeWinProbability": 0.966
+	},
+	"401856660": {
+		"provider": "Bovada",
+		"spread": -9.5,
+		"overUnder": 50.5,
+		"homeMoneyline": -480,
+		"awayMoneyline": 350,
+		"homeWinProbability": 0.744
+	},
+	"401856661": {
+		"provider": "Bovada",
+		"spread": -6.5,
+		"overUnder": 55.5,
+		"homeMoneyline": -270,
+		"awayMoneyline": 220,
+		"homeWinProbability": 0.673
+	},
+	"401856662": {
+		"provider": "Bovada",
+		"spread": -28.5,
+		"overUnder": 55.5,
+		"homeMoneyline": -100000,
+		"awayMoneyline": 2000,
+		"homeWinProbability": 0.975
+	},
+	"401856664": {
+		"provider": "Bovada",
+		"spread": -41.5,
+		"overUnder": 50.5,
+		"homeWinProbability": 0.998
+	},
+	"401856665": {
+		"provider": "Bovada",
+		"spread": -36.5,
+		"overUnder": 53.5,
+		"homeMoneyline": -100000,
+		"awayMoneyline": -100000,
+		"homeWinProbability": 0.994
+	},
+	"401856667": {
+		"provider": "DraftKings",
+		"spread": -30.5,
+		"homeWinProbability": 0.982
+	},
+	"401856668": {
+		"provider": "Bovada",
+		"spread": -39.5,
+		"overUnder": 52.5,
+		"homeWinProbability": 0.997
+	},
+	"401856679": {
+		"provider": "Bovada",
+		"spread": -2.5,
+		"overUnder": 45.5,
+		"homeMoneyline": -145,
+		"awayMoneyline": 125,
+		"homeWinProbability": 0.568
+	},
+	"401856682": {
+		"provider": "Bovada",
+		"spread": -1.5,
+		"overUnder": 47.5,
+		"homeMoneyline": -120,
+		"awayMoneyline": 100,
+		"homeWinProbability": 0.541
+	},
+	"401856766": {
+		"provider": "Bovada",
+		"spread": -7.5,
+		"overUnder": 48.5,
+		"homeMoneyline": -235,
+		"awayMoneyline": 195,
+		"homeWinProbability": 0.698
+	},
+	"401856772": {
+		"provider": "DraftKings",
+		"spread": 11.5,
+		"homeWinProbability": 0.176
+	},
+	"401856776": {
+		"provider": "DraftKings",
+		"spread": -7,
+		"homeWinProbability": 0.685
+	},
+	"401856777": {
+		"provider": "DraftKings",
+		"spread": -9.5,
+		"homeWinProbability": 0.698
+	},
+	"401856778": {
+		"provider": "Bovada",
+		"spread": -20.5,
+		"overUnder": 50.5,
+		"homeMoneyline": -1300,
+		"awayMoneyline": 725,
+		"homeWinProbability": 0.921
+	},
+	"401856780": {
+		"provider": "Bovada",
+		"spread": -21.5,
+		"overUnder": 58.5,
+		"homeMoneyline": -1725,
+		"awayMoneyline": -100000,
+		"homeWinProbability": 0.931
+	},
+	"401858201": {
+		"provider": "DraftKings",
+		"spread": -3,
+		"homeWinProbability": 0.622
+	},
+	"401858202": {
+		"provider": "Bovada",
+		"spread": -5.5,
+		"overUnder": 54.5,
+		"homeMoneyline": -145,
+		"awayMoneyline": 125,
+		"homeWinProbability": 0.648
+	},
+	"401858204": {
+		"provider": "DraftKings",
+		"spread": -22.5,
+		"homeWinProbability": 0.94
+	},
+	"401858206": {
+		"provider": "DraftKings",
+		"spread": 21.5,
+		"homeWinProbability": 0.053
+	},
+	"401858207": {
+		"provider": "Bovada",
+		"spread": -16.5,
+		"overUnder": 50.5,
+		"homeMoneyline": -800,
+		"awayMoneyline": 525,
+		"homeWinProbability": 0.872
+	},
+	"401858209": {
+		"provider": "DraftKings",
+		"spread": -8.5,
+		"homeWinProbability": 0.755
+	},
+	"401858210": {
+		"provider": "Bovada",
+		"spread": 1.5,
+		"overUnder": 54.5,
+		"homeMoneyline": -115,
+		"awayMoneyline": -105,
+		"homeWinProbability": 0.459
+	},
+	"401858212": {
+		"provider": "DraftKings",
+		"spread": 2.5,
+		"overUnder": 52.5,
+		"homeMoneyline": 120,
+		"awayMoneyline": -142,
+		"homeWinProbability": 0.459
+	},
+	"401858423": {
+		"provider": "DraftKings",
+		"spread": -30.5,
+		"homeWinProbability": 0.982
+	},
+	"401858424": {
+		"provider": "Bovada",
+		"spread": -27.5,
+		"overUnder": 56.5,
+		"homeMoneyline": -100000,
+		"awayMoneyline": 2000,
+		"homeWinProbability": 0.971
+	},
+	"401858425": {
+		"provider": "DraftKings",
+		"spread": -40.5,
+		"homeWinProbability": 0.998
+	},
+	"401858426": {
+		"provider": "Bovada",
+		"spread": -30.5,
+		"overUnder": 45.5,
+		"homeMoneyline": -100000,
+		"awayMoneyline": 2500,
+		"homeWinProbability": 0.982
+	},
+	"401858428": {
+		"provider": "DraftKings",
+		"spread": -26.5,
+		"homeWinProbability": 0.966
+	},
+	"401858429": {
+		"provider": "Bovada",
+		"spread": -11.5,
+		"overUnder": 49.5,
+		"homeMoneyline": -410,
+		"awayMoneyline": 305,
+		"homeWinProbability": 0.786
+	},
+	"401858430": {
+		"provider": "DraftKings",
+		"spread": -23.5,
+		"homeWinProbability": 0.947
+	},
+	"401858432": {
+		"provider": "DraftKings",
+		"spread": -49.5,
+		"homeWinProbability": 1
+	},
+	"401858433": {
+		"provider": "DraftKings",
+		"spread": -24.5,
+		"homeWinProbability": 0.954
+	},
+	"401858434": {
+		"provider": "Bovada",
+		"spread": -24.5,
+		"overUnder": 54.5,
+		"homeMoneyline": -3300,
+		"awayMoneyline": 1100,
+		"homeWinProbability": 0.954
+	},
+	"401858436": {
+		"provider": "DraftKings",
+		"spread": -23.5,
+		"homeWinProbability": 0.94
+	},
+	"401858437": {
+		"provider": "DraftKings",
+		"spread": -21.5,
+		"homeWinProbability": 0.94
+	},
+	"401858438": {
+		"provider": "Bovada",
+		"spread": -20.5,
+		"overUnder": 47.5,
+		"homeMoneyline": -2500,
+		"awayMoneyline": 1000,
+		"homeWinProbability": 0.921
+	},
+	"401860878": {
+		"provider": "DraftKings",
+		"spread": -4,
+		"homeWinProbability": 0.609
+	},
+	"401862693": {
+		"provider": "DraftKings",
+		"spread": -3,
+		"homeWinProbability": 0.66
+	},
+	"401862695": {
+		"provider": "Bovada",
+		"spread": -9.5,
+		"overUnder": 55.5,
+		"homeMoneyline": -440,
+		"awayMoneyline": 330,
+		"homeWinProbability": 0.744
+	},
+	"401862699": {
+		"provider": "Bovada",
+		"spread": -12.5,
+		"overUnder": 54.5,
+		"homeMoneyline": -460,
+		"awayMoneyline": 340,
+		"homeWinProbability": 0.806
+	},
+	"401864432": {
+		"provider": "Bovada",
+		"spread": 2.5,
+		"overUnder": 52.5,
+		"homeMoneyline": 120,
+		"awayMoneyline": -140,
+		"homeWinProbability": 0.432
+	},
+	"401864494": {
+		"provider": "DraftKings",
+		"spread": -35.5,
+		"homeWinProbability": 0.996
+	},
+	"401864495": {
+		"provider": "DraftKings",
+		"spread": -3.5,
+		"homeWinProbability": 0.622
+	},
+	"401864497": {
+		"provider": "Bovada",
+		"spread": 2.5,
+		"overUnder": 58.5,
+		"homeMoneyline": 105,
+		"awayMoneyline": -125,
+		"homeWinProbability": 0.432
+	},
+	"401864498": {
+		"provider": "Bovada",
+		"spread": -12.5,
+		"homeWinProbability": 0.806
+	},
+	"401864570": {
+		"provider": "DraftKings",
+		"spread": -29.5,
+		"homeWinProbability": 0.985
+	},
+	"401864577": {
+		"provider": "Bovada",
+		"spread": -7.5,
+		"overUnder": 48.5,
+		"homeMoneyline": -330,
+		"awayMoneyline": 265,
+		"homeWinProbability": 0.698
+	},
+	"401866408": {
+		"provider": "DraftKings",
+		"spread": -8.5,
+		"homeWinProbability": 0.721
+	},
+	"401869960": {
+		"provider": "DraftKings",
+		"spread": -6,
+		"homeWinProbability": 0.66
+	},
+	"401870763": {
+		"provider": "Bovada",
+		"spread": -15.5,
+		"overUnder": 51.5,
+		"homeMoneyline": -1300,
+		"awayMoneyline": 725,
+		"homeWinProbability": 0.857
+	}
+}

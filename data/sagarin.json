@@ -1,0 +1,1822 @@
+{
+	"asOf": "2026-01-19",
+	"asOfLabel": "FINAL College Football 2025 ratings through games of 2026 January 19 Monday - CFP National Championship Game",
+	"fetchedAt": "2026-08-08T11:27:48.934Z",
+	"teams": {
+		"2": {
+			"rating": 79.03,
+			"rank": 29,
+			"division": "fbs",
+			"sagarinName": "Auburn"
+		},
+		"5": {
+			"rating": 54.17,
+			"rank": 146,
+			"division": "fbs",
+			"sagarinName": "UAB"
+		},
+		"6": {
+			"rating": 57.56,
+			"rank": 124,
+			"division": "fbs",
+			"sagarinName": "South Alabama"
+		},
+		"8": {
+			"rating": 72.4,
+			"rank": 60,
+			"division": "fbs",
+			"sagarinName": "Arkansas"
+		},
+		"9": {
+			"rating": 75.33,
+			"rank": 45,
+			"division": "fbs",
+			"sagarinName": "Arizona State"
+		},
+		"12": {
+			"rating": 78.6,
+			"rank": 31,
+			"division": "fbs",
+			"sagarinName": "Arizona"
+		},
+		"13": {
+			"rating": 49.17,
+			"rank": 175,
+			"division": "fcs",
+			"sagarinName": "Cal Poly-SLO"
+		},
+		"16": {
+			"rating": 56.88,
+			"rank": 128,
+			"division": "fcs",
+			"sagarinName": "Sacramento State"
+		},
+		"21": {
+			"rating": 69.42,
+			"rank": 69,
+			"division": "fbs",
+			"sagarinName": "San Diego State"
+		},
+		"23": {
+			"rating": 54.34,
+			"rank": 144,
+			"division": "fbs",
+			"sagarinName": "San Jose State"
+		},
+		"24": {
+			"rating": 67.74,
+			"rank": 78,
+			"division": "fbs",
+			"sagarinName": "Stanford"
+		},
+		"25": {
+			"rating": 67.89,
+			"rank": 76,
+			"division": "fbs",
+			"sagarinName": "California"
+		},
+		"26": {
+			"rating": 67.71,
+			"rank": 79,
+			"division": "fbs",
+			"sagarinName": "UCLA"
+		},
+		"30": {
+			"rating": 83.43,
+			"rank": 18,
+			"division": "fbs",
+			"sagarinName": "Southern California"
+		},
+		"36": {
+			"rating": 53.59,
+			"rank": 148,
+			"division": "fbs",
+			"sagarinName": "Colorado State"
+		},
+		"38": {
+			"rating": 64.9,
+			"rank": 93,
+			"division": "fbs",
+			"sagarinName": "Colorado"
+		},
+		"41": {
+			"rating": 64.96,
+			"rank": 92,
+			"division": "fbs",
+			"sagarinName": "Connecticut"
+		},
+		"43": {
+			"rating": 59.17,
+			"rank": 114,
+			"division": "fcs",
+			"sagarinName": "Yale"
+		},
+		"46": {
+			"rating": 35.94,
+			"rank": 239,
+			"division": "fcs",
+			"sagarinName": "Georgetown"
+		},
+		"47": {
+			"rating": 36.27,
+			"rank": 237,
+			"division": "fcs",
+			"sagarinName": "Howard"
+		},
+		"48": {
+			"rating": 56.45,
+			"rank": 131,
+			"division": "fbs",
+			"sagarinName": "Delaware"
+		},
+		"50": {
+			"rating": 33.96,
+			"rank": 248,
+			"division": "fcs",
+			"sagarinName": "Florida A&M"
+		},
+		"52": {
+			"rating": 75.8,
+			"rank": 43,
+			"division": "fbs",
+			"sagarinName": "Florida State"
+		},
+		"55": {
+			"rating": 60,
+			"rank": 110,
+			"division": "fbs",
+			"sagarinName": "Jacksonville State"
+		},
+		"56": {
+			"rating": 23.22,
+			"rank": 265,
+			"division": "fcs",
+			"sagarinName": "Stetson"
+		},
+		"57": {
+			"rating": 76.94,
+			"rank": 37,
+			"division": "fbs",
+			"sagarinName": "Florida"
+		},
+		"58": {
+			"rating": 77.58,
+			"rank": 35,
+			"division": "fbs",
+			"sagarinName": "South Florida"
+		},
+		"59": {
+			"rating": 76.82,
+			"rank": 38,
+			"division": "fbs",
+			"sagarinName": "Georgia Tech"
+		},
+		"61": {
+			"rating": 89.07,
+			"rank": 7,
+			"division": "fbs",
+			"sagarinName": "Georgia"
+		},
+		"62": {
+			"rating": 66.48,
+			"rank": 84,
+			"division": "fbs",
+			"sagarinName": "Hawai'i"
+		},
+		"66": {
+			"rating": 76.11,
+			"rank": 41,
+			"division": "fbs",
+			"sagarinName": "Iowa State"
+		},
+		"68": {
+			"rating": 72.26,
+			"rank": 61,
+			"division": "fbs",
+			"sagarinName": "Boise State"
+		},
+		"70": {
+			"rating": 50.54,
+			"rank": 163,
+			"division": "fcs",
+			"sagarinName": "Idaho"
+		},
+		"77": {
+			"rating": 72.98,
+			"rank": 56,
+			"division": "fbs",
+			"sagarinName": "Northwestern"
+		},
+		"79": {
+			"rating": 60.35,
+			"rank": 108,
+			"division": "fcs",
+			"sagarinName": "Southern Illinois"
+		},
+		"84": {
+			"rating": 100.06,
+			"rank": 1,
+			"division": "fbs",
+			"sagarinName": "Indiana"
+		},
+		"87": {
+			"rating": 94.6,
+			"rank": 3,
+			"division": "fbs",
+			"sagarinName": "Notre Dame"
+		},
+		"93": {
+			"rating": 40.33,
+			"rank": 220,
+			"division": "fcs",
+			"sagarinName": "Murray State"
+		},
+		"96": {
+			"rating": 72.64,
+			"rank": 58,
+			"division": "fbs",
+			"sagarinName": "Kentucky"
+		},
+		"97": {
+			"rating": 79.95,
+			"rank": 25,
+			"division": "fbs",
+			"sagarinName": "Louisville"
+		},
+		"98": {
+			"rating": 63.73,
+			"rank": 94,
+			"division": "fbs",
+			"sagarinName": "Western Kentucky"
+		},
+		"99": {
+			"rating": 79.14,
+			"rank": 28,
+			"division": "fbs",
+			"sagarinName": "LSU"
+		},
+		"103": {
+			"rating": 65.92,
+			"rank": 88,
+			"division": "fbs",
+			"sagarinName": "Boston College"
+		},
+		"107": {
+			"rating": 45.38,
+			"rank": 196,
+			"division": "fcs",
+			"sagarinName": "Holy Cross"
+		},
+		"108": {
+			"rating": 54.4,
+			"rank": 142,
+			"division": "fcs",
+			"sagarinName": "Harvard"
+		},
+		"113": {
+			"rating": 35.6,
+			"rank": 242,
+			"division": "fbs",
+			"sagarinName": "Massachusetts"
+		},
+		"119": {
+			"rating": 46.35,
+			"rank": 190,
+			"division": "fcs",
+			"sagarinName": "Towson"
+		},
+		"120": {
+			"rating": 66.22,
+			"rank": 85,
+			"division": "fbs",
+			"sagarinName": "Maryland"
+		},
+		"127": {
+			"rating": 71.31,
+			"rank": 63,
+			"division": "fbs",
+			"sagarinName": "Michigan State"
+		},
+		"130": {
+			"rating": 80.89,
+			"rank": 21,
+			"division": "fbs",
+			"sagarinName": "Michigan"
+		},
+		"135": {
+			"rating": 73.35,
+			"rank": 53,
+			"division": "fbs",
+			"sagarinName": "Minnesota"
+		},
+		"142": {
+			"rating": 80.49,
+			"rank": 22,
+			"division": "fbs",
+			"sagarinName": "Missouri"
+		},
+		"145": {
+			"rating": 88.84,
+			"rank": 8,
+			"division": "fbs",
+			"sagarinName": "Mississippi"
+		},
+		"147": {
+			"rating": 74.42,
+			"rank": 47,
+			"division": "fcs",
+			"sagarinName": "Montana State"
+		},
+		"149": {
+			"rating": 68.36,
+			"rank": 73,
+			"division": "fcs",
+			"sagarinName": "Montana"
+		},
+		"150": {
+			"rating": 76.71,
+			"rank": 39,
+			"division": "fbs",
+			"sagarinName": "Duke"
+		},
+		"151": {
+			"rating": 73.52,
+			"rank": 52,
+			"division": "fbs",
+			"sagarinName": "East Carolina"
+		},
+		"152": {
+			"rating": 78.11,
+			"rank": 32,
+			"division": "fbs",
+			"sagarinName": "NC State"
+		},
+		"153": {
+			"rating": 65.57,
+			"rank": 90,
+			"division": "fbs",
+			"sagarinName": "North Carolina"
+		},
+		"154": {
+			"rating": 73.91,
+			"rank": 51,
+			"division": "fbs",
+			"sagarinName": "Wake Forest"
+		},
+		"155": {
+			"rating": 63.67,
+			"rank": 95,
+			"division": "fcs",
+			"sagarinName": "North Dakota"
+		},
+		"158": {
+			"rating": 73.22,
+			"rank": 54,
+			"division": "fbs",
+			"sagarinName": "Nebraska"
+		},
+		"159": {
+			"rating": 49.7,
+			"rank": 172,
+			"division": "fcs",
+			"sagarinName": "Dartmouth"
+		},
+		"160": {
+			"rating": 50.94,
+			"rank": 157,
+			"division": "fcs",
+			"sagarinName": "New Hampshire"
+		},
+		"163": {
+			"rating": 45.23,
+			"rank": 199,
+			"division": "fcs",
+			"sagarinName": "Princeton"
+		},
+		"164": {
+			"rating": 71.8,
+			"rank": 62,
+			"division": "fbs",
+			"sagarinName": "Rutgers"
+		},
+		"166": {
+			"rating": 50.89,
+			"rank": 159,
+			"division": "fbs",
+			"sagarinName": "New Mexico State"
+		},
+		"167": {
+			"rating": 66.81,
+			"rank": 81,
+			"division": "fbs",
+			"sagarinName": "New Mexico"
+		},
+		"171": {
+			"rating": 40.63,
+			"rank": 219,
+			"division": "fcs",
+			"sagarinName": "Columbia"
+		},
+		"172": {
+			"rating": 41.47,
+			"rank": 217,
+			"division": "fcs",
+			"sagarinName": "Cornell"
+		},
+		"183": {
+			"rating": 61.15,
+			"rank": 103,
+			"division": "fbs",
+			"sagarinName": "Syracuse"
+		},
+		"189": {
+			"rating": 54.34,
+			"rank": 145,
+			"division": "fbs",
+			"sagarinName": "Bowling Green"
+		},
+		"193": {
+			"rating": 62.83,
+			"rank": 97,
+			"division": "fbs",
+			"sagarinName": "Miami-Ohio"
+		},
+		"194": {
+			"rating": 95.16,
+			"rank": 2,
+			"division": "fbs",
+			"sagarinName": "Ohio State"
+		},
+		"195": {
+			"rating": 66,
+			"rank": 86,
+			"division": "fbs",
+			"sagarinName": "Ohio"
+		},
+		"197": {
+			"rating": 58.25,
+			"rank": 122,
+			"division": "fbs",
+			"sagarinName": "Oklahoma State"
+		},
+		"201": {
+			"rating": 83.67,
+			"rank": 17,
+			"division": "fbs",
+			"sagarinName": "Oklahoma"
+		},
+		"202": {
+			"rating": 55.23,
+			"rank": 137,
+			"division": "fbs",
+			"sagarinName": "Tulsa"
+		},
+		"204": {
+			"rating": 57.02,
+			"rank": 126,
+			"division": "fbs",
+			"sagarinName": "Oregon State"
+		},
+		"213": {
+			"rating": 86.46,
+			"rank": 10,
+			"division": "fbs",
+			"sagarinName": "Penn State"
+		},
+		"218": {
+			"rating": 59.18,
+			"rank": 113,
+			"division": "fbs",
+			"sagarinName": "Temple"
+		},
+		"219": {
+			"rating": 47.71,
+			"rank": 183,
+			"division": "fcs",
+			"sagarinName": "Pennsylvania"
+		},
+		"221": {
+			"rating": 77.68,
+			"rank": 33,
+			"division": "fbs",
+			"sagarinName": "Pittsburgh"
+		},
+		"222": {
+			"rating": 61.47,
+			"rank": 102,
+			"division": "fcs",
+			"sagarinName": "Villanova"
+		},
+		"225": {
+			"rating": 44.69,
+			"rank": 200,
+			"division": "fcs",
+			"sagarinName": "Brown"
+		},
+		"227": {
+			"rating": 54.35,
+			"rank": 143,
+			"division": "fcs",
+			"sagarinName": "Rhode Island"
+		},
+		"228": {
+			"rating": 79.32,
+			"rank": 26,
+			"division": "fbs",
+			"sagarinName": "Clemson"
+		},
+		"231": {
+			"rating": 43.14,
+			"rank": 209,
+			"division": "fcs",
+			"sagarinName": "Furman"
+		},
+		"233": {
+			"rating": 60.33,
+			"rank": 109,
+			"division": "fcs",
+			"sagarinName": "South Dakota"
+		},
+		"235": {
+			"rating": 68.97,
+			"rank": 70,
+			"division": "fbs",
+			"sagarinName": "Memphis"
+		},
+		"236": {
+			"rating": 43.95,
+			"rank": 203,
+			"division": "fcs",
+			"sagarinName": "Chattanooga"
+		},
+		"238": {
+			"rating": 85.49,
+			"rank": 15,
+			"division": "fbs",
+			"sagarinName": "Vanderbilt"
+		},
+		"239": {
+			"rating": 69.76,
+			"rank": 68,
+			"division": "fbs",
+			"sagarinName": "Baylor"
+		},
+		"242": {
+			"rating": 50.52,
+			"rank": 164,
+			"division": "fbs",
+			"sagarinName": "Rice"
+		},
+		"245": {
+			"rating": 85.87,
+			"rank": 13,
+			"division": "fbs",
+			"sagarinName": "Texas A&M"
+		},
+		"248": {
+			"rating": 74.43,
+			"rank": 46,
+			"division": "fbs",
+			"sagarinName": "Houston"
+		},
+		"249": {
+			"rating": 75.44,
+			"rank": 44,
+			"division": "fbs",
+			"sagarinName": "North Texas"
+		},
+		"251": {
+			"rating": 86.35,
+			"rank": 11,
+			"division": "fbs",
+			"sagarinName": "Texas"
+		},
+		"252": {
+			"rating": 81.85,
+			"rank": 20,
+			"division": "fbs",
+			"sagarinName": "BYU"
+		},
+		"253": {
+			"rating": 55.25,
+			"rank": 136,
+			"division": "fcs",
+			"sagarinName": "Southern Utah"
+		},
+		"254": {
+			"rating": 86.8,
+			"rank": 9,
+			"division": "fbs",
+			"sagarinName": "Utah"
+		},
+		"256": {
+			"rating": 80.06,
+			"rank": 24,
+			"division": "fbs",
+			"sagarinName": "James Madison"
+		},
+		"257": {
+			"rating": 45.68,
+			"rank": 195,
+			"division": "fcs",
+			"sagarinName": "Richmond"
+		},
+		"258": {
+			"rating": 78.95,
+			"rank": 30,
+			"division": "fbs",
+			"sagarinName": "Virginia"
+		},
+		"259": {
+			"rating": 68.05,
+			"rank": 75,
+			"division": "fbs",
+			"sagarinName": "Virginia Tech"
+		},
+		"264": {
+			"rating": 85.2,
+			"rank": 16,
+			"division": "fbs",
+			"sagarinName": "Washington"
+		},
+		"265": {
+			"rating": 72.91,
+			"rank": 57,
+			"division": "fbs",
+			"sagarinName": "Washington State"
+		},
+		"275": {
+			"rating": 73.99,
+			"rank": 49,
+			"division": "fbs",
+			"sagarinName": "Wisconsin"
+		},
+		"276": {
+			"rating": 60.5,
+			"rank": 106,
+			"division": "fbs",
+			"sagarinName": "Marshall"
+		},
+		"277": {
+			"rating": 65.82,
+			"rank": 89,
+			"division": "fbs",
+			"sagarinName": "West Virginia"
+		},
+		"278": {
+			"rating": 66.85,
+			"rank": 80,
+			"division": "fbs",
+			"sagarinName": "Fresno State"
+		},
+		"282": {
+			"rating": 43.38,
+			"rank": 208,
+			"division": "fcs",
+			"sagarinName": "Indiana State"
+		},
+		"284": {
+			"rating": 34.56,
+			"rank": 245,
+			"division": "fcs",
+			"sagarinName": "Stonehill College"
+		},
+		"290": {
+			"rating": 60.94,
+			"rank": 104,
+			"division": "fbs",
+			"sagarinName": "Georgia Southern"
+		},
+		"292": {
+			"rating": 51.17,
+			"rank": 156,
+			"division": "fcs",
+			"sagarinName": "UTRGV"
+		},
+		"295": {
+			"rating": 74.31,
+			"rank": 48,
+			"division": "fbs",
+			"sagarinName": "Old Dominion"
+		},
+		"301": {
+			"rating": 45.36,
+			"rank": 197,
+			"division": "fcs",
+			"sagarinName": "San Diego"
+		},
+		"302": {
+			"rating": 60.37,
+			"rank": 107,
+			"division": "fcs",
+			"sagarinName": "UC Davis"
+		},
+		"304": {
+			"rating": 55.76,
+			"rank": 134,
+			"division": "fcs",
+			"sagarinName": "Idaho State"
+		},
+		"309": {
+			"rating": 58.62,
+			"rank": 119,
+			"division": "fbs",
+			"sagarinName": "Louisiana-Lafayette"
+		},
+		"311": {
+			"rating": 46.21,
+			"rank": 191,
+			"division": "fcs",
+			"sagarinName": "Maine"
+		},
+		"322": {
+			"rating": 48.63,
+			"rank": 179,
+			"division": "fcs",
+			"sagarinName": "Lafayette"
+		},
+		"324": {
+			"rating": 56.06,
+			"rank": 132,
+			"division": "fbs",
+			"sagarinName": "Coastal Carolina"
+		},
+		"326": {
+			"rating": 67.79,
+			"rank": 77,
+			"division": "fbs",
+			"sagarinName": "Texas State"
+		},
+		"328": {
+			"rating": 65.39,
+			"rank": 91,
+			"division": "fbs",
+			"sagarinName": "Utah State"
+		},
+		"331": {
+			"rating": 48.87,
+			"rank": 178,
+			"division": "fcs",
+			"sagarinName": "Eastern Washington"
+		},
+		"333": {
+			"rating": 85.61,
+			"rank": 14,
+			"division": "fbs",
+			"sagarinName": "Alabama"
+		},
+		"338": {
+			"rating": 59.85,
+			"rank": 112,
+			"division": "fbs",
+			"sagarinName": "Kennesaw State"
+		},
+		"344": {
+			"rating": 69.95,
+			"rank": 67,
+			"division": "fbs",
+			"sagarinName": "Mississippi State"
+		},
+		"349": {
+			"rating": 68.76,
+			"rank": 72,
+			"division": "fbs",
+			"sagarinName": "Army West Point"
+		},
+		"356": {
+			"rating": 79.28,
+			"rank": 27,
+			"division": "fbs",
+			"sagarinName": "Illinois"
+		},
+		"399": {
+			"rating": 36.72,
+			"rank": 235,
+			"division": "fcs",
+			"sagarinName": "Albany-NY"
+		},
+		"2000": {
+			"rating": 58.34,
+			"rank": 121,
+			"division": "fcs",
+			"sagarinName": "Abilene Christian"
+		},
+		"2005": {
+			"rating": 60.9,
+			"rank": 105,
+			"division": "fbs",
+			"sagarinName": "Air Force"
+		},
+		"2006": {
+			"rating": 52.4,
+			"rank": 151,
+			"division": "fbs",
+			"sagarinName": "Akron"
+		},
+		"2010": {
+			"rating": 31.78,
+			"rank": 253,
+			"division": "fcs",
+			"sagarinName": "Alabama A&M"
+		},
+		"2011": {
+			"rating": 52.25,
+			"rank": 153,
+			"division": "fcs",
+			"sagarinName": "Alabama State"
+		},
+		"2016": {
+			"rating": 38.98,
+			"rank": 224,
+			"division": "fcs",
+			"sagarinName": "Alcorn State"
+		},
+		"2026": {
+			"rating": 54.61,
+			"rank": 140,
+			"division": "fbs",
+			"sagarinName": "Appalachian State"
+		},
+		"2029": {
+			"rating": 29.53,
+			"rank": 256,
+			"division": "fcs",
+			"sagarinName": "Ark.-Pine Bluff"
+		},
+		"2032": {
+			"rating": 59.88,
+			"rank": 111,
+			"division": "fbs",
+			"sagarinName": "Arkansas State"
+		},
+		"2046": {
+			"rating": 55,
+			"rank": 139,
+			"division": "fcs",
+			"sagarinName": "Austin Peay"
+		},
+		"2050": {
+			"rating": 49.87,
+			"rank": 171,
+			"division": "fbs",
+			"sagarinName": "Ball State"
+		},
+		"2065": {
+			"rating": 38.79,
+			"rank": 226,
+			"division": "fcs",
+			"sagarinName": "Bethune-Cookman"
+		},
+		"2083": {
+			"rating": 35.13,
+			"rank": 244,
+			"division": "fcs",
+			"sagarinName": "Bucknell"
+		},
+		"2084": {
+			"rating": 54.6,
+			"rank": 141,
+			"division": "fbs",
+			"sagarinName": "Buffalo"
+		},
+		"2086": {
+			"rating": 37.61,
+			"rank": 233,
+			"division": "fcs",
+			"sagarinName": "Butler"
+		},
+		"2097": {
+			"rating": 39.1,
+			"rank": 223,
+			"division": "fcs",
+			"sagarinName": "Campbell"
+		},
+		"2110": {
+			"rating": 46,
+			"rank": 193,
+			"division": "fcs",
+			"sagarinName": "Central Arkansas"
+		},
+		"2115": {
+			"rating": 44.57,
+			"rank": 201,
+			"division": "fcs",
+			"sagarinName": "Central Connecticut"
+		},
+		"2116": {
+			"rating": 66.51,
+			"rank": 83,
+			"division": "fbs",
+			"sagarinName": "Central Florida(UCF)"
+		},
+		"2117": {
+			"rating": 59.1,
+			"rank": 115,
+			"division": "fbs",
+			"sagarinName": "Central Michigan"
+		},
+		"2127": {
+			"rating": 42.2,
+			"rank": 214,
+			"division": "fcs",
+			"sagarinName": "Charleston Southern"
+		},
+		"2132": {
+			"rating": 70.1,
+			"rank": 66,
+			"division": "fbs",
+			"sagarinName": "Cincinnati"
+		},
+		"2142": {
+			"rating": 42.52,
+			"rank": 212,
+			"division": "fcs",
+			"sagarinName": "Colgate"
+		},
+		"2166": {
+			"rating": 24.06,
+			"rank": 264,
+			"division": "fcs",
+			"sagarinName": "Davidson"
+		},
+		"2168": {
+			"rating": 40.8,
+			"rank": 218,
+			"division": "fcs",
+			"sagarinName": "Dayton"
+		},
+		"2169": {
+			"rating": 42.21,
+			"rank": 213,
+			"division": "fcs",
+			"sagarinName": "Delaware State"
+		},
+		"2181": {
+			"rating": 45.71,
+			"rank": 194,
+			"division": "fcs",
+			"sagarinName": "Drake"
+		},
+		"2184": {
+			"rating": 43.52,
+			"rank": 205,
+			"division": "fcs",
+			"sagarinName": "Duquesne"
+		},
+		"2193": {
+			"rating": 50.83,
+			"rank": 160,
+			"division": "fcs",
+			"sagarinName": "East Tennessee State"
+		},
+		"2197": {
+			"rating": 38.38,
+			"rank": 229,
+			"division": "fcs",
+			"sagarinName": "Eastern Illinois"
+		},
+		"2198": {
+			"rating": 50.21,
+			"rank": 167,
+			"division": "fcs",
+			"sagarinName": "Eastern Kentucky"
+		},
+		"2199": {
+			"rating": 55.45,
+			"rank": 135,
+			"division": "fbs",
+			"sagarinName": "Eastern Michigan"
+		},
+		"2210": {
+			"rating": 48.44,
+			"rank": 182,
+			"division": "fcs",
+			"sagarinName": "Elon"
+		},
+		"2226": {
+			"rating": 56.53,
+			"rank": 129,
+			"division": "fbs",
+			"sagarinName": "Florida Atlantic"
+		},
+		"2229": {
+			"rating": 58.4,
+			"rank": 120,
+			"division": "fbs",
+			"sagarinName": "Fla. International"
+		},
+		"2230": {
+			"rating": 33.9,
+			"rank": 249,
+			"division": "fcs",
+			"sagarinName": "Fordham"
+		},
+		"2241": {
+			"rating": 46.84,
+			"rank": 186,
+			"division": "fcs",
+			"sagarinName": "Gardner-Webb"
+		},
+		"2247": {
+			"rating": 50.22,
+			"rank": 166,
+			"division": "fbs",
+			"sagarinName": "Georgia State"
+		},
+		"2261": {
+			"rating": 29.48,
+			"rank": 257,
+			"division": "fcs",
+			"sagarinName": "Hampton"
+		},
+		"2277": {
+			"rating": 32.06,
+			"rank": 252,
+			"division": "fcs",
+			"sagarinName": "Houston Christian"
+		},
+		"2287": {
+			"rating": 65.99,
+			"rank": 87,
+			"division": "fcs",
+			"sagarinName": "Illinois State"
+		},
+		"2294": {
+			"rating": 86.07,
+			"rank": 12,
+			"division": "fbs",
+			"sagarinName": "Iowa"
+		},
+		"2296": {
+			"rating": 50.16,
+			"rank": 168,
+			"division": "fcs",
+			"sagarinName": "Jackson State"
+		},
+		"2305": {
+			"rating": 70.84,
+			"rank": 65,
+			"division": "fbs",
+			"sagarinName": "Kansas"
+		},
+		"2306": {
+			"rating": 76.06,
+			"rank": 42,
+			"division": "fbs",
+			"sagarinName": "Kansas State"
+		},
+		"2309": {
+			"rating": 50.31,
+			"rank": 165,
+			"division": "fbs",
+			"sagarinName": "Kent State"
+		},
+		"2320": {
+			"rating": 49.47,
+			"rank": 174,
+			"division": "fcs",
+			"sagarinName": "Lamar"
+		},
+		"2329": {
+			"rating": 59.01,
+			"rank": 116,
+			"division": "fcs",
+			"sagarinName": "Lehigh"
+		},
+		"2335": {
+			"rating": 57.99,
+			"rank": 123,
+			"division": "fbs",
+			"sagarinName": "Liberty"
+		},
+		"2341": {
+			"rating": 41.61,
+			"rank": 215,
+			"division": "fcs",
+			"sagarinName": "LIU Post"
+		},
+		"2348": {
+			"rating": 62.17,
+			"rank": 98,
+			"division": "fbs",
+			"sagarinName": "Louisiana Tech"
+		},
+		"2368": {
+			"rating": 35.52,
+			"rank": 243,
+			"division": "fcs",
+			"sagarinName": "Marist"
+		},
+		"2377": {
+			"rating": 44.55,
+			"rank": 202,
+			"division": "fcs",
+			"sagarinName": "McNeese State"
+		},
+		"2382": {
+			"rating": 56.52,
+			"rank": 130,
+			"division": "fcs",
+			"sagarinName": "Mercer"
+		},
+		"2385": {
+			"rating": 38.62,
+			"rank": 227,
+			"division": "fcs",
+			"sagarinName": "Mercyhurst"
+		},
+		"2390": {
+			"rating": 93.02,
+			"rank": 5,
+			"division": "fbs",
+			"sagarinName": "Miami-Florida"
+		},
+		"2393": {
+			"rating": 50.9,
+			"rank": 158,
+			"division": "fbs",
+			"sagarinName": "Middle Tennessee"
+		},
+		"2400": {
+			"rating": 25.01,
+			"rank": 263,
+			"division": "fcs",
+			"sagarinName": "Miss. Valley State"
+		},
+		"2405": {
+			"rating": 52.26,
+			"rank": 152,
+			"division": "fcs",
+			"sagarinName": "Monmouth-NJ"
+		},
+		"2413": {
+			"rating": 32.23,
+			"rank": 251,
+			"division": "fcs",
+			"sagarinName": "Morehead State"
+		},
+		"2415": {
+			"rating": 36.91,
+			"rank": 234,
+			"division": "fcs",
+			"sagarinName": "Morgan State"
+		},
+		"2426": {
+			"rating": 72.43,
+			"rank": 59,
+			"division": "fbs",
+			"sagarinName": "Navy"
+		},
+		"2428": {
+			"rating": 47.53,
+			"rank": 185,
+			"division": "fcs",
+			"sagarinName": "NC Central"
+		},
+		"2429": {
+			"rating": 48.44,
+			"rank": 181,
+			"division": "fbs",
+			"sagarinName": "Charlotte"
+		},
+		"2433": {
+			"rating": 50.01,
+			"rank": 170,
+			"division": "fbs",
+			"sagarinName": "LouisianaMonroe(ULM)"
+		},
+		"2439": {
+			"rating": 68.3,
+			"rank": 74,
+			"division": "fbs",
+			"sagarinName": "UNLV"
+		},
+		"2440": {
+			"rating": 55.19,
+			"rank": 138,
+			"division": "fbs",
+			"sagarinName": "Nevada"
+		},
+		"2441": {
+			"rating": 33.69,
+			"rank": 250,
+			"division": "fcs",
+			"sagarinName": "New Haven"
+		},
+		"2447": {
+			"rating": 45.34,
+			"rank": 198,
+			"division": "fcs",
+			"sagarinName": "Nicholls State"
+		},
+		"2448": {
+			"rating": 28.35,
+			"rank": 259,
+			"division": "fcs",
+			"sagarinName": "NC A&T"
+		},
+		"2449": {
+			"rating": 76.17,
+			"rank": 40,
+			"division": "fcs",
+			"sagarinName": "North Dakota State"
+		},
+		"2450": {
+			"rating": 30.74,
+			"rank": 254,
+			"division": "fcs",
+			"sagarinName": "Norfolk State"
+		},
+		"2453": {
+			"rating": 40.07,
+			"rank": 221,
+			"division": "fcs",
+			"sagarinName": "North Alabama"
+		},
+		"2458": {
+			"rating": 41.61,
+			"rank": 216,
+			"division": "fcs",
+			"sagarinName": "Northern Colorado"
+		},
+		"2459": {
+			"rating": 52.76,
+			"rank": 149,
+			"division": "fbs",
+			"sagarinName": "Northern Illinois"
+		},
+		"2460": {
+			"rating": 48.51,
+			"rank": 180,
+			"division": "fcs",
+			"sagarinName": "Northern Iowa"
+		},
+		"2464": {
+			"rating": 52.67,
+			"rank": 150,
+			"division": "fcs",
+			"sagarinName": "Northern Arizona"
+		},
+		"2466": {
+			"rating": 26.34,
+			"rank": 261,
+			"division": "fcs",
+			"sagarinName": "Northwestern State"
+		},
+		"2483": {
+			"rating": 94.27,
+			"rank": 4,
+			"division": "fbs",
+			"sagarinName": "Oregon"
+		},
+		"2502": {
+			"rating": 36.38,
+			"rank": 236,
+			"division": "fcs",
+			"sagarinName": "Portland State"
+		},
+		"2504": {
+			"rating": 50.05,
+			"rank": 169,
+			"division": "fcs",
+			"sagarinName": "Prairie View A&M"
+		},
+		"2506": {
+			"rating": 43.87,
+			"rank": 204,
+			"division": "fcs",
+			"sagarinName": "Presbyterian College"
+		},
+		"2509": {
+			"rating": 63.58,
+			"rank": 96,
+			"division": "fbs",
+			"sagarinName": "Purdue"
+		},
+		"2523": {
+			"rating": 34.2,
+			"rank": 247,
+			"division": "fcs",
+			"sagarinName": "Robert Morris"
+		},
+		"2529": {
+			"rating": 42.81,
+			"rank": 211,
+			"division": "fcs",
+			"sagarinName": "Sacred Heart"
+		},
+		"2534": {
+			"rating": 43.48,
+			"rank": 207,
+			"division": "fbs",
+			"sagarinName": "Sam Houston State"
+		},
+		"2535": {
+			"rating": 36.14,
+			"rank": 238,
+			"division": "fcs",
+			"sagarinName": "Samford"
+		},
+		"2545": {
+			"rating": 55.85,
+			"rank": 133,
+			"division": "fcs",
+			"sagarinName": "SE Louisiana"
+		},
+		"2546": {
+			"rating": 42.86,
+			"rank": 210,
+			"division": "fcs",
+			"sagarinName": "SE Missouri State"
+		},
+		"2567": {
+			"rating": 83,
+			"rank": 19,
+			"division": "fbs",
+			"sagarinName": "SMU"
+		},
+		"2569": {
+			"rating": 50.8,
+			"rank": 161,
+			"division": "fcs",
+			"sagarinName": "SC State"
+		},
+		"2571": {
+			"rating": 62.08,
+			"rank": 99,
+			"division": "fcs",
+			"sagarinName": "South Dakota State"
+		},
+		"2572": {
+			"rating": 58.81,
+			"rank": 117,
+			"division": "fbs",
+			"sagarinName": "Southern Miss"
+		},
+		"2579": {
+			"rating": 77.59,
+			"rank": 34,
+			"division": "fbs",
+			"sagarinName": "South Carolina"
+		},
+		"2582": {
+			"rating": 30.15,
+			"rank": 255,
+			"division": "fcs",
+			"sagarinName": "Southern U."
+		},
+		"2617": {
+			"rating": 61.99,
+			"rank": 100,
+			"division": "fcs",
+			"sagarinName": "Stephen F. Austin"
+		},
+		"2619": {
+			"rating": 46.8,
+			"rank": 187,
+			"division": "fcs",
+			"sagarinName": "Stony Brook"
+		},
+		"2623": {
+			"rating": 57.08,
+			"rank": 125,
+			"division": "fbs",
+			"sagarinName": "Missouri State"
+		},
+		"2627": {
+			"rating": 66.62,
+			"rank": 82,
+			"division": "fcs",
+			"sagarinName": "Tarleton State"
+		},
+		"2628": {
+			"rating": 77.31,
+			"rank": 36,
+			"division": "fbs",
+			"sagarinName": "TCU"
+		},
+		"2630": {
+			"rating": 47.57,
+			"rank": 184,
+			"division": "fcs",
+			"sagarinName": "Tennessee-Martin"
+		},
+		"2633": {
+			"rating": 80.32,
+			"rank": 23,
+			"division": "fbs",
+			"sagarinName": "Tennessee"
+		},
+		"2634": {
+			"rating": 34.25,
+			"rank": 246,
+			"division": "fcs",
+			"sagarinName": "Tennessee State"
+		},
+		"2635": {
+			"rating": 53.6,
+			"rank": 147,
+			"division": "fcs",
+			"sagarinName": "Tennessee Tech"
+		},
+		"2636": {
+			"rating": 71.18,
+			"rank": 64,
+			"division": "fbs",
+			"sagarinName": "UTSA"
+		},
+		"2638": {
+			"rating": 49.16,
+			"rank": 176,
+			"division": "fbs",
+			"sagarinName": "UTEP"
+		},
+		"2640": {
+			"rating": 38.25,
+			"rank": 230,
+			"division": "fcs",
+			"sagarinName": "Texas Southern"
+		},
+		"2641": {
+			"rating": 90.88,
+			"rank": 6,
+			"division": "fbs",
+			"sagarinName": "Texas Tech"
+		},
+		"2643": {
+			"rating": 43.5,
+			"rank": 206,
+			"division": "fcs",
+			"sagarinName": "The Citadel"
+		},
+		"2649": {
+			"rating": 73.01,
+			"rank": 55,
+			"division": "fbs",
+			"sagarinName": "Toledo"
+		},
+		"2653": {
+			"rating": 61.83,
+			"rank": 101,
+			"division": "fbs",
+			"sagarinName": "Troy"
+		},
+		"2655": {
+			"rating": 73.98,
+			"rank": 50,
+			"division": "fbs",
+			"sagarinName": "Tulane"
+		},
+		"2674": {
+			"rating": 26.25,
+			"rank": 262,
+			"division": "fcs",
+			"sagarinName": "Valparaiso"
+		},
+		"2678": {
+			"rating": 26.74,
+			"rank": 260,
+			"division": "fcs",
+			"sagarinName": "VMI"
+		},
+		"2681": {
+			"rating": 35.81,
+			"rank": 241,
+			"division": "fcs",
+			"sagarinName": "Wagner"
+		},
+		"2692": {
+			"rating": 46.41,
+			"rank": 189,
+			"division": "fcs",
+			"sagarinName": "Weber State"
+		},
+		"2698": {
+			"rating": 51.23,
+			"rank": 155,
+			"division": "fcs",
+			"sagarinName": "West Georgia"
+		},
+		"2710": {
+			"rating": 39.68,
+			"rank": 222,
+			"division": "fcs",
+			"sagarinName": "Western Illinois"
+		},
+		"2711": {
+			"rating": 68.87,
+			"rank": 71,
+			"division": "fbs",
+			"sagarinName": "Western Michigan"
+		},
+		"2717": {
+			"rating": 51.53,
+			"rank": 154,
+			"division": "fcs",
+			"sagarinName": "Western Carolina"
+		},
+		"2729": {
+			"rating": 48.96,
+			"rank": 177,
+			"division": "fcs",
+			"sagarinName": "William & Mary"
+		},
+		"2747": {
+			"rating": 49.55,
+			"rank": 173,
+			"division": "fcs",
+			"sagarinName": "Wofford"
+		},
+		"2751": {
+			"rating": 56.93,
+			"rank": 127,
+			"division": "fbs",
+			"sagarinName": "Wyoming"
+		},
+		"2754": {
+			"rating": 58.81,
+			"rank": 118,
+			"division": "fcs",
+			"sagarinName": "Youngstown State"
+		},
+		"2755": {
+			"rating": 37.83,
+			"rank": 231,
+			"division": "fcs",
+			"sagarinName": "Grambling State"
+		},
+		"2771": {
+			"rating": 37.64,
+			"rank": 232,
+			"division": "fcs",
+			"sagarinName": "Merrimack"
+		},
+		"2803": {
+			"rating": 35.91,
+			"rank": 240,
+			"division": "fcs",
+			"sagarinName": "Bryant"
+		},
+		"2815": {
+			"rating": 46.15,
+			"rank": 192,
+			"division": "fcs",
+			"sagarinName": "Lindenwood"
+		},
+		"2837": {
+			"rating": 38.58,
+			"rank": 228,
+			"division": "fcs",
+			"sagarinName": "East Texas A&M"
+		},
+		"2900": {
+			"rating": 46.56,
+			"rank": 188,
+			"division": "fcs",
+			"sagarinName": "St. Thomas-Mn."
+		},
+		"2916": {
+			"rating": 50.57,
+			"rank": 162,
+			"division": "fcs",
+			"sagarinName": "Incarnate Word"
+		},
+		"3101": {
+			"rating": 38.81,
+			"rank": 225,
+			"division": "fcs",
+			"sagarinName": "Utah Tech"
+		}
+	},
+	"errors": {
+		"unmatchedSagarinTeams": [
+			{
+				"sagarinName": "Saint Francis-Pa.",
+				"rank": 258,
+				"rating": 29.28
+			}
+		],
+		"missingEspnTeams": [
+			{
+				"espnId": "2477",
+				"name": "Ohio Dominican Panthers"
+			},
+			{
+				"espnId": "2249",
+				"name": "Glenville State Pioneers"
+			},
+			{
+				"espnId": "2471",
+				"name": "Northwestern (IA) Red Raiders"
+			},
+			{
+				"espnId": "2842",
+				"name": "UVA Wise Cavaliers"
+			},
+			{
+				"espnId": "2851",
+				"name": "Winona State Warriors"
+			},
+			{
+				"espnId": "110242",
+				"name": "West Florida Argonauts"
+			},
+			{
+				"espnId": "2148",
+				"name": "Concord Mountain Lions"
+			},
+			{
+				"espnId": "613",
+				"name": "South Dakota Mines Hardrockers"
+			},
+			{
+				"espnId": "2347",
+				"name": "Louisiana Christian University Wildcats"
+			},
+			{
+				"espnId": "2130",
+				"name": "Chicago State Cougars"
+			},
+			{
+				"espnId": "127991",
+				"name": "Roosevelt Lakers"
+			},
+			{
+				"espnId": "2986",
+				"name": "Fairmont State Falcons"
+			},
+			{
+				"espnId": "2245",
+				"name": "Georgetown (KY) Tigers"
+			},
+			{
+				"espnId": "102071",
+				"name": "Lawrence Tech LAWTE"
+			},
+			{
+				"espnId": "2355",
+				"name": "Virginia Lynchburg Dragons"
+			},
+			{
+				"espnId": "2736",
+				"name": "Winston-Salem Rams"
+			},
+			{
+				"espnId": "2542",
+				"name": "Savannah State Tigers"
+			},
+			{
+				"espnId": "129469",
+				"name": "Anderson (SC) Trojans"
+			},
+			{
+				"espnId": "60",
+				"name": "Morehouse College Maroon Tigers"
+			},
+			{
+				"espnId": "2013",
+				"name": "Albany State Golden Rams"
+			},
+			{
+				"espnId": "2805",
+				"name": "Clark Atlanta Panthers"
+			},
+			{
+				"espnId": "2595",
+				"name": "St. Francis (IL) Fighting Saints"
+			},
+			{
+				"espnId": "2396",
+				"name": "Miles College Golden Bears"
+			},
+			{
+				"espnId": "110243",
+				"name": "UT Permian Basin Falcons"
+			},
+			{
+				"espnId": "3077",
+				"name": "Kentucky Christian Knights"
+			},
+			{
+				"espnId": "112334",
+				"name": "Franklin Pierce Ravens"
+			},
+			{
+				"espnId": "2583",
+				"name": "Southern Connecticut State Owls"
+			},
+			{
+				"espnId": "2691",
+				"name": "Webber International Warriors"
+			},
+			{
+				"espnId": "2839",
+				"name": "Tusculum Pioneers"
+			},
+			{
+				"espnId": "2707",
+				"name": "West Virginia State Yellow Jackets"
+			},
+			{
+				"espnId": "2207",
+				"name": "Elizabeth City State Vikings"
+			},
+			{
+				"espnId": "2323",
+				"name": "Lane Dragons"
+			},
+			{
+				"espnId": "2119",
+				"name": "Central State (OH) Marauders"
+			},
+			{
+				"espnId": "2206",
+				"name": "Edward Waters Tigers"
+			},
+			{
+				"espnId": "2310",
+				"name": "Kentucky State Thorobreds"
+			},
+			{
+				"espnId": "102626",
+				"name": "Texas Wesleyan Rams"
+			},
+			{
+				"espnId": "2120",
+				"name": "Central Washington Wildcats"
+			},
+			{
+				"espnId": "2646",
+				"name": "Thomas More College Saints"
+			},
+			{
+				"espnId": "2175",
+				"name": "Dickinson (PA) Red Devils"
+			},
+			{
+				"espnId": "128",
+				"name": "Northern Michigan Wildcats"
+			},
+			{
+				"espnId": "2075",
+				"name": "Bowie State Bulldogs"
+			},
+			{
+				"espnId": "2339",
+				"name": "Lincoln (PA) Lions"
+			},
+			{
+				"espnId": "330",
+				"name": "Virginia State Trojans"
+			},
+			{
+				"espnId": "2233",
+				"name": "Franklin Grizzlies"
+			},
+			{
+				"espnId": "2122",
+				"name": "Central Oklahoma Bronchos"
+			},
+			{
+				"espnId": "124386",
+				"name": "Arkansas Baptist Buffaloes"
+			},
+			{
+				"espnId": "3179",
+				"name": "Point University Skyhawks"
+			},
+			{
+				"espnId": "2657",
+				"name": "Tuskegee Golden Tigers"
+			},
+			{
+				"espnId": "2170",
+				"name": "Delta State Statesmen"
+			},
+			{
+				"espnId": "196",
+				"name": "Northeastern State RiverHawks"
+			},
+			{
+				"espnId": "131239",
+				"name": "Rio Grande Red Storm"
+			},
+			{
+				"espnId": "2232",
+				"name": "Fort Valley State Wildcats"
+			},
+			{
+				"espnId": "2022",
+				"name": "American International Yellow Jackets"
+			},
+			{
+				"espnId": "2695",
+				"name": "West Alabama Tigers"
+			},
+			{
+				"espnId": "124110",
+				"name": "UFTL Eagles"
+			}
+		]
+	}
+}
