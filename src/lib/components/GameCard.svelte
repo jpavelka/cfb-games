@@ -45,6 +45,10 @@
 	const hasFavorite = $derived(
 		game.teams.some((team) => settings.favoriteTeamIds.includes(team.id))
 	);
+	// Matchup score badge shows the boost actually applied to this game's sort
+	// position — not just "a favorite is playing" — so it stays silent when
+	// `favoriteHandling` is 'top' or 'none', where the score itself is untouched.
+	const showBoost = $derived(hasFavorite && settings.favoriteHandling === 'boost');
 
 	// Only shown once there's room to the right of the (now width-capped)
 	// matchup column — see `.side` below.
@@ -100,6 +104,9 @@
 			<span class="scoreBadge" title="Matchup score">
 				<img class="scoreIcon" src={matchupIcon} alt="" />
 				<span class="matchupScore" style:background={matchupScoreColor(matchup)}>{matchup}</span>
+				{#if showBoost}
+					<span class="boost" title="Favorite team boost">+{settings.favoriteBoostAmount}</span>
+				{/if}
 			</span>
 		{/if}
 		{#if surprise !== null}
@@ -294,6 +301,13 @@
 	.scoreIcon {
 		width: 16px;
 		height: 16px;
+	}
+
+	.boost {
+		color: var(--color-favorite);
+		font-size: 0.65rem;
+		font-weight: 600;
+		font-variant-numeric: tabular-nums;
 	}
 
 	.right {

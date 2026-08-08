@@ -1,3 +1,4 @@
+import { scoreBadgeColor } from './scoreColor';
 import type { Game } from './types';
 
 // Points a typical scoring drive is worth, for converting a point deviation
@@ -89,46 +90,5 @@ export function surpriseScore(game: Game): number | null {
 	return Math.min(99, Math.round((s1 ?? 0) + (s2 ?? 0)));
 }
 
-interface HslStop {
-	h: number;
-	s: number;
-	l: number;
-}
-
-// Fixed (not theme-dependent) fill for the surprise-score badge: flat gray
-// through 25, amber at 60, red at 99. Deliberately doesn't share
-// `matchupScoreColor`'s green high end — "great matchup" and "big upset" are
-// different signals.
-const SCORE_LOW: HslStop = { h: 0, s: 0, l: 68 };
-const SCORE_MID: HslStop = { h: 45, s: 75, l: 58 };
-const SCORE_HIGH: HslStop = { h: 355, s: 65, l: 55 };
-const SCORE_LOW_THRESHOLD = 25;
-const SCORE_MID_THRESHOLD = 60;
-
-function lerp(a: number, b: number, t: number): number {
-	return a + (b - a) * t;
-}
-
-function lerpStop(a: HslStop, b: HslStop, t: number): HslStop {
-	return { h: lerp(a.h, b.h, t), s: lerp(a.s, b.s, t), l: lerp(a.l, b.l, t) };
-}
-
-/** Badge fill for a surprise score (0-99): gray (<=25) -> amber (60) -> red (99). */
-export function surpriseScoreColor(score: number): string {
-	const clamped = Math.max(0, Math.min(99, score));
-	const stop =
-		clamped <= SCORE_LOW_THRESHOLD
-			? SCORE_LOW
-			: clamped <= SCORE_MID_THRESHOLD
-				? lerpStop(
-						SCORE_LOW,
-						SCORE_MID,
-						(clamped - SCORE_LOW_THRESHOLD) / (SCORE_MID_THRESHOLD - SCORE_LOW_THRESHOLD)
-					)
-				: lerpStop(
-						SCORE_MID,
-						SCORE_HIGH,
-						(clamped - SCORE_MID_THRESHOLD) / (99 - SCORE_MID_THRESHOLD)
-					);
-	return `hsl(${stop.h} ${stop.s}% ${stop.l}%)`;
-}
+/** Badge fill for a surprise score (0-99) — same scale as the matchup-score badge, see `scoreBadgeColor`. */
+export const surpriseScoreColor = scoreBadgeColor;

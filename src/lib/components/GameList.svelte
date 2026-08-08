@@ -11,7 +11,7 @@
 		type ScoreWeights
 	} from '$lib/game/ratings';
 	import { settings, updateSettings } from '$lib/game/settings.svelte';
-	import { groupByDay as buildDays, groupByStatus, localDayKey } from '$lib/game/sort';
+	import { groupByDay as buildDays, groupByStatus, localDayKey, sortGames } from '$lib/game/sort';
 	import type { Game } from '$lib/game/types';
 
 	let {
@@ -39,8 +39,14 @@
 
 	// Every section sorts by matchup score, except Completed, where the user
 	// picks matchup, surprise, or a custom weighted blend of both — see
-	// `completedSortMode` in settings and the "Sort by" control below.
+	// `completedSortMode` in settings and the "Sort by" control below — and
+	// Upcoming, where the user picks matchup or actual kickoff time — see
+	// `upcomingSortMode`.
 	function sortSection(sectionGames: Game[], sectionKey: string): Game[] {
+		if (sectionKey === 'upcoming' && settings.upcomingSortMode === 'kickoff') {
+			return sortGames(sectionGames);
+		}
+
 		if (sectionKey !== 'completed') return sortByInterest(sectionGames, ratings, favorites);
 
 		if (settings.completedSortMode === 'custom') {
@@ -168,6 +174,32 @@
 			</h2>
 		</summary>
 
+		{#if section.key === 'upcoming'}
+			<div class="sortToggle">
+				<span>Sort by</span>
+				<label class="radio">
+					<input
+						type="radio"
+						name="upcomingSortMode"
+						value="matchup"
+						checked={settings.upcomingSortMode === 'matchup'}
+						onchange={() => updateSettings({ upcomingSortMode: 'matchup' })}
+					/>
+					Matchup
+				</label>
+				<label class="radio">
+					<input
+						type="radio"
+						name="upcomingSortMode"
+						value="kickoff"
+						checked={settings.upcomingSortMode === 'kickoff'}
+						onchange={() => updateSettings({ upcomingSortMode: 'kickoff' })}
+					/>
+					Kickoff Time
+				</label>
+			</div>
+		{/if}
+
 		{#if section.key === 'completed'}
 			<div class="sortToggle">
 				<span>Sort by</span>
@@ -253,7 +285,7 @@
 							checked={groupedByTime[stateKey] ?? day.key === todayKey}
 							onchange={(event) => (groupedByTime[stateKey] = event.currentTarget.checked)}
 						/>
-						Group by Kickoff Time
+						Group by Time of Day
 					</label>
 
 					{#if !(groupedByTime[stateKey] ?? day.key === todayKey)}
@@ -346,7 +378,7 @@
 	}
 
 	.day:not([open]) {
-		margin-bottom: var(--space-2);
+		margin-bottom: 0;
 	}
 
 	summary {

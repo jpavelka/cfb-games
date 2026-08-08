@@ -10,6 +10,9 @@ export type Theme = 'system' | 'light' | 'dark';
 /** How the Completed section is ordered: by matchup score, by surprise score (the other breaks ties), or a custom weighted blend of both. */
 export type CompletedSortMode = 'matchup' | 'surprise' | 'custom';
 
+/** How the Upcoming section is ordered: by matchup score, or chronologically by actual kickoff time. */
+export type UpcomingSortMode = 'matchup' | 'kickoff';
+
 export interface SettingsState {
 	/** Hide games below this matchup score. 0 = no filter. */
 	minMatchupScore: number;
@@ -32,6 +35,7 @@ export interface SettingsState {
 	 * 100 }`) for `combinedScore` in `game/ratings.ts`.
 	 */
 	customSortMix: number;
+	upcomingSortMode: UpcomingSortMode;
 }
 
 const STORAGE_KEY = 'cfb:settings';
@@ -45,7 +49,8 @@ const DEFAULTS: SettingsState = {
 	accessibleBroadcasts: [],
 	filterByAccessibleBroadcasts: false,
 	completedSortMode: 'matchup',
-	customSortMix: 50
+	customSortMix: 50,
+	upcomingSortMode: 'matchup'
 };
 
 /**

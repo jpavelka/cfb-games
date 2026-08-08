@@ -71,15 +71,15 @@ export function sortGames(games: readonly Game[], key: SortKey = 'chronological'
 	return [...games].sort(comparators[key]);
 }
 
-export type TimeSlot = 'early' | 'afternoon' | 'evening' | 'night' | 'tbd';
+export type TimeSlot = 'early' | 'afternoon' | 'evening' | 'late' | 'tbd';
 
-const SLOT_ORDER: readonly TimeSlot[] = ['early', 'afternoon', 'evening', 'night', 'tbd'];
+const SLOT_ORDER: readonly TimeSlot[] = ['early', 'afternoon', 'evening', 'late', 'tbd'];
 
 export const SLOT_LABELS: Record<TimeSlot, string> = {
 	early: 'Early',
 	afternoon: 'Afternoon',
 	evening: 'Evening',
-	night: 'Night',
+	late: 'Late',
 	tbd: 'TBD'
 };
 
@@ -94,8 +94,8 @@ const ET_HOUR = new Intl.DateTimeFormat('en-US', {
  * talk about noon / afternoon / prime-time slots), regardless of the viewer's own
  * timezone — these are broadcast windows, not local clock time.
  *
- * Boundaries: early before 2pm, afternoon 2–6pm, evening 6–9pm, night 9pm on —
- * and the small hours after midnight ET stay "night" too, since a West Coast game
+ * Boundaries: early before 2pm, afternoon 2–6pm, evening 6–9pm, late 9pm on —
+ * and the small hours after midnight ET stay "late" too, since a West Coast game
  * kicking off at, say, 10:30pm PT (1:30am ET) is still that night's window, not
  * the next day's "early" game. No real CFB game kicks off between roughly 2am and
  * 9am ET, so hour 2–4 is unambiguous territory for that wraparound.
@@ -108,11 +108,11 @@ export function timeSlot(game: Game): TimeSlot {
 	if (game.kickoffTbd) return 'tbd';
 
 	const hour = Number(ET_HOUR.format(game.kickoff));
-	if (hour < 5) return 'night';
+	if (hour < 5) return 'late';
 	if (hour < 14) return 'early';
 	if (hour < 18) return 'afternoon';
 	if (hour < 21) return 'evening';
-	return 'night';
+	return 'late';
 }
 
 export interface GameSlot {
