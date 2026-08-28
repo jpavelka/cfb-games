@@ -7,12 +7,12 @@
 # imports src/lib/espn and src/lib/game directly, and Docker can't COPY files from
 # outside its build context. Deploy with:
 #   gcloud run deploy cfb-scoreboard-refresh --source . --project <project> --region <region>
-FROM node:22-slim
+FROM node:22-alpine
 
 WORKDIR /app
 
 COPY server/package.json server/package-lock.json ./server/
-RUN cd server && npm ci --omit=dev
+RUN cd server && npm ci --omit=dev && npm cache clean --force
 
 COPY src/lib ./src/lib
 COPY server ./server
