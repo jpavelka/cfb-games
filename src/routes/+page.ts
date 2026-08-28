@@ -13,11 +13,11 @@ import type { PageLoad } from './$types';
 // `src/routes/[week=week]/`.
 export const load: PageLoad = ({ parent, fetch }) => {
 	const scoreboard = Promise.all([loadCurrentWeek(fetch), parent()]).then(
-		async ([currentWeek, { openingWeekCutoff, teams, bettingFallback }]) => {
+		async ([currentWeek, { openingWeekCutoff, teams }]) => {
 			if (!currentWeek) error(503, 'Current week schedule is not available');
 
 			const isOpeningWeek = currentWeek.week === 1 && currentWeek.seasonType === REGULAR_SEASON;
-			const board = await loadScoreboard(currentWeek, teams, bettingFallback, fetch);
+			const board = await loadScoreboard(currentWeek, teams, fetch);
 
 			const cutoff = await openingWeekCutoff;
 			return cutoff && isOpeningWeek

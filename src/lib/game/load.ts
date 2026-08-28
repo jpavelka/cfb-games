@@ -1,5 +1,4 @@
 import { error } from '@sveltejs/kit';
-import type { BettingFallbackMap } from './bettingFallback';
 import { sortGames } from './sort';
 import { fromStoredScoreboard, loadStoredScoreboard } from './storage';
 import type { TeamMap } from './teams';
@@ -55,7 +54,6 @@ function isFresh(board: Scoreboard, now: Date = new Date()): boolean {
 export async function loadScoreboard(
 	target: WeekTarget,
 	teams: Promise<TeamMap> | TeamMap,
-	bettingFallback: Promise<BettingFallbackMap> | BettingFallbackMap,
 	fetchImpl: typeof fetch = fetch
 ): Promise<Scoreboard> {
 	// The GCS key is season-scoped (`games-{seasonYear}-{seasonType}-{week}.json`),
@@ -72,18 +70,17 @@ export async function loadScoreboard(
 		return cached;
 	}
 
-	const [stored, weeks, teamMap, fallbackMap] = await Promise.all([
+	const [stored, weeks, teamMap] = await Promise.all([
 		loadStoredScoreboard({ ...target, seasonYear }, fetchImpl),
 		loadWeekOptions(fetchImpl),
-		teams,
-		bettingFallback
+		teams
 	]);
 
 	if (!stored) {
 		error(503, `No stored scoreboard for week ${target.week} (season type ${target.seasonType})`);
 	}
 
-	const board = fromStoredScoreboard(stored, weeks, teamMap, fallbackMap);
+	const board = fromStoredScoreboard(stored, weeks, teamMap);
 	const result = { ...board, games: sortGames(board.games, 'chronological') };
 	scoreboardCache.set(key, result);
 	return result;

@@ -1,7 +1,8 @@
-import { gzipSync } from 'node:zlib';
+import { gunzipSync, gzipSync } from 'node:zlib';
 import { Storage } from '@google-cloud/storage';
+import type { BettingFallbackEntry } from '../src/lib/game/bettingFallback';
 import type { Scoreboard } from '../src/lib/game/types';
-import { toStoredScoreboard } from '../src/lib/game/storedScoreboard';
+import { toStoredScoreboard, type StoredScoreboard } from '../src/lib/game/storedScoreboard';
 
 /**
  * Public-read GCS bucket the static frontend fetches these files from directly —
@@ -38,8 +39,32 @@ export function weekFileName({ seasonYear, seasonType, week }: WeekKey): string 
 	return `games-${seasonYear}-${seasonType}-${week}.json`;
 }
 
-function seasonFilePrefix(seasonYear: number): string {
-	return `games-${seasonYear}-`;
+/** One file per week, same key shape as `weekFileName` — see `refreshBetting` in `index.ts`. */
+function bettingFileName({ seasonYear, seasonType, week }: WeekKey): string {
+	return `betting-${seasonYear}-${seasonType}-${week}.json`;
+}
+
+function seasonFilePrefixes(seasonYear: number): string[] {
+	return [`games-${seasonYear}-`, `betting-${seasonYear}-`];
+}
+
+/**
+ * Downloads and JSON-parses one file, transparently handling both a raw gzip
+ * buffer and one GCS already decompressed for us ("decompressive transcoding"
+ * can happen depending on the request, so `.download()`'s output isn't
+ * guaranteed either way even though every file here is saved with
+ * `contentEncoding: gzip`). `null` when the file doesn't exist yet.
+ */
+async function downloadJson<T>(filename: string): Promise<T | null> {
+	try {
+		const [contents] = await bucket().file(filename).download();
+		const isGzipped = contents.length >= 2 && contents[0] === 0x1f && contents[1] === 0x8b;
+		const text = (isGzipped ? gunzipSync(contents) : contents).toString('utf8');
+		return JSON.parse(text) as T;
+	} catch (error) {
+		if ((error as { code?: number }).code === 404) return null;
+		throw error;
+	}
 }
 
 export async function saveWeekScoreboard(
@@ -69,6 +94,43 @@ export async function saveWeekScoreboard(
 			cacheControl: 'public, max-age=10'
 		}
 	});
+}
+
+/**
+ * Reads back a week's previously-saved file, if any — used by `refreshWeek` (see
+ * `preserveOdds.ts`) to carry forward data ESPN stops repeating once a game goes
+ * live, rather than letting the next overwrite silently lose it. `null` when
+ * nothing's been saved for this week yet (first-ever refresh of the season/week).
+ */
+export async function loadWeekScoreboard(key: WeekKey): Promise<StoredScoreboard | null> {
+	return downloadJson<StoredScoreboard>(weekFileName(key));
+}
+
+/**
+ * Once-a-day CFBD + ESPN-core-API betting fallback data for one week (see
+ * `refreshBetting` in `index.ts`) — a separate, much-less-frequently-written file
+ * from the scoreboard itself, since it never changes intra-day. `refreshWeek`
+ * reads it back on every poll via `loadBettingFile` and applies it with
+ * `applyBettingFallback`, so a game's `odds` are already fully merged by the time
+ * they reach the browser.
+ */
+export async function saveBettingFile(key: WeekKey, betting: Record<string, BettingFallbackEntry>): Promise<void> {
+	const file = bucket().file(bettingFileName(key));
+	const json = JSON.stringify(betting);
+	await file.save(gzipSync(json), {
+		contentType: 'application/json',
+		metadata: {
+			contentEncoding: 'gzip',
+			// Refreshed once a day, not every 10s like the scoreboard — a longer TTL
+			// just saves a redundant GCS round trip on every intervening poll.
+			cacheControl: 'public, max-age=3600'
+		}
+	});
+}
+
+/** `null` when nothing's been saved for this week yet, or `refreshBetting` hasn't run today. */
+export async function loadBettingFile(key: WeekKey): Promise<Record<string, BettingFallbackEntry> | null> {
+	return downloadJson<Record<string, BettingFallbackEntry>>(bettingFileName(key));
 }
 
 /**
@@ -104,15 +166,17 @@ export async function writeKnownSeasonYear(seasonYear: number): Promise<void> {
 
 /** Whether at least one week has been written for `seasonYear` yet. */
 export async function hasAnyFileForSeason(seasonYear: number): Promise<boolean> {
-	const [files] = await bucket().getFiles({ prefix: seasonFilePrefix(seasonYear), maxResults: 1 });
+	const [files] = await bucket().getFiles({ prefix: seasonFilePrefixes(seasonYear)[0], maxResults: 1 });
 	return files.length > 0;
 }
 
-/** Deletes every week file for `seasonYear` — the previous season, once the new one has data. */
+/** Deletes every week's scoreboard *and* betting file for `seasonYear` — the previous season, once the new one has data. */
 export async function deleteWeekFilesForSeason(seasonYear: number): Promise<void> {
-	const [files] = await bucket().getFiles({ prefix: seasonFilePrefix(seasonYear) });
+	const fileLists = await Promise.all(
+		seasonFilePrefixes(seasonYear).map((prefix) => bucket().getFiles({ prefix }).then(([files]) => files))
+	);
 	await Promise.all(
-		files.map((file) =>
+		fileLists.flat().map((file) =>
 			file.delete().catch((error: unknown) => {
 				// Already gone (e.g. a concurrent/retried cleanup beat us to it) — fine.
 				if ((error as { code?: number }).code !== 404) throw error;

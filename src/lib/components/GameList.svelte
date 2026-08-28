@@ -1,16 +1,21 @@
 <script lang="ts">
 	import GameCard from './GameCard.svelte';
 	import GameModal from './GameModal.svelte';
+	import matchupIcon from '$lib/assets/matchup.svg';
+	import scoreboardIcon from '$lib/assets/scoreboard.svg';
+	import surpriseIcon from '$lib/assets/surprised.svg';
 	import { formatDayHeading } from '$lib/format';
 	import type { ConferenceMap } from '$lib/game/conferences';
 	import {
+		sortByCombinedCurrentScore,
 		sortByCombinedScore,
 		sortByInterest,
+		type CurrentScoreWeights,
 		type FavoriteSort,
 		type RatingMap,
 		type ScoreWeights
 	} from '$lib/game/ratings';
-	import { settings, updateSettings } from '$lib/game/settings.svelte';
+	import { isDarkMode, settings, updateSettings } from '$lib/game/settings.svelte';
 	import { groupByDay as buildDays, groupByStatus, localDayKey, sortGames } from '$lib/game/sort';
 	import type { Game } from '$lib/game/types';
 
@@ -39,12 +44,29 @@
 
 	// Every section sorts by matchup score, except Completed, where the user
 	// picks matchup, surprise, or a custom weighted blend of both — see
-	// `completedSortMode` in settings and the "Sort by" control below — and
+	// `completedSortMode` in settings and the "Sort by" control below —
 	// Upcoming, where the user picks matchup or actual kickoff time — see
-	// `upcomingSortMode`.
+	// `upcomingSortMode` — and Current, where the user picks situation,
+	// matchup, (live) surprise score, or a custom three-way blend set via
+	// the triangle below — see `currentSortMode`.
 	function sortSection(sectionGames: Game[], sectionKey: string): Game[] {
 		if (sectionKey === 'upcoming' && settings.upcomingSortMode === 'kickoff') {
 			return sortGames(sectionGames);
+		}
+
+		if (sectionKey === 'current') {
+			if (settings.currentSortMode === 'custom') {
+				return sortByCombinedCurrentScore(
+					sectionGames,
+					ratings,
+					settings.currentSortWeights,
+					favorites
+				);
+			}
+			return sortByInterest(sectionGames, ratings, favorites, {
+				metric: settings.currentSortMode,
+				tiebreakMetric: settings.currentSortMode === 'matchup' ? 'situation' : 'matchup'
+			});
 		}
 
 		if (sectionKey !== 'completed') return sortByInterest(sectionGames, ratings, favorites);
@@ -69,6 +91,17 @@
 			customSortMix: Number.isFinite(parsed)
 				? Math.min(100, Math.max(0, parsed))
 				: settings.customSortMix
+		});
+	}
+
+	function setCurrentSortWeight(metric: keyof CurrentScoreWeights, raw: string): void {
+		const parsed = Number(raw);
+		if (!Number.isFinite(parsed)) return;
+		updateSettings({
+			currentSortWeights: {
+				...settings.currentSortWeights,
+				[metric]: Math.min(100, Math.max(0, parsed))
+			}
 		});
 	}
 
@@ -165,7 +198,7 @@
 {/snippet}
 
 {#each sections as section (section.key)}
-	<details class="statusSection" class:live={section.key === 'current'} open ontoggle={handleHeaderToggle}>
+	<details class="statusSection" open ontoggle={handleHeaderToggle}>
 		<summary onclick={(event) => handleHeaderClick(event, 0)}>
 			<h2 bind:clientHeight={sectionHeadingHeights[section.key]}>
 				<span class="chevron" aria-hidden="true"></span>
@@ -173,6 +206,105 @@
 				<span class="count">{section.games.length}</span>
 			</h2>
 		</summary>
+
+		{#if section.key === 'current'}
+			<div class="sortToggle">
+				<span>Sort by</span>
+				<label class="radio">
+					<input
+						type="radio"
+						name="currentSortMode"
+						value="matchup"
+						checked={settings.currentSortMode === 'matchup'}
+						onchange={() => updateSettings({ currentSortMode: 'matchup' })}
+					/>
+					Matchup
+				</label>
+				<label class="radio">
+					<input
+						type="radio"
+						name="currentSortMode"
+						value="situation"
+						checked={settings.currentSortMode === 'situation'}
+						onchange={() => updateSettings({ currentSortMode: 'situation' })}
+					/>
+					Situation
+				</label>
+				<label class="radio">
+					<input
+						type="radio"
+						name="currentSortMode"
+						value="surprise"
+						checked={settings.currentSortMode === 'surprise'}
+						onchange={() => updateSettings({ currentSortMode: 'surprise' })}
+					/>
+					Surprise
+				</label>
+				<label class="radio">
+					<input
+						type="radio"
+						name="currentSortMode"
+						value="custom"
+						checked={settings.currentSortMode === 'custom'}
+						onchange={() => updateSettings({ currentSortMode: 'custom' })}
+					/>
+					Custom
+				</label>
+			</div>
+
+			{#if settings.currentSortMode === 'custom'}
+				<div class="weightSliders">
+					<div class="weightRow">
+						<span class="weightLabel">
+							<img class="scoreIcon" src={matchupIcon} alt="" />
+							Matchup
+						</span>
+						<input
+							class="weightSlider"
+							type="range"
+							min="0"
+							max="100"
+							aria-label="Matchup score weight"
+							value={settings.currentSortWeights.matchup}
+							oninput={(event) => setCurrentSortWeight('matchup', event.currentTarget.value)}
+						/>
+						<span class="weightValue">{settings.currentSortWeights.matchup}</span>
+					</div>
+					<div class="weightRow">
+						<span class="weightLabel">
+							<img class="scoreIcon" class:inverted={isDarkMode()} src={scoreboardIcon} alt="" />
+							Situation
+						</span>
+						<input
+							class="weightSlider"
+							type="range"
+							min="0"
+							max="100"
+							aria-label="Situation score weight"
+							value={settings.currentSortWeights.situation}
+							oninput={(event) => setCurrentSortWeight('situation', event.currentTarget.value)}
+						/>
+						<span class="weightValue">{settings.currentSortWeights.situation}</span>
+					</div>
+					<div class="weightRow">
+						<span class="weightLabel">
+							<img class="scoreIcon" src={surpriseIcon} alt="" />
+							Surprise
+						</span>
+						<input
+							class="weightSlider"
+							type="range"
+							min="0"
+							max="100"
+							aria-label="Surprise score weight"
+							value={settings.currentSortWeights.surprise}
+							oninput={(event) => setCurrentSortWeight('surprise', event.currentTarget.value)}
+						/>
+						<span class="weightValue">{settings.currentSortWeights.surprise}</span>
+					</div>
+				</div>
+			{/if}
+		{/if}
 
 		{#if section.key === 'upcoming'}
 			<div class="sortToggle">
@@ -237,7 +369,10 @@
 
 			{#if settings.completedSortMode === 'custom'}
 				<div class="mixRow">
-					<span>Matchup</span>
+					<span class="mixLabel">
+						<img class="scoreIcon" src={matchupIcon} alt="" />
+						Matchup
+					</span>
 					<input
 						class="mixSlider"
 						type="range"
@@ -247,7 +382,10 @@
 						value={settings.customSortMix}
 						oninput={(event) => setCustomSortMix(event.currentTarget.value)}
 					/>
-					<span>Surprise</span>
+					<span class="mixLabel">
+						<img class="scoreIcon" src={surpriseIcon} alt="" />
+						Surprise
+					</span>
 				</div>
 			{/if}
 		{/if}
@@ -365,6 +503,58 @@
 		max-width: 16rem;
 	}
 
+	.mixLabel {
+		display: inline-flex;
+		align-items: center;
+		gap: var(--space-1);
+	}
+
+	.scoreIcon {
+		flex: none;
+		width: 14px;
+		height: 14px;
+	}
+
+	.scoreIcon.inverted {
+		filter: invert(1);
+	}
+
+	.weightSliders {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-2);
+		margin-bottom: var(--space-3);
+	}
+
+	.weightRow {
+		display: flex;
+		align-items: center;
+		gap: var(--space-2);
+		color: var(--color-text-muted);
+		font-size: var(--text-sm);
+	}
+
+	.weightLabel {
+		display: inline-flex;
+		flex: none;
+		align-items: center;
+		gap: var(--space-1);
+		width: 5.5rem;
+	}
+
+	.weightSlider {
+		flex: 1;
+		max-width: 16rem;
+	}
+
+	.weightValue {
+		flex: none;
+		width: 1.75rem;
+		text-align: right;
+		color: var(--color-text);
+		font-variant-numeric: tabular-nums;
+	}
+
 	.statusSection {
 		margin-bottom: var(--space-6);
 	}
@@ -439,11 +629,6 @@
 
 	.statusSection > summary h2 {
 		font-size: var(--text-xl);
-	}
-
-	.statusSection.live > summary h2 {
-		background: var(--color-live-bg);
-		color: var(--color-live);
 	}
 
 	.statusSection:not([open]) h2,

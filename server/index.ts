@@ -1,15 +1,21 @@
 import { createServer, type IncomingMessage, type ServerResponse } from 'node:http';
 import { fetchMergedScoreboard, type MergedScoreboard } from '../src/lib/espn/client';
+import { fetchEventOdds } from '../src/lib/espn/odds';
 import { toScoreboard } from '../src/lib/game/transform';
 import { sortGames } from '../src/lib/game/sort';
 import { POSTSEASON, REGULAR_SEASON, weekSlug } from '../src/lib/game/weeks';
+import { applyBettingFallback, hasUsefulLine } from '../src/lib/game/bettingFallback';
 import type { Game } from '../src/lib/game/types';
 import {
 	saveWeekScoreboard,
+	loadWeekScoreboard,
+	saveBettingFile,
+	loadBettingFile,
 	readKnownSeasonYear,
 	writeKnownSeasonYear,
 	hasAnyFileForSeason,
-	deleteWeekFilesForSeason
+	deleteWeekFilesForSeason,
+	type WeekKey
 } from './gcs';
 import { getKnownTeamIds } from './knownTeamIds';
 import {
@@ -20,6 +26,10 @@ import {
 	type CleanupOldSeasonPayload
 } from './tasks';
 import { computeNextRefreshDelayMs } from './reschedule';
+import { preservePregameOdds } from './preserveOdds';
+import { preserveLiveWinProbability } from './preserveWinProbability';
+import { mergeCfbdBetting } from './cfbdBetting';
+import { fetchCfbdBetting } from './cfbdClient';
 
 /** How long `/cleanup-old-season` waits before checking (or re-checking) for new-season data. */
 const CLEANUP_DELAY_MS = 48 * 60 * 60_000;
@@ -77,7 +87,38 @@ async function refreshWeek(payload: RefreshWeekPayload): Promise<void> {
 	try {
 		const merged = await fetchMergedScoreboard({ week, seasonType });
 		const board = toScoreboard(merged);
-		board.games = sortGames(board.games);
+
+		const weekKey: WeekKey = { seasonYear: payload.seasonYear, seasonType, week };
+		// Two GCS reads, no third-party network calls — deliberately kept off this
+		// hot polling path (see `refreshBetting` below for where CFBD/ESPN's
+		// per-event odds actually get fetched, once a day).
+		const [previous, bettingFallback] = await Promise.all([
+			// Used two ways below: `preservePregameOdds` carries a game's odds
+			// forward once ESPN stops repeating them live, and
+			// `preserveLiveWinProbability` carries the live win-probability number
+			// forward across a poll that lands on a play ESPN didn't model one for.
+			loadWeekScoreboard(weekKey),
+			// Once-daily CFBD + ESPN-core-API backfill (see `refreshBetting`) — fills
+			// whatever's still missing after `preservePregameOdds`, without
+			// overriding anything ESPN's live scoreboard actually supplied.
+			loadBettingFile(weekKey)
+		]);
+
+		let mergedGames = preservePregameOdds(board.games, previous?.games);
+		// ESPN doesn't compute a win-probability value for every play (PATs
+		// consistently lack it, and some games' situation goes fully empty for a
+		// poll or two even while live) — keep the last-known live number rather
+		// than flickering the win-prob bar off between polls. See
+		// preserveWinProbability.ts.
+		mergedGames = preserveLiveWinProbability(mergedGames, previous?.games);
+		if (bettingFallback) {
+			const fallbackMap = new Map(Object.entries(bettingFallback));
+			mergedGames = mergedGames.map((game) => ({
+				...game,
+				odds: applyBettingFallback(game.odds, fallbackMap.get(game.id), game.home, game.away)
+			}));
+		}
+		board.games = sortGames(mergedGames);
 		games = board.games;
 
 		// Same delay this refresh is about to reschedule itself with (computed again,
@@ -91,7 +132,7 @@ async function refreshWeek(payload: RefreshWeekPayload): Promise<void> {
 		}
 
 		const knownTeamIds = await getKnownTeamIds(payload.seasonYear);
-		await saveWeekScoreboard({ seasonYear: payload.seasonYear, seasonType, week }, board, knownTeamIds, nextRefreshAt);
+		await saveWeekScoreboard(weekKey, board, knownTeamIds, nextRefreshAt);
 	} catch (error) {
 		failed = true;
 		console.error(`refresh-week failed for seasonType=${seasonType} week=${week}`, error);
@@ -108,6 +149,58 @@ async function refreshWeek(payload: RefreshWeekPayload): Promise<void> {
 	if (delayMs === null) return; // past the cutoff: let this chain end.
 
 	await enqueueRefreshTask(payload, delayMs);
+}
+
+/**
+ * Once-a-day job: fetch CFBD's betting lines + pregame win probability for the
+ * *current* week, then back-fill any game CFBD has no line for by calling
+ * ESPN's per-event core-API odds endpoint (`fetchEventOdds`) — confirmed to
+ * cover real gaps CFBD misses, especially for smaller FCS matchups (see the
+ * live-win-probability investigation). Writes the merged result to GCS;
+ * `refreshWeek` reads it back on every poll via `loadBettingFile`.
+ *
+ * Deliberately isolated from `refreshWeek`'s hot polling path: CFBD and the
+ * per-event ESPN calls only ever happen here, once a day, never on the
+ * 10s-cadence live-game loop.
+ */
+async function refreshBetting(): Promise<{
+	seasonYear: number;
+	seasonType: number;
+	week: number;
+	gamesCovered: number;
+	backfilled: number;
+}> {
+	const apiKey = process.env.CFBD_API_KEY;
+	if (!apiKey) throw new Error('CFBD_API_KEY env var is required');
+
+	// Same "no params -> now" rule as bootstrap()/checkSeason() — the current
+	// week is whatever ESPN says it is right now.
+	const merged = await fetchMergedScoreboard();
+	const seasonTypeParam = merged.season.type === POSTSEASON ? 'postseason' : 'regular';
+
+	const { lines, winProbabilities } = await fetchCfbdBetting(
+		merged.season.year,
+		merged.week.number,
+		seasonTypeParam,
+		apiKey
+	);
+	const betting = mergeCfbdBetting(lines, winProbabilities);
+
+	let backfilled = 0;
+	await Promise.all(
+		merged.events.map(async ({ event }) => {
+			if (!event.id || hasUsefulLine(betting[event.id])) return;
+			const espnOdds = await fetchEventOdds(event.id);
+			if (!espnOdds) return;
+			betting[event.id] = { ...betting[event.id], ...espnOdds };
+			backfilled += 1;
+		})
+	);
+
+	const weekKey: WeekKey = { seasonYear: merged.season.year, seasonType: merged.season.type, week: merged.week.number };
+	await saveBettingFile(weekKey, betting);
+
+	return { ...weekKey, gamesCovered: Object.keys(betting).length, backfilled };
 }
 
 interface BootstrapPayload {
@@ -245,6 +338,16 @@ async function handleRequest(req: IncomingMessage, res: ServerResponse): Promise
 	if (req.method === 'POST' && req.url === '/check-season') {
 		const { action, seasonYear } = await checkSeason();
 		respond(res, 200, `${action} (season ${seasonYear})\n`);
+		return;
+	}
+
+	if (req.method === 'POST' && req.url === '/refresh-betting') {
+		const result = await refreshBetting();
+		respond(
+			res,
+			200,
+			`betting refreshed for season ${result.seasonYear} week ${result.week}: ${result.gamesCovered} games covered, ${result.backfilled} backfilled from ESPN\n`
+		);
 		return;
 	}
 

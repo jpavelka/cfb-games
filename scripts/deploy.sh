@@ -11,9 +11,10 @@ set -euo pipefail
 #
 # Usage:
 #   scripts/deploy.sh              # create/update infra, deploy the service
-#   scripts/deploy.sh --bootstrap  # also kick off the refresh chains afterward
-#                                   # (server/GCP_SETUP.md step 7) — only pass this
-#                                   # on first-time setup or a deliberate restart,
+#   scripts/deploy.sh --bootstrap  # also kick off the refresh chains and seed
+#                                   # betting fallback data afterward (server/
+#                                   # GCP_SETUP.md step 7) — only pass this on
+#                                   # first-time setup or a deliberate restart,
 #                                   # since it restarts every week's chain.
 
 cd "$(dirname "$0")/.."
@@ -28,7 +29,7 @@ set -a
 source "$ENV_FILE"
 set +a
 
-for var in PROJECT_ID REGION BUCKET_NAME SERVICE_NAME QUEUE_NAME RUNTIME_SA INVOKER_SA ALLOWED_ORIGINS; do
+for var in PROJECT_ID REGION BUCKET_NAME SERVICE_NAME QUEUE_NAME RUNTIME_SA INVOKER_SA ALLOWED_ORIGINS CFBD_API_KEY; do
 	if [[ -z "${!var:-}" ]]; then
 		echo "$var is not set in $ENV_FILE" >&2
 		exit 1
@@ -43,6 +44,7 @@ fi
 RUNTIME_SA_EMAIL="${RUNTIME_SA}@${PROJECT_ID}.iam.gserviceaccount.com"
 INVOKER_SA_EMAIL="${INVOKER_SA}@${PROJECT_ID}.iam.gserviceaccount.com"
 SEASON_CHECK_JOB="${SERVICE_NAME}-check-season"
+BETTING_REFRESH_JOB="${SERVICE_NAME}-refresh-betting"
 
 echo "==> Project: $PROJECT_ID"
 gcloud config set project "$PROJECT_ID" --quiet
@@ -126,7 +128,7 @@ gcloud run deploy "$SERVICE_NAME" \
 	--service-account "$RUNTIME_SA_EMAIL" \
 	--no-allow-unauthenticated \
 	--quiet \
-	--set-env-vars "GCP_PROJECT=${PROJECT_ID},TASKS_LOCATION=${REGION},TASKS_QUEUE=${QUEUE_NAME},SCOREBOARD_BUCKET=${BUCKET_NAME},TASKS_INVOKER_SERVICE_ACCOUNT=${INVOKER_SA_EMAIL}"
+	--set-env-vars "GCP_PROJECT=${PROJECT_ID},TASKS_LOCATION=${REGION},TASKS_QUEUE=${QUEUE_NAME},SCOREBOARD_BUCKET=${BUCKET_NAME},TASKS_INVOKER_SERVICE_ACCOUNT=${INVOKER_SA_EMAIL},CFBD_API_KEY=${CFBD_API_KEY}"
 
 SERVICE_URL=$(gcloud run services describe "$SERVICE_NAME" \
 	--region="$REGION" --format='value(status.url)')
@@ -177,6 +179,28 @@ else
 		--oidc-token-audience="$SERVICE_URL" --quiet >/dev/null
 fi
 
+echo "==> Cloud Scheduler: $BETTING_REFRESH_JOB"
+# Refreshes the current week's CFBD + ESPN-core-API betting fallback once every
+# morning, well before any kickoff — see server/index.ts's /refresh-betting.
+# 11:00 UTC matches the old daily GitHub Actions cadence this replaced.
+if gcloud scheduler jobs describe "$BETTING_REFRESH_JOB" --location="$REGION" >/dev/null 2>&1; then
+	gcloud scheduler jobs update http "$BETTING_REFRESH_JOB" \
+		--location="$REGION" \
+		--schedule="0 11 * * *" \
+		--uri="${SERVICE_URL}/refresh-betting" \
+		--http-method=POST \
+		--oidc-service-account-email="$INVOKER_SA_EMAIL" \
+		--oidc-token-audience="$SERVICE_URL" --quiet >/dev/null
+else
+	gcloud scheduler jobs create http "$BETTING_REFRESH_JOB" \
+		--location="$REGION" \
+		--schedule="0 11 * * *" \
+		--uri="${SERVICE_URL}/refresh-betting" \
+		--http-method=POST \
+		--oidc-service-account-email="$INVOKER_SA_EMAIL" \
+		--oidc-token-audience="$SERVICE_URL" --quiet >/dev/null
+fi
+
 echo "==> Deployed: $SERVICE_URL"
 
 if [[ "${1:-}" == "--bootstrap" ]]; then
@@ -185,5 +209,10 @@ if [[ "${1:-}" == "--bootstrap" ]]; then
 		-H "Authorization: Bearer $(gcloud auth print-identity-token)" \
 		-H "Content-Type: application/json" \
 		-d '{"reschedule": true}'
+	echo
+
+	echo "==> Seeding betting fallback data"
+	curl -sf -X POST "${SERVICE_URL}/refresh-betting" \
+		-H "Authorization: Bearer $(gcloud auth print-identity-token)"
 	echo
 fi

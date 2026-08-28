@@ -183,14 +183,51 @@ export function formatMoneyline(odds: GameOdds | undefined, team: GameTeam): str
 	return value > 0 ? `+${value}` : `${value}`;
 }
 
-/** e.g. "68%" — implied win probability, vig removed, for this team. Never shows 100% or 0%. */
-export function formatWinProbability(odds: GameOdds | undefined, team: GameTeam): string | undefined {
-	const pct = team.homeAway === 'home' ? odds?.homeWinPct : odds?.awayWinPct;
+/** e.g. "68%" — a 0-100 win probability for one side. Never shows 100% or 0%. */
+export function formatWinProbability(pct: number | undefined): string | undefined {
 	if (pct === undefined) return undefined;
 	const rounded = Math.round(pct);
 	if (rounded >= 100) return '>99%';
 	if (rounded <= 0) return '<1%';
 	return `${rounded}%`;
+}
+
+/**
+ * Down & distance plus field position, e.g. `{ downDistance: "2nd & 7",
+ * yardLine: "-35" }` — split in two so callers can style the yard line
+ * (secondary information) differently from the down & distance itself.
+ * `yardLine` is signed relative to the possessing team: `+` once they've
+ * crossed into the opponent's territory, `-` while still in their own,
+ * neither exactly at midfield.
+ *
+ * Reads ESPN's own `possessionText` ("OU 35", or plain "50" at midfield)
+ * rather than re-deriving a signed yard line from `situation.yardLine` —
+ * that field runs on a fixed whole-field scale whose zero end isn't
+ * documented anywhere, where `possessionText`'s per-side numbering already
+ * unambiguously names whichever team's territory the ball is in.
+ *
+ * `undefined` unless both down/distance and a resolvable field position are
+ * available (i.e. outside of a live game).
+ */
+export function formatFieldPosition(
+	game: Game
+): { downDistance: string; yardLine: string } | undefined {
+	const { situation } = game;
+	if (!situation?.downDistance || !situation.possessionText) return undefined;
+
+	if (situation.possessionText === '50') {
+		return { downDistance: situation.downDistance, yardLine: '50' };
+	}
+
+	const match = situation.possessionText.match(/^(\S+) (\d+)$/);
+	if (!match) return undefined;
+	const [, sideAbbreviation, yardLine] = match;
+
+	const possessingTeam = game.teams.find((team) => team.id === situation.possessionTeamId);
+	if (!possessingTeam) return undefined;
+
+	const sign = sideAbbreviation === possessingTeam.abbreviation ? '-' : '+';
+	return { downDistance: situation.downDistance, yardLine: `${sign}${yardLine}` };
 }
 
 /** e.g. "Aviva Stadium · Dublin, Ireland". */

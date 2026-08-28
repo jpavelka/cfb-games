@@ -7,11 +7,13 @@
 	let {
 		team,
 		odds,
-		showScore = false
+		showScore = false,
+		hasPossession = false
 	}: {
 		team: GameTeam;
 		odds?: GameOdds;
 		showScore?: boolean;
+		hasPossession?: boolean;
 	} = $props();
 
 	const record = $derived(formatRecord(team));
@@ -32,6 +34,9 @@
 			<span class="name">{team.location}</span>
 			{#if spread}
 				<span class="spread">{spread}</span>
+			{/if}
+			{#if hasPossession}
+				<span class="possession" title="Has possession">🏈</span>
 			{/if}
 			{#if isFavorite}
 				<span class="favorite" title="Favorite team">★</span>
@@ -79,6 +84,11 @@
 	.favorite {
 		flex: none;
 		color: var(--color-favorite);
+		font-size: var(--text-xs);
+	}
+
+	.possession {
+		flex: none;
 		font-size: var(--text-xs);
 	}
 

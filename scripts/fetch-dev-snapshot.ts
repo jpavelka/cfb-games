@@ -31,7 +31,6 @@ interface SnapshotIndexEntry {
 	name: string;
 	label: string;
 	capturedAt: string;
-	bettingFile?: string;
 }
 
 const FLAG = /^--(week|season-type|year|name)=(.+)$/;

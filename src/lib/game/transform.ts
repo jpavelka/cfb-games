@@ -92,12 +92,18 @@ function toStatus(status: EspnStatus | undefined): GameStatus {
 function toSituation(situation: EspnSituation | undefined): GameSituation | undefined {
 	if (!situation) return undefined;
 
+	const probability = situation.lastPlay?.probability;
+	const hasWinPct =
+		probability?.homeWinPercentage !== undefined && probability?.awayWinPercentage !== undefined;
+
 	const mapped: GameSituation = {
 		downDistance: situation.shortDownDistanceText,
 		possessionText: situation.possessionText,
 		possessionTeamId: situation.possession,
 		isRedZone: situation.isRedZone,
-		lastPlay: situation.lastPlay?.text
+		lastPlay: situation.lastPlay?.text,
+		homeWinPct: hasWinPct ? probability.homeWinPercentage! * 100 : undefined,
+		awayWinPct: hasWinPct ? probability.awayWinPercentage! * 100 : undefined
 	};
 
 	// Nothing worth showing if ESPN gave us an empty situation object.
@@ -105,7 +111,8 @@ function toSituation(situation: EspnSituation | undefined): GameSituation | unde
 		!mapped.downDistance &&
 		!mapped.possessionText &&
 		!mapped.possessionTeamId &&
-		!mapped.lastPlay
+		!mapped.lastPlay &&
+		!hasWinPct
 	) {
 		return undefined;
 	}

@@ -76,7 +76,8 @@
 <footer bind:clientHeight={footerHeight}>
 	<div class="inner" class:wrapped={footerWrapped} bind:this={footerInner}>
 		<span bind:this={footerFirstItem}
-			>Timezone: {formatTimeZoneAbbreviation()} ({formatUtcOffset()})</span
+			>Timezone: {formatTimeZoneAbbreviation()}
+			<span class="utc-offset">({formatUtcOffset()})</span></span
 		>
 		<span bind:this={footerSecondItem}><DataStatus /></span>
 	</div>
@@ -176,6 +177,12 @@
 		justify-content: center;
 		text-align: center;
 		row-gap: var(--space-1);
+	}
+
+	@media (max-width: 480px) {
+		.utc-offset {
+			display: none;
+		}
 	}
 
 </style>

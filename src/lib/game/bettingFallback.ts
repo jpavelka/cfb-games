@@ -1,11 +1,14 @@
-import { base } from '$app/paths';
 import { devigMoneyline } from './transform';
 import type { GameOdds, GameTeam } from './types';
 
 /**
- * One game's worth of collegefootballdata.com data, as written by
- * `scripts/fetch-betting.ts` to `static/data/betting.json` (keyed by ESPN game
- * id — CFBD and ESPN share the same game id space).
+ * One game's worth of collegefootballdata.com (+ ESPN core-API backfill) data,
+ * as written by `server/index.ts`'s once-daily `refreshBetting` job to the
+ * per-week `betting-{seasonYear}-{seasonType}-{week}.json` GCS file (keyed by
+ * ESPN game id — CFBD and ESPN share the same game id space). `refreshWeek`
+ * reads it back and applies it server-side via `applyBettingFallback` below, so
+ * by the time a `Game` reaches the browser its `odds` are already fully merged
+ * — nothing client-side needs to know this fallback exists.
  *
  * `spread` follows CFBD's convention (signed, relative to the home team:
  * negative means the home team is favored), unlike `GameOdds.spread` which is
@@ -24,28 +27,12 @@ export interface BettingFallbackEntry {
 export type BettingFallbackMap = Map<string, BettingFallbackEntry>;
 
 /**
- * Loaded from `static/data/betting.json` by default, refreshed daily by GitHub
- * Actions — not fetched live at view time (same rule as `sagarin.json`/
- * `loadRatingMap`). A missing/unreadable file yields an empty map rather than
- * failing the page.
- *
- * `path` can be overridden to point at a dev-only backup instead — see
- * `/dev-snapshot/[name]` and `scripts/build-local-betting-backup.ts`.
+ * Whether this game already has a real line — i.e. whether it's worth spending
+ * a per-event ESPN core-API request to backfill it. Used only by
+ * `refreshBetting`'s once-daily job, never on the scoreboard's hot polling path.
  */
-export async function loadBettingFallback(
-	fetchImpl: typeof fetch = fetch,
-	path: string = `${base}/data/betting.json`
-): Promise<BettingFallbackMap> {
-	try {
-		const response = await fetchImpl(path);
-		if (!response.ok) return new Map();
-
-		const data = (await response.json()) as Record<string, BettingFallbackEntry>;
-		return new Map(Object.entries(data));
-	} catch (error) {
-		console.warn('Could not load CFBD betting fallback data', error);
-		return new Map();
-	}
+export function hasUsefulLine(entry: BettingFallbackEntry | undefined): boolean {
+	return entry?.spread !== undefined || entry?.homeMoneyline !== undefined || entry?.awayMoneyline !== undefined;
 }
 
 /**

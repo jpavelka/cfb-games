@@ -96,6 +96,14 @@ export interface GameSituation {
 	isRedZone?: boolean;
 	/** Text description of the most recent play. */
 	lastPlay?: string;
+	/**
+	 * Live win probability (0-100) after the most recent play, from ESPN's
+	 * in-game model. Present only once ESPN's model has started producing
+	 * numbers (not on the very first snapshot of a game) — unlike
+	 * `GameOdds.homeWinPct`/`awayWinPct`, this isn't derived from a moneyline.
+	 */
+	homeWinPct?: number;
+	awayWinPct?: number;
 }
 
 export interface GameVenue {

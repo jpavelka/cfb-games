@@ -1,4 +1,3 @@
-import { applyBettingFallback, type BettingFallbackMap } from './bettingFallback';
 import type { StoredGame, StoredGameTeam, StoredScoreboard, StoredTeamFallback } from './storedScoreboard';
 import type { TeamInfo, TeamMap } from './teams';
 import type { Game, GameTeam, Scoreboard } from './types';
@@ -126,10 +125,11 @@ function toGameTeam(stored: StoredGameTeam, teams: TeamMap): GameTeam {
  * `shortName` only needs to be a stable per-game string, not ESPN's exact value
  * — same fallback `transform.ts` uses when ESPN itself omits it.
  *
- * `bettingFallback` (see `$lib/game/bettingFallback`) fills in whatever pieces
- * of `stored.odds` ESPN didn't have, keyed by `stored.id`.
+ * `stored.odds` arrives already fully merged — `server/`'s `refreshWeek` applies
+ * CFBD/ESPN-core-API betting fallback (see `$lib/game/bettingFallback`) before
+ * ever writing to GCS, so there's nothing left to merge client-side.
  */
-function toGame(stored: StoredGame, teams: TeamMap, bettingFallback: BettingFallbackMap): Game {
+function toGame(stored: StoredGame, teams: TeamMap): Game {
 	const away = toGameTeam(stored.away, teams);
 	const home = toGameTeam(stored.home, teams);
 
@@ -146,7 +146,7 @@ function toGame(stored: StoredGame, teams: TeamMap, bettingFallback: BettingFall
 			completed: stored.status.state === 'post' && !stored.status.canceled,
 			detail: stored.status.shortDetail
 		},
-		odds: applyBettingFallback(stored.odds, bettingFallback.get(stored.id), home, away),
+		odds: stored.odds,
 		situation: stored.situation
 	};
 }
@@ -158,19 +158,13 @@ function toGame(stored: StoredGame, teams: TeamMap, bettingFallback: BettingFall
  * always 0: unparseable ESPN events are dropped before `server/` ever writes a
  * file, so there's nothing left to count. `teams` is the already-loaded
  * `teams.json` map (see `$lib/game/teams`), used to resolve each `StoredGameTeam`
- * back into a full `GameTeam`. `bettingFallback` is threaded straight through
- * to `toGame`.
+ * back into a full `GameTeam`.
  */
-export function fromStoredScoreboard(
-	stored: StoredScoreboard,
-	weeks: WeekOption[],
-	teams: TeamMap,
-	bettingFallback: BettingFallbackMap
-): Scoreboard {
+export function fromStoredScoreboard(stored: StoredScoreboard, weeks: WeekOption[], teams: TeamMap): Scoreboard {
 	return {
 		week: stored.week,
 		weeks,
-		games: stored.games.map((game) => toGame(game, teams, bettingFallback)),
+		games: stored.games.map((game) => toGame(game, teams)),
 		fetchedAt: stored.fetchedAt,
 		nextRefreshAt: stored.nextRefreshAt,
 		partialErrors: stored.partialErrors,

@@ -91,7 +91,11 @@ export interface EspnSituation {
 	/** Team id of the team with possession. */
 	possession?: string;
 	isRedZone?: boolean;
-	lastPlay?: { text?: string };
+	lastPlay?: {
+		text?: string;
+		/** 0-1 scale. Absent on plays before ESPN's win-probability model kicks in (e.g. the opening kickoff). */
+		probability?: { homeWinPercentage?: number; awayWinPercentage?: number };
+	};
 }
 
 export interface EspnStatus {

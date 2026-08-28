@@ -1,6 +1,7 @@
 <script lang="ts">
 	import TeamLogo from './TeamLogo.svelte';
 	import matchupIcon from '$lib/assets/matchup.svg';
+	import scoreboardIcon from '$lib/assets/scoreboard.svg';
 	import surpriseIcon from '$lib/assets/surprised.svg';
 	import { broadcastLink } from '$lib/game/broadcastLinks';
 	import {
@@ -18,7 +19,9 @@
 	} from '$lib/format';
 	import type { ConferenceMap } from '$lib/game/conferences';
 	import { matchupScore, matchupScoreColor, teamStrength, type RatingMap } from '$lib/game/ratings';
-	import { surpriseScore, surpriseScoreColor } from '$lib/game/surprise';
+	import { isDarkMode } from '$lib/game/settings.svelte';
+	import { situationScore, situationScoreColor } from '$lib/game/situationScore';
+	import { liveSurpriseScore, surpriseScore, surpriseScoreColor } from '$lib/game/surprise';
 	import { winProbBarColors } from '$lib/game/teamColors';
 	import type { Game } from '$lib/game/types';
 	import { winsipediaLink } from '$lib/game/winsipediaLink';
@@ -62,20 +65,27 @@
 		return parts.length === 2 ? parts.join(' · ') : undefined;
 	});
 	const matchup = $derived(game ? matchupScore(game, ratings) : null);
-	const surprise = $derived(game ? surpriseScore(game) : null);
+	// `surpriseScore` only returns non-null once a game is final, `liveSurpriseScore`
+	// only while one is in progress — never both, so this always reflects the
+	// game's current state without needing to branch on it here.
+	const surprise = $derived(game ? (surpriseScore(game) ?? liveSurpriseScore(game)) : null);
+	const situation = $derived(game && isLive ? situationScore(game) : null);
 	const winsipedia = $derived(game ? winsipediaLink(game) : undefined);
-	// Always the pregame snapshot, regardless of where the game is now — it's
-	// always labeled as such (see `.pregameLabel`), so it stays honest whether
-	// the game hasn't started, is live, or is final.
-	const winProb = $derived(
+	// Two independent, always-honest metrics — never swapped for one another,
+	// since a pregame moneyline snapshot and a live per-play model answer
+	// different questions. The pregame number is shown for the life of the
+	// game (it doesn't stop being true once kickoff happens); the live number
+	// is additional, and only exists while the game is actually in progress.
+	const pregameWinProb = $derived(
 		game && game.odds?.homeWinPct !== undefined && game.odds?.awayWinPct !== undefined
 			? { home: game.odds.homeWinPct, away: game.odds.awayWinPct }
 			: undefined
 	);
-	// Once the game has actually started, the snapshot is aging rather than
-	// current — dim it and dash its border (see `.winProbBar.stale`) so it
-	// doesn't read as live info.
-	const isStale = $derived(game?.status.state !== 'pre');
+	const liveWinProb = $derived(
+		isLive && game?.situation?.homeWinPct !== undefined && game?.situation?.awayWinPct !== undefined
+			? { home: game.situation.homeWinPct, away: game.situation.awayWinPct }
+			: undefined
+	);
 	const winProbColors = $derived(game ? winProbBarColors(game.home, game.away) : undefined);
 
 	// Quarter-by-quarter score, once a game is complete. `.length` on both sides
@@ -150,6 +160,11 @@
 					</div>
 					{#if i === 0 && showScore}
 						<div class="scoreCenter">
+							{#if isLive}
+								<span class="possessionIcon" title={game.teams[0].id === game.situation?.possessionTeamId ? 'Has possession' : undefined}>
+									{game.teams[0].id === game.situation?.possessionTeamId ? '🏈' : ''}
+								</span>
+							{/if}
 							<span class="score" class:winner={game.teams[0].isWinner === true}>
 								{game.teams[0].score ?? '–'}
 							</span>
@@ -157,27 +172,69 @@
 							<span class="score" class:winner={game.teams[1].isWinner === true}>
 								{game.teams[1].score ?? '–'}
 							</span>
+							{#if isLive}
+								<span class="possessionIcon" title={game.teams[1].id === game.situation?.possessionTeamId ? 'Has possession' : undefined}>
+									{game.teams[1].id === game.situation?.possessionTeamId ? '🏈' : ''}
+								</span>
+							{/if}
 						</div>
 					{/if}
 				{/each}
 			</div>
 
-			{#if winProb && winProbColors}
-				<div class="winProbBar" class:stale={isStale} title="Win probability">
+			{#if isLive && game.situation}
+				<div class="situation">
+					{#if game.situation.downDistance || game.situation.possessionText}
+						<p class="downDistance">
+							{[game.situation.downDistance, game.situation.possessionText]
+								.filter(Boolean)
+								.join(' at ')}
+						</p>
+					{/if}
+					{#if game.situation.lastPlay}
+						<p class="lastPlay"><strong>Last play:</strong> {game.situation.lastPlay}</p>
+					{/if}
+				</div>
+			{/if}
+
+			{#if pregameWinProb && winProbColors}
+				<div class="winProbBar" title="Pregame win probability">
 					<div class="winProbHeader">
-						<span class="winPct">{formatWinProbability(game.odds, game.away)} to win</span>
-						<span class="pregameLabel">Pregame projection</span>
-						<span class="winPct">{formatWinProbability(game.odds, game.home)} to win</span>
+						<span class="winPct">{formatWinProbability(pregameWinProb.away)} to win</span>
+						<span class="winProbTag">Pregame projection</span>
+						<span class="winPct">{formatWinProbability(pregameWinProb.home)} to win</span>
 					</div>
 					<div class="bar">
 						<span
 							class="segment"
-							style:width="{winProb.away}%"
+							style:width="{pregameWinProb.away}%"
 							style:background={winProbColors.away}
 						></span>
 						<span
 							class="segment"
-							style:width="{winProb.home}%"
+							style:width="{pregameWinProb.home}%"
+							style:background={winProbColors.home}
+						></span>
+					</div>
+				</div>
+			{/if}
+
+			{#if liveWinProb && winProbColors}
+				<div class="winProbBar" title="Live win probability">
+					<div class="winProbHeader">
+						<span class="winPct">{formatWinProbability(liveWinProb.away)} to win</span>
+						<span class="winProbTag live">Live</span>
+						<span class="winPct">{formatWinProbability(liveWinProb.home)} to win</span>
+					</div>
+					<div class="bar">
+						<span
+							class="segment"
+							style:width="{liveWinProb.away}%"
+							style:background={winProbColors.away}
+						></span>
+						<span
+							class="segment"
+							style:width="{liveWinProb.home}%"
 							style:background={winProbColors.home}
 						></span>
 					</div>
@@ -228,13 +285,33 @@
 						</dd>
 					</div>
 				{/if}
-				{#if surprise !== null}
+				{#if showScore}
 					<div>
-						<dt>Surprise score</dt>
+						<dt>{isLive ? 'Live surprise score' : 'Surprise score'}</dt>
 						<dd>
 							<span class="scoreBadge">
 								<img class="scoreIcon" src={surpriseIcon} alt="" />
-								<span class="matchupScore" style:background={surpriseScoreColor(surprise)}>{surprise}</span>
+								<span class="matchupScore" style:background={surpriseScoreColor(surprise ?? 0)}
+									>{surprise ?? '–'}</span
+								>
+							</span>
+						</dd>
+					</div>
+				{/if}
+				{#if isLive}
+					<div>
+						<dt>Situation score</dt>
+						<dd>
+							<span class="scoreBadge">
+								<img
+									class="scoreIcon"
+									class:inverted={isDarkMode()}
+									src={scoreboardIcon}
+									alt=""
+								/>
+								<span class="matchupScore" style:background={situationScoreColor(situation ?? 0)}
+									>{situation ?? '–'}</span
+								>
 							</span>
 						</dd>
 					</div>
@@ -415,12 +492,29 @@
 		margin-bottom: var(--space-2);
 	}
 
-	.winProbBar {
-		margin: 0 0 var(--space-4);
+	.situation {
+		margin: 0 0 var(--space-3);
+		text-align: center;
 	}
 
-	.winProbBar.stale {
-		opacity: 0.7;
+	.downDistance {
+		margin: 0;
+		font-size: var(--text-sm);
+		font-weight: 600;
+	}
+
+	.lastPlay {
+		margin: 2px 0 0;
+		color: var(--color-text-muted);
+		font-size: var(--text-xs);
+	}
+
+	.winProbBar {
+		margin: 0 0 var(--space-2);
+	}
+
+	.winProbBar:last-of-type {
+		margin-bottom: var(--space-4);
 	}
 
 	.winProbHeader {
@@ -431,12 +525,16 @@
 		margin: 0 0 var(--space-1);
 	}
 
-	.pregameLabel {
+	.winProbTag {
 		color: var(--color-text-faint);
 		font-size: var(--text-xs);
 		font-weight: 600;
 		text-transform: uppercase;
 		letter-spacing: 0.03em;
+	}
+
+	.winProbTag.live {
+		color: var(--color-live);
 	}
 
 	.winProbBar .bar {
@@ -446,10 +544,6 @@
 		border: 1px solid var(--color-border);
 		border-radius: var(--radius-full);
 		background: var(--color-surface-alt);
-	}
-
-	.winProbBar.stale .bar {
-		border-style: dashed;
 	}
 
 	/* Scrolls horizontally rather than wrapping/shrinking columns when a game
@@ -619,6 +713,13 @@
 		height: 18px;
 	}
 
+	/* The situation icon is a solid black silhouette (unlike the full-color
+	   matchup/surprise icons), so it disappears against a dark background
+	   without this — see `isDarkMode()` in GameModal's script. */
+	.scoreIcon.inverted {
+		filter: invert(1);
+	}
+
 	.winPct {
 		color: var(--color-text-muted);
 		font-size: var(--text-xs);
@@ -635,6 +736,18 @@
 		font-family: var(--font-numeric);
 		font-size: var(--text-3xl);
 		font-variant-numeric: tabular-nums;
+	}
+
+	.possessionIcon {
+		flex: none;
+		width: 1.2em;
+		font-size: var(--text-lg);
+		text-align: center;
+	}
+
+	.score {
+		min-width: 2ch;
+		text-align: center;
 	}
 
 	.score.winner {

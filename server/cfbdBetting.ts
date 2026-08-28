@@ -3,8 +3,8 @@ import type { BettingFallbackEntry } from '../src/lib/game/bettingFallback';
 /**
  * Shared shape between collegefootballdata.com's `/lines` and `/metrics/wp/pregame`
  * responses and the merge that turns them into `BettingFallbackEntry` records — used
- * both by `fetch-betting.ts` (live CFBD fetch) and `build-local-betting-backup.ts`
- * (offline, from files saved under `local/`).
+ * by `refreshBetting` in `index.ts`, the once-daily job that builds the betting
+ * fallback file `refreshWeek` reads back (see `applyBettingFallback`).
  */
 
 export interface CfbdLine {
@@ -27,9 +27,9 @@ export interface CfbdPregameWinProbability {
 
 /**
  * Merges CFBD's betting lines and pregame win probability by game id into the
- * `static/data/betting.json` shape. Only the first-listed provider per game is
- * kept — this is a fallback for missing ESPN odds, not a full odds-comparison
- * feature, so one provider is enough.
+ * betting-fallback file shape. Only the first-listed provider per game is kept —
+ * this is a fallback for missing ESPN odds, not a full odds-comparison feature,
+ * so one provider is enough.
  */
 export function mergeCfbdBetting(
 	lines: CfbdGameLines[],

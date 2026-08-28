@@ -9,9 +9,8 @@ name: Refresh Data (Weekly)
 #    refresh-data-daily.yml, which now carries the last-known copies of these
 #    three files forward from gh-pages instead of refetching them itself.
 #    static/data/ is gitignored, and the deploy step replaces gh-pages wholesale
-#    (single-commit), so this job has to carry sagarin.json, weeks.json, and
-#    betting.json (the daily-cadence files) forward the same way, in the other
-#    direction.
+#    (single-commit), so this job has to carry sagarin.json and weeks.json (the
+#    daily-cadence files) forward the same way, in the other direction.
 #
 # 2. Checks Winsipedia link coverage: diffs winsipediaLink.ts's SLUGS table
 #    (against the teams.json just fetched above) and files or updates a
@@ -47,11 +46,6 @@ jobs:
         run: |
           mkdir -p static/data
           git fetch origin gh-pages && git checkout origin/gh-pages -- data/weeks.json && mv data/weeks.json static/data/ || true
-
-      - name: Fetch existing betting data
-        run: |
-          mkdir -p static/data
-          git fetch origin gh-pages && git checkout origin/gh-pages -- data/betting.json && mv data/betting.json static/data/ || true
 
       - uses: actions/setup-node@v7
         with:

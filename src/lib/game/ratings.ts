@@ -1,6 +1,7 @@
 import { base } from '$app/paths';
 import { scoreBadgeColor } from './scoreColor';
-import { surpriseScore } from './surprise';
+import { situationScore } from './situationScore';
+import { liveSurpriseScore, surpriseScore } from './surprise';
 import type { Game, GameTeam } from './types';
 
 interface RatingsFile {
@@ -112,11 +113,17 @@ function isFavoriteGame(game: Game, teamIds: ReadonlySet<string>): boolean {
 	return game.teams.some((team) => teamIds.has(team.id));
 }
 
-/** Which 0-99 score `sortByInterest` ranks on — see `matchupScore` and `surpriseScore`. */
-export type InterestMetric = 'matchup' | 'surprise';
+/**
+ * Which score `sortByInterest` ranks on — see `matchupScore`, `surpriseScore`
+ * (final score, falling back to the live in-progress one), and
+ * `situationScore` (live only).
+ */
+export type InterestMetric = 'matchup' | 'surprise' | 'situation';
 
 function metricScore(metric: InterestMetric, game: Game, ratings: RatingMap): number | null {
-	return metric === 'matchup' ? matchupScore(game, ratings) : surpriseScore(game);
+	if (metric === 'matchup') return matchupScore(game, ratings);
+	if (metric === 'situation') return situationScore(game);
+	return surpriseScore(game) ?? liveSurpriseScore(game);
 }
 
 /**
@@ -138,6 +145,13 @@ function sortScore(
 /** User-adjustable multipliers for `matchupScore` and `surpriseScore` when blending them into the Completed section's sort key — see `combinedScore`. */
 export interface ScoreWeights {
 	matchup: number;
+	surprise: number;
+}
+
+/** User-adjustable multipliers for `matchupScore`, `situationScore`, and the surprise score when blending them into the Current section's sort key — see `combinedCurrentScore`. */
+export interface CurrentScoreWeights {
+	matchup: number;
+	situation: number;
 	surprise: number;
 }
 
@@ -163,6 +177,43 @@ function combinedSortScore(
 	favorites: FavoriteSort | undefined
 ): number | null {
 	const base = combinedScore(game, ratings, weights);
+	if (base === null || favorites?.handling !== 'boost') return base;
+	return isFavoriteGame(game, favorites.teamIds) ? base + favorites.boostAmount : base;
+}
+
+/**
+ * `weights.matchup * matchupScore + weights.situation * situationScore +
+ * weights.surprise * surpriseScore`, for the Current section's three-slider
+ * blend — mirrors `combinedScore`. The weights are independent sliders, not
+ * a normalized split, but that's fine: only their size relative to each
+ * other affects sort order. A null component (no live win-probability data
+ * yet, a TBD side, no odds to compute a surprise score) counts as `0` rather
+ * than dropping the game. `null` only when all three are null.
+ */
+function combinedCurrentScore(
+	game: Game,
+	ratings: RatingMap,
+	weights: CurrentScoreWeights
+): number | null {
+	const matchup = matchupScore(game, ratings);
+	const situation = situationScore(game);
+	const surprise = surpriseScore(game) ?? liveSurpriseScore(game);
+	if (matchup === null && situation === null && surprise === null) return null;
+	return (
+		weights.matchup * (matchup ?? 0) +
+		weights.situation * (situation ?? 0) +
+		weights.surprise * (surprise ?? 0)
+	);
+}
+
+/** `combinedCurrentScore`, boosted for favorite teams — mirrors `sortScore`. */
+function combinedCurrentSortScore(
+	game: Game,
+	ratings: RatingMap,
+	weights: CurrentScoreWeights,
+	favorites: FavoriteSort | undefined
+): number | null {
+	const base = combinedCurrentScore(game, ratings, weights);
 	if (base === null || favorites?.handling !== 'boost') return base;
 	return isFavoriteGame(game, favorites.teamIds) ? base + favorites.boostAmount : base;
 }
@@ -239,6 +290,36 @@ export function sortByCombinedScore(
 
 		const scoreA = combinedSortScore(a, ratings, weights, favorites);
 		const scoreB = combinedSortScore(b, ratings, weights, favorites);
+		if (scoreA !== scoreB) {
+			if (scoreA === null) return 1;
+			if (scoreB === null) return -1;
+			return scoreB - scoreA;
+		}
+
+		return a.shortName.localeCompare(b.shortName);
+	});
+}
+
+/**
+ * Current-section sort driven by a user-tunable three-way blend of
+ * situation, matchup, and surprise scores — see `combinedCurrentScore`.
+ * Otherwise mirrors `sortByCombinedScore`.
+ */
+export function sortByCombinedCurrentScore(
+	games: readonly Game[],
+	ratings: RatingMap,
+	weights: CurrentScoreWeights,
+	favorites?: FavoriteSort
+): Game[] {
+	return [...games].sort((a, b) => {
+		if (favorites?.handling === 'top') {
+			const favA = isFavoriteGame(a, favorites.teamIds);
+			const favB = isFavoriteGame(b, favorites.teamIds);
+			if (favA !== favB) return favA ? -1 : 1;
+		}
+
+		const scoreA = combinedCurrentSortScore(a, ratings, weights, favorites);
+		const scoreB = combinedCurrentSortScore(b, ratings, weights, favorites);
 		if (scoreA !== scoreB) {
 			if (scoreA === null) return 1;
 			if (scoreB === null) return -1;

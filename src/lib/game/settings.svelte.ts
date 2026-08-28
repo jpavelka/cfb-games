@@ -1,4 +1,5 @@
 import { browser } from '$app/environment';
+import type { CurrentScoreWeights } from './ratings';
 
 export type TeamFilter = 'all' | 'fbs' | 'fcs' | 'power4' | 'ranked';
 
@@ -12,6 +13,9 @@ export type CompletedSortMode = 'matchup' | 'surprise' | 'custom';
 
 /** How the Upcoming section is ordered: by matchup score, or chronologically by actual kickoff time. */
 export type UpcomingSortMode = 'matchup' | 'kickoff';
+
+/** How the Current (live) section is ordered: by matchup score, situation score, live surprise score, or a custom weighted blend of all three. */
+export type CurrentSortMode = 'matchup' | 'situation' | 'surprise' | 'custom';
 
 export interface SettingsState {
 	/** Hide games below this matchup score. 0 = no filter. */
@@ -36,6 +40,15 @@ export interface SettingsState {
 	 */
 	customSortMix: number;
 	upcomingSortMode: UpcomingSortMode;
+	currentSortMode: CurrentSortMode;
+	/**
+	 * Three independent 0-100 sliders (matchup/situation/surprise) for the
+	 * Current section's custom sort — only used when `currentSortMode` is
+	 * `'custom'`. Fed straight to `sortByCombinedCurrentScore` in
+	 * `game/ratings.ts`; they don't need to sum to anything in particular
+	 * since only their relative size affects the sort order.
+	 */
+	currentSortWeights: CurrentScoreWeights;
 }
 
 const STORAGE_KEY = 'cfb:settings';
@@ -50,7 +63,9 @@ const DEFAULTS: SettingsState = {
 	filterByAccessibleBroadcasts: false,
 	completedSortMode: 'matchup',
 	customSortMix: 50,
-	upcomingSortMode: 'matchup'
+	upcomingSortMode: 'matchup',
+	currentSortMode: 'situation',
+	currentSortWeights: { matchup: 50, situation: 50, surprise: 50 }
 };
 
 /**

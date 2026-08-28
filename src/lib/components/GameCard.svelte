@@ -1,10 +1,12 @@
 <script lang="ts">
 	import TeamRow from './TeamRow.svelte';
 	import matchupIcon from '$lib/assets/matchup.svg';
+	import scoreboardIcon from '$lib/assets/scoreboard.svg';
 	import surpriseIcon from '$lib/assets/surprised.svg';
 	import {
 		formatBroadcasts,
 		formatConferenceContext,
+		formatFieldPosition,
 		formatGameDate,
 		formatKickoffTime,
 		formatPeriodLabels,
@@ -14,8 +16,9 @@
 		formatWinProbability
 	} from '$lib/format';
 	import { matchupScore, matchupScoreColor, type RatingMap } from '$lib/game/ratings';
-	import { settings } from '$lib/game/settings.svelte';
-	import { surpriseScore, surpriseScoreColor } from '$lib/game/surprise';
+	import { isDarkMode, settings } from '$lib/game/settings.svelte';
+	import { situationScore, situationScoreColor } from '$lib/game/situationScore';
+	import { liveSurpriseScore, surpriseScore, surpriseScoreColor } from '$lib/game/surprise';
 	import { winProbBarColors } from '$lib/game/teamColors';
 	import type { Game } from '$lib/game/types';
 
@@ -41,7 +44,11 @@
 
 	const meta = $derived([broadcasts, spread].filter((part): part is string => Boolean(part)));
 	const matchup = $derived(matchupScore(game, ratings));
-	const surprise = $derived(surpriseScore(game));
+	// `surpriseScore` only returns non-null once a game is final, `liveSurpriseScore`
+	// only while one is in progress — never both, so this always reflects the
+	// game's current state without needing to branch on it here.
+	const surprise = $derived(surpriseScore(game) ?? liveSurpriseScore(game));
+	const situation = $derived(isLive ? situationScore(game) : null);
 	const hasFavorite = $derived(
 		game.teams.some((team) => settings.favoriteTeamIds.includes(team.id))
 	);
@@ -58,15 +65,27 @@
 			.filter((part): part is string => Boolean(part))
 			.join(' · ')
 	);
-	// Both win-pct fields come from the same moneyline pair, so either both are
-	// present or neither is (see `GameOdds.homeWinPct`). Once the game is live
-	// or final, the actual score speaks for itself — a pregame odds snapshot
-	// would be stale and misleading next to it.
-	const winProb = $derived(
-		game.status.state === 'pre' &&
-			game.odds?.homeWinPct !== undefined &&
-			game.odds?.awayWinPct !== undefined
+	const fieldPosition = $derived(isLive ? formatFieldPosition(game) : undefined);
+	// Splits "2nd & 7" into "2" + "nd" (superscripted, see `.ordinal`) + " & 7" —
+	// purely typographic, so it stays here rather than in `formatFieldPosition`.
+	const downOrdinal = $derived.by(() => {
+		const match = fieldPosition?.downDistance.match(/^(\d+)(st|nd|rd|th)(.*)$/);
+		if (!match) return undefined;
+		const [, number, suffix, rest] = match;
+		return { number, suffix, rest };
+	});
+	// Pregame-only and live-only — the card only ever has room for one win-prob
+	// bar at a time, and a game is never both, so these two never compete for
+	// the same slot. (The modal, which has room for both at once, keeps them
+	// fully independent instead — see GameModal.svelte.)
+	const pregameWinProb = $derived(
+		game.status.state === 'pre' && game.odds?.homeWinPct !== undefined && game.odds?.awayWinPct !== undefined
 			? { home: game.odds.homeWinPct, away: game.odds.awayWinPct }
+			: undefined
+	);
+	const liveWinProb = $derived(
+		isLive && game.situation?.homeWinPct !== undefined && game.situation?.awayWinPct !== undefined
+			? { home: game.situation.homeWinPct, away: game.situation.awayWinPct }
 			: undefined
 	);
 	const winProbColors = $derived(winProbBarColors(game.home, game.away));
@@ -83,22 +102,23 @@
 			? formatPeriodLabels(Math.max(periodScores.away.length, periodScores.home.length))
 			: undefined
 	);
-
-	const possessionTeam = $derived(
-		game.situation?.possessionTeamId
-			? game.teams.find((team) => team.id === game.situation?.possessionTeamId)
-			: undefined
-	);
 </script>
 
 <button type="button" class="card" class:favorite={hasFavorite} onclick={() => onSelect(game)}>
 	<div class="time" class:live={isLive} class:tbd={game.kickoffTbd}>
-		{#if showDate}
+		{#if showDate && !isLive}
 			<span class="date">{formatGameDate(game)}</span>
 		{/if}
 		<span class="kickoff">{showScore ? statusLine : formatKickoffTime(game)}</span>
-		{#if isLive}
-			<span class="badge">Live</span>
+		{#if fieldPosition}
+			<p class="downDistance">
+				{#if downOrdinal}
+					{downOrdinal.number}<sup class="ordinal">{downOrdinal.suffix}</sup>{downOrdinal.rest}
+				{:else}
+					{fieldPosition.downDistance}
+				{/if}
+				<span class="yardLine">{fieldPosition.yardLine}</span>
+			</p>
 		{/if}
 		{#if matchup !== null}
 			<span class="scoreBadge" title="Matchup score">
@@ -109,10 +129,25 @@
 				{/if}
 			</span>
 		{/if}
-		{#if surprise !== null}
-			<span class="scoreBadge" title="Surprise score">
+		{#if isLive}
+			<span class="scoreBadge" title="Situation score">
+				<img
+					class="scoreIcon"
+					class:inverted={isDarkMode()}
+					src={scoreboardIcon}
+					alt=""
+				/>
+				<span class="matchupScore" style:background={situationScoreColor(situation ?? 0)}
+					>{situation ?? '–'}</span
+				>
+			</span>
+		{/if}
+		{#if showScore}
+			<span class="scoreBadge" title={isLive ? 'Live surprise score' : 'Surprise score'}>
 				<img class="scoreIcon" src={surpriseIcon} alt="" />
-				<span class="matchupScore" style:background={surpriseScoreColor(surprise)}>{surprise}</span>
+				<span class="matchupScore" style:background={surpriseScoreColor(surprise ?? 0)}
+					>{surprise ?? '–'}</span
+				>
 			</span>
 		{/if}
 	</div>
@@ -124,7 +159,12 @@
 			{/if}
 
 			{#each game.teams as team (team.homeAway)}
-				<TeamRow {team} odds={game.odds} {showScore} />
+				<TeamRow
+					{team}
+					odds={game.odds}
+					{showScore}
+					hasPossession={isLive && team.id === game.situation?.possessionTeamId}
+				/>
 			{/each}
 
 			{#if meta.length}
@@ -137,42 +177,46 @@
 		</div>
 
 		<div class="side">
-			{#if winProb}
-				<div class="winProb" title="Win probability">
+			{#if pregameWinProb}
+				<div class="winProb" title="Pregame win probability">
 					<div class="bar">
 						<span
 							class="segment"
-							style:width="{winProb.away}%"
+							style:width="{pregameWinProb.away}%"
 							style:background={winProbColors.away}
 						></span>
 						<span
 							class="segment"
-							style:width="{winProb.home}%"
+							style:width="{pregameWinProb.home}%"
 							style:background={winProbColors.home}
 						></span>
 					</div>
 					<div class="teamWinProbLabels">
-						<span>{game.away.abbreviation || game.away.location} {formatWinProbability(game.odds, game.away)}</span>
+						<span>{game.away.abbreviation || game.away.location} {formatWinProbability(pregameWinProb.away)}</span>
 						<span class="winProbLabel">Projected Winner</span>
-						<span>{game.home.abbreviation || game.home.location} {formatWinProbability(game.odds, game.home)}</span>
+						<span>{game.home.abbreviation || game.home.location} {formatWinProbability(pregameWinProb.home)}</span>
 					</div>
 				</div>
 			{/if}
-			{#if isLive && game.situation}
-				<div class="situation" class:redZone={game.situation.isRedZone}>
-					{#if game.situation.downDistance || game.situation.possessionText}
-						<p class="downDistance">
-							{[game.situation.downDistance, game.situation.possessionText]
-								.filter(Boolean)
-								.join(' at ')}
-							{#if possessionTeam}
-								<span class="possession">{possessionTeam.abbreviation || possessionTeam.location}</span>
-							{/if}
-						</p>
-					{/if}
-					{#if game.situation.lastPlay}
-						<p class="lastPlay">{game.situation.lastPlay}</p>
-					{/if}
+			{#if liveWinProb}
+				<div class="winProb" title="Live win probability">
+					<div class="bar">
+						<span
+							class="segment"
+							style:width="{liveWinProb.away}%"
+							style:background={winProbColors.away}
+						></span>
+						<span
+							class="segment"
+							style:width="{liveWinProb.home}%"
+							style:background={winProbColors.home}
+						></span>
+					</div>
+					<div class="teamWinProbLabels">
+						<span>{game.away.abbreviation || game.away.location} {formatWinProbability(liveWinProb.away)}</span>
+						<span class="winProbLabel live">Live Win Probability</span>
+						<span>{game.home.abbreviation || game.home.location} {formatWinProbability(liveWinProb.home)}</span>
+					</div>
 				</div>
 			{/if}
 			{#if periodScores && periodLabels}
@@ -266,18 +310,7 @@
 	}
 
 	.time.live {
-		color: var(--color-live);
 		font-weight: 600;
-	}
-
-	.badge {
-		padding: 0 var(--space-1);
-		border-radius: var(--radius-sm);
-		background: var(--color-live-bg);
-		color: var(--color-live);
-		font-size: var(--text-xs);
-		font-weight: 700;
-		text-transform: uppercase;
 	}
 
 	.scoreBadge {
@@ -301,6 +334,13 @@
 	.scoreIcon {
 		width: 16px;
 		height: 16px;
+	}
+
+	/* The situation icon is a solid black silhouette (unlike the full-color
+	   matchup/surprise icons), so it disappears against a dark background
+	   without this — see `isDarkMode()` in GameCard's script. */
+	.scoreIcon.inverted {
+		filter: invert(1);
 	}
 
 	.boost {
@@ -386,6 +426,12 @@
 		opacity: 0.9;
 	}
 
+	.winProbLabel.live {
+		color: var(--color-live);
+		font-weight: 600;
+		opacity: 1;
+	}
+
 	.bar {
 		display: flex;
 		height: 6px;
@@ -460,30 +506,19 @@
 		font-weight: 600;
 	}
 
-	.situation {
-		margin-bottom: var(--space-1);
-	}
-
-	.situation.redZone .downDistance {
-		color: var(--color-live);
-	}
-
 	.downDistance {
 		margin: 0;
+		font-size: var(--text-xs);
 		font-weight: 600;
 	}
 
-	.possession {
-		margin-left: var(--space-1);
-		font-weight: 400;
-		text-transform: uppercase;
+	.ordinal {
+		font-size: 0.7em;
 	}
 
-	.lastPlay {
-		margin: 2px 0 0;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap;
+	.yardLine {
+		font-size: 0.9em;
+		color: var(--color-text-faint);
 	}
 
 	.context,

@@ -157,11 +157,22 @@ current so the frontend never has to hit ESPN itself:
 - **`POST /cleanup-old-season`** — deletes the previous season's GCS files once
   the new season actually has data of its own (retries for ~8 days before giving
   up rather than deleting speculatively).
+- **`POST /refresh-betting`** — polled once daily by Cloud Scheduler (see
+  `refreshBetting` in `server/index.ts`); fetches CFBD's betting lines + pregame
+  win probability for the *current* week, then backfills any game CFBD has no
+  line for with ESPN's per-event core-API odds endpoint (`$lib/espn/odds.ts`).
+  Writes `betting-{seasonYear}-{seasonType}-{week}.json`, which `/refresh-week`
+  reads back on every poll and merges into `odds` via `applyBettingFallback` —
+  see `$lib/game/bettingFallback`. Deliberately isolated from the scoreboard's
+  hot polling path: CFBD and ESPN's per-event odds are never fetched from
+  `/refresh-week` itself.
 
 Each week's file is `games-{seasonYear}-{seasonType}-{week}.json`, written via
 `server/gcs.ts` and read back by `src/lib/game/storage.ts` — the wire format is
 the trimmed `StoredScoreboard`/`StoredGame` shape in `game/storedScoreboard.ts`,
-not the full `Scoreboard`/`Game` model every component uses.
+not the full `Scoreboard`/`Game` model every component uses. By the time a
+`Game` reaches the browser, `odds` is already fully merged (ESPN + CFBD + ESPN
+backfill) — nothing client-side merges betting data anymore.
 
 Deploying: copy `.env.deploy.example` to `.env.deploy` (gitignored — project ID,
 region, bucket name, service account names, allowed CORS origins) and run
@@ -191,14 +202,12 @@ anyway. They're gitignored and refreshed two ways:
 linearly per-fetch so the lowest rating in the file maps to 1 and the highest to
 99.
 
-`static/data/betting.json` is different: it's not an ESPN fetch, but a daily
-snapshot of collegefootballdata.com's betting lines and pregame win probability,
-keyed by game id (`scripts/fetch-betting.ts`). `game/bettingFallback.ts`'s
-`applyBettingFallback` uses it to fill in whatever pieces of a game's odds the
-ESPN scoreboard is missing — it never overrides real ESPN data. Needs a
-`CFBD_API_KEY` in the environment: copy `.env.example` to `.env` locally (picked
-up automatically via `--env-file-if-exists`), or set the `CFBD_API_KEY` repo
-secret for the GitHub Actions run.
+Betting/win-probability fallback data (collegefootballdata.com + an ESPN
+core-API backfill) is *not* part of this static pipeline — it lives entirely on
+the Cloud Run side now (`server/index.ts`'s `refreshBetting`, see
+[The refresh backend](#the-refresh-backend)) and is merged into `odds` before a
+week's file ever reaches GCS. `CFBD_API_KEY` is a Cloud Run env var (set via
+`.env.deploy`), not a GitHub Actions secret.
 
 ## Dev-only scoreboard snapshots
 
@@ -291,10 +300,13 @@ The seams are deliberate and narrow:
 
 - ESPN's API is undocumented and unversioned, with no published rate limits and
   no stability guarantee. Live responses carry `cache-control: max-age=10`.
-- The **live-game** rendering path (`state: 'in'` — clock, quarter, live badge) is
-  exercised for real once games are actually in progress each season; win
-  probability / betting odds for in-progress games is a tracked follow-up, not yet
-  built.
+- The **live-game** rendering path (`state: 'in'` — clock, quarter, live badge,
+  down/distance/last play) is exercised for real once games are actually in
+  progress each season. Betting odds now survive kickoff even though ESPN's own
+  scoreboard drops them the moment a game goes live: `refreshWeek` carries the
+  last-captured pregame snapshot forward (`server/preserveOdds.ts`) and
+  `refreshBetting`'s once-daily CFBD + ESPN-core-API job backfills anything that
+  snapshot missed — see [The refresh backend](#the-refresh-backend).
 - Node 22 (CI's `actions/setup-node` version) is the baseline; `package.json`
   currently runs vite 8.
 - `previous/` is a gitignored reference copy of the pre-rebuild Svelte 3 app (old
