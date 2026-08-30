@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lockBodyScroll } from '$lib/bodyScrollLock';
 	import { formatIsoDate } from '$lib/format';
 
 	let {
@@ -12,6 +13,7 @@
 	$effect(() => {
 		if (open) {
 			dialogEl?.showModal();
+			return lockBodyScroll();
 		} else {
 			dialogEl?.close();
 		}

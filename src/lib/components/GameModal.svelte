@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lockBodyScroll } from '$lib/bodyScrollLock';
 	import TeamLogo from './TeamLogo.svelte';
 	import matchupIcon from '$lib/assets/matchup.svg';
 	import scoreboardIcon from '$lib/assets/scoreboard.svg';
@@ -41,6 +42,7 @@
 	$effect(() => {
 		if (game) {
 			dialogEl?.showModal();
+			return lockBodyScroll();
 		} else {
 			dialogEl?.close();
 		}

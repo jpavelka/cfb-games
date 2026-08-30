@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lockBodyScroll } from '$lib/bodyScrollLock';
 	import {
 		groupConferencesBySubdivision,
 		type ConferenceMap,
@@ -32,6 +33,7 @@
 	$effect(() => {
 		if (open) {
 			dialogEl?.showModal();
+			return lockBodyScroll();
 		} else {
 			dialogEl?.close();
 		}
