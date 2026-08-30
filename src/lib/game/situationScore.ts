@@ -13,9 +13,11 @@ const FACTOR_CEILING_MINUTES_LEFT = 5;
 // Flat score for any overtime period, regardless of win probability — see `situationScore`.
 const OVERTIME_SITUATION_SCORE = 99;
 
-// A close score with this many minutes left (or fewer) is tense regardless of
-// what the win-probability model says — see `situationScore`.
-const LATE_GAME_MINUTES_LEFT = 5;
+// A close score in the fourth quarter is tense regardless of what the
+// win-probability model says — see `situationScore`. The floor applies
+// throughout the fourth quarter, scaled by `lateGameFloorFactor` so it's 0 at
+// the start of the quarter and ramps up to full strength by
+// `FACTOR_CEILING_MINUTES_LEFT` minutes left.
 const TIE_LATE_MINIMUM_SCORE = 95;
 
 // "One score" is a two-possession game or closer (touchdown + 2-point try).
@@ -73,10 +75,12 @@ function baseFromFavoriteWinPct(favoriteWinPct: number): number {
  * `GameSituation.homeWinPct`/`awayWinPct`).
  *
  * A few overrides come before the usual math, since each describes a game
- * that's tense no matter what a model says, with `LATE_GAME_MINUTES_LEFT`
- * minutes left or fewer: overtime is always a flat `OVERTIME_SITUATION_SCORE`;
- * a tied score is floored at `TIE_LATE_MINIMUM_SCORE`; a one-score game
- * (within `ONE_SCORE_MARGIN` points) is floored at
+ * that's tense no matter what a model says, applying throughout the fourth
+ * quarter but scaled down early in the quarter by `lateGameFloorFactor` (0 at
+ * 15 minutes left, ramping to full strength by `FACTOR_CEILING_MINUTES_LEFT`
+ * minutes left): overtime is always a flat `OVERTIME_SITUATION_SCORE`; a tied
+ * score is floored at (a factor of) `TIE_LATE_MINIMUM_SCORE`; a one-score
+ * game (within `ONE_SCORE_MARGIN` points) is floored at
  * `ONE_SCORE_LOSER_HAS_BALL_MINIMUM_SCORE` if the trailing team has the ball,
  * or `ONE_SCORE_MINIMUM_SCORE` otherwise; and a two-score game (within
  * `TWO_SCORE_MARGIN` points) with the trailing team on offense is floored at
@@ -111,20 +115,35 @@ export function situationScore(game: Game): number | null {
 }
 
 /**
- * The minimum score a late, close game gets regardless of what the
+ * 0 at the start of the fourth quarter (15 minutes left), ramping linearly up
+ * to 1 once `FACTOR_CEILING_MINUTES_LEFT` minutes or fewer remain. Applied to
+ * the fourth-quarter minimum scores in `lateGameFloor` so they phase in
+ * gradually across the quarter instead of switching on all at once.
+ */
+function lateGameFloorFactor(minutesLeft: number): number {
+	const t =
+		(MINUTES_PER_PERIOD - minutesLeft) / (MINUTES_PER_PERIOD - FACTOR_CEILING_MINUTES_LEFT);
+	return Math.max(0, Math.min(1, t));
+}
+
+/**
+ * The minimum score a close fourth-quarter game gets regardless of what the
  * win-probability model says — see the overrides described on
- * `situationScore`. `undefined` when no override applies (not late enough,
- * or too big a margin), including when the score isn't available yet.
+ * `situationScore`. The base minimum values are scaled by
+ * `lateGameFloorFactor`. `undefined` when no override applies (not in the
+ * fourth quarter, or too big a margin), including when the score isn't
+ * available yet.
  */
 function lateGameFloor(game: Game, minutesLeft: number): number | undefined {
-	if (minutesLeft > LATE_GAME_MINUTES_LEFT) return undefined;
+	if (minutesLeft > MINUTES_PER_PERIOD) return undefined;
+	const factor = lateGameFloorFactor(minutesLeft);
 
 	const { score: homeScore } = game.home;
 	const { score: awayScore } = game.away;
 	if (homeScore === undefined || awayScore === undefined) return undefined;
 
 	const margin = homeScore - awayScore;
-	if (margin === 0) return TIE_LATE_MINIMUM_SCORE;
+	if (margin === 0) return Math.round(TIE_LATE_MINIMUM_SCORE * factor);
 
 	const absMargin = Math.abs(margin);
 	if (absMargin > TWO_SCORE_MARGIN) return undefined;
@@ -133,9 +152,10 @@ function lateGameFloor(game: Game, minutesLeft: number): number | undefined {
 	const loserHasBall = game.situation?.possessionTeamId === losingTeam.id;
 
 	if (absMargin > ONE_SCORE_MARGIN) {
-		return loserHasBall ? TWO_SCORE_LOSER_HAS_BALL_MINIMUM_SCORE : undefined;
+		return loserHasBall ? Math.round(TWO_SCORE_LOSER_HAS_BALL_MINIMUM_SCORE * factor) : undefined;
 	}
-	return loserHasBall ? ONE_SCORE_LOSER_HAS_BALL_MINIMUM_SCORE : ONE_SCORE_MINIMUM_SCORE;
+	const base = loserHasBall ? ONE_SCORE_LOSER_HAS_BALL_MINIMUM_SCORE : ONE_SCORE_MINIMUM_SCORE;
+	return Math.round(base * factor);
 }
 
 /** Badge fill for a situation score (0-99) — same scale as the matchup/surprise badges, see `scoreBadgeColor`. */
