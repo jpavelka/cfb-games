@@ -314,14 +314,18 @@ export function formatRelativeUpdate(fetchedAt: Date, now: Date = new Date()): s
  * idle bye week backed all the way off to next Monday — see
  * `server/reschedule.ts`), "next check Mon, Sep 1 at 6:00 AM" instead of a
  * meaningless "in 38 hr" — or, once that's a full day or more out, "next check
- * in 3 days" instead of an oddly specific date/time. Once the scheduled check
- * time has passed without the page reloading, "refresh for new data" instead
- * of a stale "any moment".
+ * in 3 days" instead of an oddly specific date/time. As the check time nears,
+ * counts down through "< 30s", "< 10s", "< 5s" instead of a static "any
+ * moment". Once the scheduled check time has passed by a few seconds without
+ * the page reloading (give the fetch a moment to land), "refresh for new
+ * data".
  */
 export function formatNextRefresh(nextRefreshAt: Date, now: Date = new Date()): string {
 	const seconds = Math.round((nextRefreshAt.getTime() - now.getTime()) / 1000);
-	if (seconds <= 0) return 'Refresh for new data';
-	if (seconds <= 30) return 'Next check any moment';
+	if (seconds <= -5) return 'Refresh for new data';
+	if (seconds <= 0) return 'Next check < 5s';
+	if (seconds <= 10) return 'Next check < 10s';
+	if (seconds <= 30) return 'Next check < 30s';
 
 	const minutes = Math.round(seconds / 60);
 	if (minutes < 60) return `Next check ${minutes} min`;

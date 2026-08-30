@@ -23,6 +23,12 @@ const ONE_SCORE_MARGIN = 8;
 const ONE_SCORE_LOSER_HAS_BALL_MINIMUM_SCORE = 90;
 const ONE_SCORE_MINIMUM_SCORE = 60;
 
+// Base score (before the time factor) is 99 for any favorite win% at or
+// below this — a toss-up or near toss-up is maximally undecided — ramping
+// linearly down to 0 once the favorite's win% reaches BASE_WIN_PCT_LOCK.
+const BASE_WIN_PCT_TOSS_UP = 60;
+const BASE_WIN_PCT_LOCK = 99;
+
 /** "12:34" -> 12.5666..., or `undefined` if ESPN's displayClock isn't in that shape. */
 function parseClockMinutesRemaining(displayClock: string | undefined): number | undefined {
 	const match = displayClock ? /^(\d+):(\d{2})$/.exec(displayClock.trim()) : null;
@@ -36,17 +42,24 @@ function parseClockMinutesRemaining(displayClock: string | undefined): number | 
  * be called for overtime periods — see the flat 99 override in
  * `situationScore`.
  */
-function minutesLeftInGame(period: number, displayClock: string | undefined): number | undefined {
+export function minutesLeftInGame(period: number, displayClock: string | undefined): number | undefined {
 	const clockMinutes = parseClockMinutesRemaining(displayClock);
 	if (clockMinutes === undefined) return undefined;
 	return (4 - period) * MINUTES_PER_PERIOD + clockMinutes;
 }
 
 /** 0 at kickoff, scaling linearly up to 1 once `FACTOR_CEILING_MINUTES_LEFT` minutes or fewer remain. */
-function timeFactor(minutesLeft: number): number {
+export function timeFactor(minutesLeft: number): number {
 	const t =
 		(REGULATION_MINUTES - minutesLeft) / (REGULATION_MINUTES - FACTOR_CEILING_MINUTES_LEFT);
 	return Math.max(0, Math.min(1, t));
+}
+
+/** 99 at a toss-up, ramping linearly down to 0 as the favorite's win% approaches a lock. */
+function baseFromFavoriteWinPct(favoriteWinPct: number): number {
+	const t =
+		(favoriteWinPct - BASE_WIN_PCT_TOSS_UP) / (BASE_WIN_PCT_LOCK - BASE_WIN_PCT_TOSS_UP);
+	return Math.round(99 * (1 - Math.max(0, Math.min(1, t))));
 }
 
 /**
@@ -63,12 +76,12 @@ function timeFactor(minutesLeft: number): number {
  * `ONE_SCORE_LOSER_HAS_BALL_MINIMUM_SCORE` if the trailing team has the ball,
  * or `ONE_SCORE_MINIMUM_SCORE` otherwise.
  *
- * Short of those, first draft: `2 * (110 - favoriteWinPct)`, clamped to
- * 0-99 — how undecided the game currently is, from 20 at a near-lock
- * (favorite ~100%) up to 99 (the clamp) for anything short of a heavy
- * favorite — scaled by how late in the game it is, since a toss-up with 55
- * minutes left is much less tense than the same toss-up with 2 minutes
- * left. That time factor is 0 at kickoff and ramps linearly to 1 with
+ * Short of those, first draft: 99 for any favorite win% at or below
+ * `BASE_WIN_PCT_TOSS_UP`, ramping linearly down to 0 once the favorite's
+ * win% reaches `BASE_WIN_PCT_LOCK` — how undecided the game currently is —
+ * scaled by how late in the game it is, since a toss-up with 55 minutes
+ * left is much less tense than the same toss-up with 2 minutes left. That
+ * time factor is 0 at kickoff and ramps linearly to 1 with
  * `FACTOR_CEILING_MINUTES_LEFT` minutes left in regulation.
  */
 export function situationScore(game: Game): number | null {
@@ -86,7 +99,7 @@ export function situationScore(game: Game): number | null {
 	const { homeWinPct, awayWinPct } = game.situation ?? {};
 	if (homeWinPct === undefined || awayWinPct === undefined) return floor ?? null;
 
-	const base = Math.min(99, Math.max(0, 2 * (110 - Math.max(homeWinPct, awayWinPct))));
+	const base = baseFromFavoriteWinPct(Math.max(homeWinPct, awayWinPct));
 	const score = Math.round(base * timeFactor(minutesLeft));
 	return floor !== undefined ? Math.max(score, floor) : score;
 }

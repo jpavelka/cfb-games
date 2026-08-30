@@ -93,6 +93,12 @@ export interface GameSituation {
 	possessionText?: string;
 	/** Team id of the team with possession. */
 	possessionTeamId?: string;
+	/**
+	 * `true` when `possessionTeamId` wasn't reported by ESPN and was instead inferred
+	 * from the kickoff following the last scoring play (see `transform.ts`). A
+	 * prediction of who receives, not a confirmed snap — wrong on an onside kick.
+	 */
+	possessionInferred?: boolean;
 	isRedZone?: boolean;
 	/** Text description of the most recent play. */
 	lastPlay?: string;

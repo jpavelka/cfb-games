@@ -1,4 +1,5 @@
 import { scoreBadgeColor } from './scoreColor';
+import { minutesLeftInGame, timeFactor } from './situationScore';
 import type { Game } from './types';
 
 // Points a typical scoring drive is worth, for converting a point deviation
@@ -74,6 +75,24 @@ function computeS2(
 }
 
 /**
+ * S1 + S2 (see `computeS1`/`computeS2`) for a hypothetical final score,
+ * capped at 99. Each contributes `0` when it can't be computed; `null` only
+ * when *neither* can be computed at all.
+ */
+function simulatedSurprise(
+	game: Game,
+	homeAhead: boolean,
+	homeScore: number | undefined,
+	awayScore: number | undefined
+): number | null {
+	const s1 = computeS1(game, homeAhead);
+	const s2 = computeS2(game, homeScore, awayScore);
+	if (s1 === undefined && s2 === undefined) return null;
+
+	return Math.min(99, Math.round((s1 ?? 0) + (s2 ?? 0)));
+}
+
+/**
  * How shocking a completed game's result was (0-99), or `null` for a game
  * that isn't final yet (or was canceled/postponed) — a live score isn't a
  * final one, and `null` before/without a result rather than guessing.
@@ -88,11 +107,7 @@ export function surpriseScore(game: Game): number | null {
 		return null;
 	}
 
-	const s1 = computeS1(game, game.home.isWinner === true);
-	const s2 = computeS2(game, game.home.score, game.away.score);
-	if (s1 === undefined && s2 === undefined) return null;
-
-	return Math.min(99, Math.round((s1 ?? 0) + (s2 ?? 0)));
+	return simulatedSurprise(game, game.home.isWinner === true, game.home.score, game.away.score);
 }
 
 /**
@@ -110,30 +125,38 @@ function pregameFavoriteSide(game: Game): 'home' | 'away' | undefined {
 }
 
 /**
- * How shocking a game would be if it ended with the score as it currently
- * stands (0-99), discounted by how likely the currently-leading team is to
- * actually hold on, per ESPN's live win probability model
- * (`GameSituation.homeWinPct`/`awayWinPct`). `null` before kickoff, once
- * final (see `surpriseScore` for that case), or if canceled/postponed.
+ * How shocking a live game is right now (0-99), blending two hypothetical
+ * outcomes by how likely each is per ESPN's live win probability model
+ * (`GameSituation.homeWinPct`/`awayWinPct`), then discounted by how much of
+ * the game is left. `null` before kickoff, once final (see `surpriseScore`
+ * for that case), if canceled/postponed, or if any needed input isn't
+ * available yet.
  *
- * Computes S1 + S2 exactly as `surpriseScore` does, but against the
- * *current* score in place of the final one — S1 still reads the
- * *pregame* favorite/win%, since that's the baseline this is measuring
- * surprise against, not anything live. That total is then scaled by the
- * live win probability of whichever team is currently ahead: a big
- * hypothetical upset that's still a toss-up shouldn't score the same as
- * one the trailing favorite has already all but lost.
+ * - `surprise1`: `simulatedSurprise` if the game ended with the score as it
+ *   currently stands.
+ * - `surprise2`: `simulatedSurprise` if the currently-trailing team went on
+ *   to win by 1 (over the leading team's *current* score) instead.
+ * - `surprise3 = surprise1 * leadingWinPct + surprise2 * trailingWinPct`
+ *   (each a 0-1 probability) — the shock value weighted by how each
+ *   hypothetical outcome is actually likely to go.
+ * - Finally, `surprise3` is scaled by the same `timeFactor` `situationScore`
+ *   uses: 0 at kickoff, ramping linearly to 1 with
+ *   `FACTOR_CEILING_MINUTES_LEFT` minutes left in regulation. A hypothetical
+ *   upset brewing at kickoff isn't yet worth much attention; the same
+ *   hypothetical late in the game is. Overtime skips this discount (factor
+ *   of 1) since it's definitionally already the end of the game.
  *
  * A tied score has no "leading team" to price a live win probability for,
  * so it's broken by crediting the pregame underdog with one extra point
  * first — a tie against a real favorite already reads as a shock in the
- * underdog's favor. `null` if that tie can't be broken (no pregame
- * favorite either way), if the leading team's live win probability isn't
- * available yet (ESPN's model doesn't publish on the very first snapshot
- * of a game), or if neither S1 nor S2 can be computed at all.
+ * underdog's favor. `null` if that tie can't be broken (no pregame favorite
+ * either way).
  */
 export function liveSurpriseScore(game: Game): number | null {
 	if (game.status.state !== 'in') return null;
+
+	const { period } = game.status;
+	if (period === undefined) return null;
 
 	const { score: homeScore } = game.home;
 	const { score: awayScore } = game.away;
@@ -149,15 +172,36 @@ export function liveSurpriseScore(game: Game): number | null {
 	}
 
 	const homeAhead = adjHomeScore > adjAwayScore;
-	const leadingWinPct = homeAhead ? game.situation?.homeWinPct : game.situation?.awayWinPct;
-	if (leadingWinPct === undefined) return null;
+	const { homeWinPct, awayWinPct } = game.situation ?? {};
+	if (homeWinPct === undefined || awayWinPct === undefined) return null;
+	const leadingWinPct = homeAhead ? homeWinPct : awayWinPct;
+	const trailingWinPct = homeAhead ? awayWinPct : homeWinPct;
 
-	const s1 = computeS1(game, homeAhead);
-	const s2 = computeS2(game, adjHomeScore, adjAwayScore);
-	if (s1 === undefined && s2 === undefined) return null;
+	const surprise1 = simulatedSurprise(game, homeAhead, adjHomeScore, adjAwayScore);
 
-	const r = (s1 ?? 0) + (s2 ?? 0);
-	return Math.min(99, Math.round(r * (leadingWinPct / 100)));
+	const leadingScore = homeAhead ? adjHomeScore : adjAwayScore;
+	const trailingWinsHomeScore = homeAhead ? adjHomeScore : leadingScore + 1;
+	const trailingWinsAwayScore = homeAhead ? leadingScore + 1 : adjAwayScore;
+	const surprise2 = simulatedSurprise(
+		game,
+		!homeAhead,
+		trailingWinsHomeScore,
+		trailingWinsAwayScore
+	);
+
+	if (surprise1 === null && surprise2 === null) return null;
+
+	const surprise3 =
+		(surprise1 ?? 0) * (leadingWinPct / 100) + (surprise2 ?? 0) * (trailingWinPct / 100);
+
+	let factor = 1;
+	if (period < 5) {
+		const minutesLeft = minutesLeftInGame(period, game.status.displayClock);
+		if (minutesLeft === undefined) return null;
+		factor = timeFactor(minutesLeft);
+	}
+
+	return Math.min(99, Math.round(surprise3 * factor));
 }
 
 /** Badge fill for a surprise score (0-99) — same scale as the matchup-score badge, see `scoreBadgeColor`. */

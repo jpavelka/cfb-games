@@ -161,7 +161,14 @@
 					{#if i === 0 && showScore}
 						<div class="scoreCenter">
 							{#if isLive}
-								<span class="possessionIcon" title={game.teams[0].id === game.situation?.possessionTeamId ? 'Has possession' : undefined}>
+								<span
+									class="possessionIcon"
+									title={game.teams[0].id === game.situation?.possessionTeamId
+										? game.situation?.possessionInferred
+											? 'Likely receiving the kickoff'
+											: 'Has possession'
+										: undefined}
+								>
 									{game.teams[0].id === game.situation?.possessionTeamId ? '🏈' : ''}
 								</span>
 							{/if}
@@ -173,7 +180,14 @@
 								{game.teams[1].score ?? '–'}
 							</span>
 							{#if isLive}
-								<span class="possessionIcon" title={game.teams[1].id === game.situation?.possessionTeamId ? 'Has possession' : undefined}>
+								<span
+									class="possessionIcon"
+									title={game.teams[1].id === game.situation?.possessionTeamId
+										? game.situation?.possessionInferred
+											? 'Likely receiving the kickoff'
+											: 'Has possession'
+										: undefined}
+								>
 									{game.teams[1].id === game.situation?.possessionTeamId ? '🏈' : ''}
 								</span>
 							{/if}

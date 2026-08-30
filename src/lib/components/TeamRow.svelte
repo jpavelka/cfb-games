@@ -8,12 +8,14 @@
 		team,
 		odds,
 		showScore = false,
-		hasPossession = false
+		hasPossession = false,
+		possessionInferred = false
 	}: {
 		team: GameTeam;
 		odds?: GameOdds;
 		showScore?: boolean;
 		hasPossession?: boolean;
+		possessionInferred?: boolean;
 	} = $props();
 
 	const record = $derived(formatRecord(team));
@@ -36,7 +38,12 @@
 				<span class="spread">{spread}</span>
 			{/if}
 			{#if hasPossession}
-				<span class="possession" title="Has possession">🏈</span>
+				<span
+					class="possession"
+					title={possessionInferred ? 'Likely receiving the kickoff' : 'Has possession'}
+				>
+					🏈
+				</span>
 			{/if}
 			{#if isFavorite}
 				<span class="favorite" title="Favorite team">★</span>

@@ -93,6 +93,18 @@ export interface EspnSituation {
 	isRedZone?: boolean;
 	lastPlay?: {
 		text?: string;
+		/** e.g. "Timeout", "Rush", "Pass Reception". */
+		type?: { text?: string };
+		/** Points scored on this play, e.g. 6 for a touchdown. 0 (or absent) on a non-scoring play. */
+		scoreValue?: number;
+		/**
+		 * The team on offense for this play. Verified against real play-by-play for
+		 * "Timeout" plays specifically: this tracks the offense even for a defensive
+		 * timeout (where the team calling it is the other side) — `start`/`end` on the
+		 * same play were found to disagree with it and be wrong in that case, so don't
+		 * use those as a substitute.
+		 */
+		team?: { id?: string };
 		/** 0-1 scale. Absent on plays before ESPN's win-probability model kicks in (e.g. the opening kickoff). */
 		probability?: { homeWinPercentage?: number; awayWinPercentage?: number };
 	};

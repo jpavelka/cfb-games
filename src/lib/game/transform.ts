@@ -89,17 +89,65 @@ function toStatus(status: EspnStatus | undefined): GameStatus {
 	};
 }
 
-function toSituation(situation: EspnSituation | undefined): GameSituation | undefined {
+const SAFETY_PATTERN = /safety/i;
+
+/**
+ * ESPN drops `situation.possession` in the dead-ball window between a made try and
+ * the ensuing kickoff (the scoreboard has no offense to report there). We can still
+ * work out who's about to receive: whoever just scored kicks off, so the other team
+ * gets the ball next — except on a safety, where the scored-on team has to free-kick
+ * to the team that just scored.
+ *
+ * This is a prediction of the coming kickoff, not a confirmed snap, so callers should
+ * treat `possessionInferred: true` as lower-confidence (e.g. an onside kick recovered
+ * by the kicking team would make it wrong until the next poll corrects it).
+ */
+function inferPossessionAfterScore(
+	lastPlay: EspnSituation['lastPlay'],
+	competitors: EspnCompetitor[]
+): string | undefined {
+	const scoringTeamId = lastPlay?.team?.id;
+	if (!lastPlay?.scoreValue || !scoringTeamId) return undefined;
+
+	if (SAFETY_PATTERN.test(lastPlay.text ?? '')) return scoringTeamId;
+
+	const receivingTeamId = competitors.find((c) => (c.team?.id ?? c.id) !== scoringTeamId)?.team
+		?.id;
+	return receivingTeamId;
+}
+
+/**
+ * ESPN also drops `situation.possession` for the "Timeout" play itself (down resets
+ * to 0, same dead-ball gap as the post-score kickoff window). Unlike that case, though,
+ * `lastPlay.team` here already reflects who's on offense — verified against real
+ * play-by-play for two defensive timeouts, where the calling team differed from the
+ * team `team.id` named and `team.id` still matched the offense correctly both times.
+ */
+function inferPossessionDuringTimeout(lastPlay: EspnSituation['lastPlay']): string | undefined {
+	if (lastPlay?.type?.text !== 'Timeout') return undefined;
+	return lastPlay.team?.id;
+}
+
+function toSituation(
+	situation: EspnSituation | undefined,
+	competitors: EspnCompetitor[]
+): GameSituation | undefined {
 	if (!situation) return undefined;
 
 	const probability = situation.lastPlay?.probability;
 	const hasWinPct =
 		probability?.homeWinPercentage !== undefined && probability?.awayWinPercentage !== undefined;
 
+	const inferredPossessionTeamId = situation.possession
+		? undefined
+		: (inferPossessionAfterScore(situation.lastPlay, competitors) ??
+			inferPossessionDuringTimeout(situation.lastPlay));
+
 	const mapped: GameSituation = {
 		downDistance: situation.shortDownDistanceText,
 		possessionText: situation.possessionText,
-		possessionTeamId: situation.possession,
+		possessionTeamId: situation.possession ?? inferredPossessionTeamId,
+		possessionInferred: inferredPossessionTeamId !== undefined,
 		isRedZone: situation.isRedZone,
 		lastPlay: situation.lastPlay?.text,
 		homeWinPct: hasWinPct ? probability.homeWinPercentage! * 100 : undefined,
@@ -308,7 +356,7 @@ export function toGame({ event, subdivisions }: MergedEvent, seasonType: number)
 		seasonType,
 		eventName,
 		odds: toOdds(odds),
-		situation: toSituation(competition.situation),
+		situation: toSituation(competition.situation, competitors),
 		subdivisions,
 		espnUrl: `https://www.espn.com/college-football/game/_/gameId/${event.id}`
 	};
