@@ -110,6 +110,9 @@ export function formatStatusLine(game: Game): string {
 	if (status.state === 'in') {
 		const period = status.period ? ordinalPeriod(status.period) : undefined;
 		const clock = status.displayClock;
+		// At 0:00 ESPN gives a specific label ("Halftime", "End of 4th") instead of
+		// just a dead clock — prefer that over reconstructing "0:00 · 2nd" ourselves.
+		if (clock === '0:00' && status.shortDetail) return status.shortDetail;
 		if (period && clock) return `${clock} · ${period}`;
 		return status.shortDetail || 'In progress';
 	}

@@ -9,14 +9,22 @@
 		odds,
 		showScore = false,
 		hasPossession = false,
-		possessionInferred = false
+		possessionInferredReason
 	}: {
 		team: GameTeam;
 		odds?: GameOdds;
 		showScore?: boolean;
 		hasPossession?: boolean;
-		possessionInferred?: boolean;
+		possessionInferredReason?: 'after-score' | 'timeout';
 	} = $props();
+
+	const possessionTitle = $derived(
+		possessionInferredReason === 'after-score'
+			? 'Likely receiving the kickoff'
+			: possessionInferredReason === 'timeout'
+				? 'Has possession (unconfirmed, inferred from timeout)'
+				: 'Has possession'
+	);
 
 	const record = $derived(formatRecord(team));
 	const spread = $derived(formatTeamSpread(odds, team));
@@ -40,7 +48,8 @@
 			{#if hasPossession}
 				<span
 					class="possession"
-					title={possessionInferred ? 'Likely receiving the kickoff' : 'Has possession'}
+					class:after-score={possessionInferredReason === 'after-score'}
+					title={possessionTitle}
 				>
 					🏈
 				</span>
@@ -97,6 +106,11 @@
 	.possession {
 		flex: none;
 		font-size: var(--text-xs);
+	}
+
+	/* A prediction of who receives the coming kickoff, not a confirmed snap. */
+	.possession.after-score {
+		opacity: 0.55;
 	}
 
 	.name {

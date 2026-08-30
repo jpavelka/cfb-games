@@ -23,6 +23,10 @@ const ONE_SCORE_MARGIN = 8;
 const ONE_SCORE_LOSER_HAS_BALL_MINIMUM_SCORE = 90;
 const ONE_SCORE_MINIMUM_SCORE = 60;
 
+// "Two score" is a three-possession game or closer (two touchdowns + 2-point tries).
+const TWO_SCORE_MARGIN = 16;
+const TWO_SCORE_LOSER_HAS_BALL_MINIMUM_SCORE = 50;
+
 // Base score (before the time factor) is 99 for any favorite win% at or
 // below this — a toss-up or near toss-up is maximally undecided — ramping
 // linearly down to 0 once the favorite's win% reaches BASE_WIN_PCT_LOCK.
@@ -71,10 +75,12 @@ function baseFromFavoriteWinPct(favoriteWinPct: number): number {
  * A few overrides come before the usual math, since each describes a game
  * that's tense no matter what a model says, with `LATE_GAME_MINUTES_LEFT`
  * minutes left or fewer: overtime is always a flat `OVERTIME_SITUATION_SCORE`;
- * a tied score is floored at `TIE_LATE_MINIMUM_SCORE`; and a one-score game
+ * a tied score is floored at `TIE_LATE_MINIMUM_SCORE`; a one-score game
  * (within `ONE_SCORE_MARGIN` points) is floored at
  * `ONE_SCORE_LOSER_HAS_BALL_MINIMUM_SCORE` if the trailing team has the ball,
- * or `ONE_SCORE_MINIMUM_SCORE` otherwise.
+ * or `ONE_SCORE_MINIMUM_SCORE` otherwise; and a two-score game (within
+ * `TWO_SCORE_MARGIN` points) with the trailing team on offense is floored at
+ * `TWO_SCORE_LOSER_HAS_BALL_MINIMUM_SCORE`.
  *
  * Short of those, first draft: 99 for any favorite win% at or below
  * `BASE_WIN_PCT_TOSS_UP`, ramping linearly down to 0 once the favorite's
@@ -119,10 +125,16 @@ function lateGameFloor(game: Game, minutesLeft: number): number | undefined {
 
 	const margin = homeScore - awayScore;
 	if (margin === 0) return TIE_LATE_MINIMUM_SCORE;
-	if (Math.abs(margin) > ONE_SCORE_MARGIN) return undefined;
+
+	const absMargin = Math.abs(margin);
+	if (absMargin > TWO_SCORE_MARGIN) return undefined;
 
 	const losingTeam = margin > 0 ? game.away : game.home;
 	const loserHasBall = game.situation?.possessionTeamId === losingTeam.id;
+
+	if (absMargin > ONE_SCORE_MARGIN) {
+		return loserHasBall ? TWO_SCORE_LOSER_HAS_BALL_MINIMUM_SCORE : undefined;
+	}
 	return loserHasBall ? ONE_SCORE_LOSER_HAS_BALL_MINIMUM_SCORE : ONE_SCORE_MINIMUM_SCORE;
 }
 

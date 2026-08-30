@@ -164,7 +164,7 @@
 					odds={game.odds}
 					{showScore}
 					hasPossession={isLive && team.id === game.situation?.possessionTeamId}
-					possessionInferred={game.situation?.possessionInferred}
+					possessionInferredReason={game.situation?.possessionInferredReason}
 				/>
 			{/each}
 

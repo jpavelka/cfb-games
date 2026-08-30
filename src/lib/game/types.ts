@@ -94,11 +94,14 @@ export interface GameSituation {
 	/** Team id of the team with possession. */
 	possessionTeamId?: string;
 	/**
-	 * `true` when `possessionTeamId` wasn't reported by ESPN and was instead inferred
-	 * from the kickoff following the last scoring play (see `transform.ts`). A
-	 * prediction of who receives, not a confirmed snap — wrong on an onside kick.
+	 * Set when `possessionTeamId` wasn't reported by ESPN and was instead inferred
+	 * (see `transform.ts`):
+	 * - `'after-score'`: a prediction of who receives the coming kickoff, not a
+	 *   confirmed snap — wrong on an onside kick recovered by the kicking team.
+	 * - `'timeout'`: the team already on offense before the timeout, carried
+	 *   forward — much lower-risk than the after-score guess.
 	 */
-	possessionInferred?: boolean;
+	possessionInferredReason?: 'after-score' | 'timeout';
 	isRedZone?: boolean;
 	/** Text description of the most recent play. */
 	lastPlay?: string;

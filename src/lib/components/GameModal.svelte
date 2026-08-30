@@ -48,6 +48,13 @@
 		}
 	});
 
+	function possessionTitle(hasPossession: boolean, reason: 'after-score' | 'timeout' | undefined) {
+		if (!hasPossession) return undefined;
+		if (reason === 'after-score') return 'Likely receiving the kickoff';
+		if (reason === 'timeout') return 'Has possession (unconfirmed, inferred from timeout)';
+		return 'Has possession';
+	}
+
 	const showScore = $derived(
 		game ? game.status.state !== 'pre' && !game.status.canceled && !game.status.postponed : false
 	);
@@ -165,11 +172,12 @@
 							{#if isLive}
 								<span
 									class="possessionIcon"
-									title={game.teams[0].id === game.situation?.possessionTeamId
-										? game.situation?.possessionInferred
-											? 'Likely receiving the kickoff'
-											: 'Has possession'
-										: undefined}
+									class:after-score={game.teams[0].id === game.situation?.possessionTeamId &&
+										game.situation?.possessionInferredReason === 'after-score'}
+									title={possessionTitle(
+										game.teams[0].id === game.situation?.possessionTeamId,
+										game.situation?.possessionInferredReason
+									)}
 								>
 									{game.teams[0].id === game.situation?.possessionTeamId ? '🏈' : ''}
 								</span>
@@ -184,11 +192,12 @@
 							{#if isLive}
 								<span
 									class="possessionIcon"
-									title={game.teams[1].id === game.situation?.possessionTeamId
-										? game.situation?.possessionInferred
-											? 'Likely receiving the kickoff'
-											: 'Has possession'
-										: undefined}
+									class:after-score={game.teams[1].id === game.situation?.possessionTeamId &&
+										game.situation?.possessionInferredReason === 'after-score'}
+									title={possessionTitle(
+										game.teams[1].id === game.situation?.possessionTeamId,
+										game.situation?.possessionInferredReason
+									)}
 								>
 									{game.teams[1].id === game.situation?.possessionTeamId ? '🏈' : ''}
 								</span>
@@ -759,6 +768,11 @@
 		width: 1.2em;
 		font-size: var(--text-lg);
 		text-align: center;
+	}
+
+	/* A prediction of who receives the coming kickoff, not a confirmed snap. */
+	.possessionIcon.after-score {
+		opacity: 0.55;
 	}
 
 	.score {
