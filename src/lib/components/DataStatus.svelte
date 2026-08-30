@@ -13,11 +13,17 @@
 		return () => clearInterval(interval);
 	});
 
-	// Once the backend's own scheduled check time has passed, a click is
-	// guaranteed to actually fetch something new — `load.ts`'s `isFresh()` stops
-	// trusting its cache at this exact same threshold — so this is the moment to
-	// turn the passive countdown into a clickable refresh.
-	const isDue = $derived(dataStatus.nextRefreshAt !== null && now.getTime() >= dataStatus.nextRefreshAt.getTime());
+	/** Matches `formatNextRefresh`'s own "refresh for new data" lag. */
+	const DUE_LAG_MS = 3_000;
+
+	// Once the backend's own scheduled check time has passed (plus a few
+	// seconds' grace — `load.ts`'s `isFresh()` stops trusting its cache at the
+	// unlagged threshold, so a click here is guaranteed to fetch something new
+	// well before this fires), turn the passive countdown into a clickable
+	// refresh — right as its label flips to "Refresh for new data", not before.
+	const isDue = $derived(
+		dataStatus.nextRefreshAt !== null && now.getTime() >= dataStatus.nextRefreshAt.getTime() + DUE_LAG_MS
+	);
 
 	let refreshing = $state(false);
 
