@@ -310,19 +310,6 @@
 						</dd>
 					</div>
 				{/if}
-				{#if showScore}
-					<div>
-						<dt>{isLive ? 'Live surprise score' : 'Surprise score'}</dt>
-						<dd>
-							<span class="scoreBadge">
-								<img class="scoreIcon" src={surpriseIcon} alt="" />
-								<span class="matchupScore" style:background={surpriseScoreColor(surprise ?? 0)}
-									>{surprise ?? '–'}</span
-								>
-							</span>
-						</dd>
-					</div>
-				{/if}
 				{#if isLive}
 					<div>
 						<dt>Situation score</dt>
@@ -336,6 +323,19 @@
 								/>
 								<span class="matchupScore" style:background={situationScoreColor(situation ?? 0)}
 									>{situation ?? '–'}</span
+								>
+							</span>
+						</dd>
+					</div>
+				{/if}
+				{#if showScore}
+					<div>
+						<dt>{'Surprise score'}</dt>
+						<dd>
+							<span class="scoreBadge">
+								<img class="scoreIcon" src={surpriseIcon} alt="" />
+								<span class="matchupScore" style:background={surpriseScoreColor(surprise ?? 0)}
+									>{surprise ?? '–'}</span
 								>
 							</span>
 						</dd>

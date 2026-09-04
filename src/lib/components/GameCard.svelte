@@ -143,7 +143,7 @@
 			</span>
 		{/if}
 		{#if showScore}
-			<span class="scoreBadge" title={isLive ? 'Live surprise score' : 'Surprise score'}>
+			<span class="scoreBadge" title={'Surprise score'}>
 				<img class="scoreIcon" src={surpriseIcon} alt="" />
 				<span class="matchupScore" style:background={surpriseScoreColor(surprise ?? 0)}
 					>{surprise ?? '–'}</span

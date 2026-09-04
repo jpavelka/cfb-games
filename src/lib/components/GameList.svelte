@@ -209,7 +209,7 @@
 
 		{#if section.key === 'current'}
 			<div class="sortToggle">
-				<span>Sort by</span>
+				<span class="sortLabel">Sort:</span>
 				<label class="radio">
 					<input
 						type="radio"
@@ -308,7 +308,7 @@
 
 		{#if section.key === 'upcoming'}
 			<div class="sortToggle">
-				<span>Sort by</span>
+				<span class="sortLabel">Sort:</span>
 				<label class="radio">
 					<input
 						type="radio"
@@ -334,7 +334,7 @@
 
 		{#if section.key === 'completed'}
 			<div class="sortToggle">
-				<span>Sort by</span>
+				<span class="sortLabel">Sort:</span>
 				<label class="radio">
 					<input
 						type="radio"
@@ -476,7 +476,7 @@
 		display: flex;
 		flex-wrap: wrap;
 		align-items: center;
-		gap: var(--space-3);
+		gap: 0.8rem;
 		margin-bottom: var(--space-3);
 		color: var(--color-text-muted);
 		font-size: var(--text-sm);
@@ -485,8 +485,14 @@
 	.sortToggle .radio {
 		display: flex;
 		align-items: center;
-		gap: var(--space-1);
+		gap: 0.3rem;
 		cursor: pointer;
+	}
+
+	.sortToggle .radio input[type='radio'] {
+		margin: 0;
+		position: relative;
+		top: -1px;
 	}
 
 	.mixRow {
