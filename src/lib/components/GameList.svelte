@@ -128,10 +128,6 @@
 	);
 	const DAY_GROUPABLE = new Set(['upcoming', 'completed']);
 
-	// Every day starts ungrouped by kickoff time except today's, which starts
-	// grouped (kickoff time matters most for a game that's about to start or
-	// already underway); a day only needs an entry here once its own checkbox
-	// is toggled away from that default.
 	const todayKey = localDayKey(new Date());
 
 	// Each day-groupable section (Upcoming, Completed) has its own independent
@@ -420,13 +416,13 @@
 					<label class="toggle timeToggle">
 						<input
 							type="checkbox"
-							checked={groupedByTime[stateKey] ?? day.key === todayKey}
+							checked={groupedByTime[stateKey] ?? false}
 							onchange={(event) => (groupedByTime[stateKey] = event.currentTarget.checked)}
 						/>
 						Group by Time of Day
 					</label>
 
-					{#if !(groupedByTime[stateKey] ?? day.key === todayKey)}
+					{#if !(groupedByTime[stateKey] ?? false)}
 						{@render gamesList(day.games, false)}
 					{:else}
 						{#each day.slots as slot (slot.key)}
