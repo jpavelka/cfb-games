@@ -1,0 +1,1 @@
+import{t as e}from"./Czm9rQs8.js";import{C as t,E as n}from"./BAh7ZQRD.js";function r(e,t=new Date){return n(t)<=e?`week0`:`week1`}function i(n,r,i){let a=i===e;return{...n,games:n.games.filter(e=>t(e)<=r===a),week:{...n.week,label:a?`Week 0`:`Week 1`,weekNumber:a?0:n.week.weekNumber,slug:i}}}export{i as n,r as t};
