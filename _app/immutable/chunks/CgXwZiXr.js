@@ -1,0 +1,1 @@
+import{d as e}from"./CAYya9iK.js";function t(t,n){throw new e(t,n)}export{t};

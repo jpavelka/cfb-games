@@ -1,0 +1,1 @@
+var e=/^week([1-9]\d?)$/,t=`week0`;function n(t){if(t===`bowls`)return{week:1,seasonType:3};if(t===`playoff`)return{week:999,seasonType:3};if(t===`week0`)return{week:1,seasonType:2};let n=e.exec(t);return n?{week:Number(n[1]),seasonType:2}:null}export{n,t};
