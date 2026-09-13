@@ -128,8 +128,11 @@ function metricScore(metric: InterestMetric, game: Game, ratings: RatingMap): nu
 
 /**
  * The score `sortByInterest` compares on: `metric`, boosted for favorite teams
- * when `favorites.handling` is `'boost'`. A TBD side (`null` score) can't be
- * boosted — there's no team to be a favorite of yet.
+ * when `favorites.handling` is `'boost'` — but only when `metric` is
+ * `'matchup'`. The boost is a matchup-score boost, not a general favorites
+ * boost, so it never applies to a `'surprise'` or `'situation'` sort. A TBD
+ * side (`null` score) can't be boosted — there's no team to be a favorite of
+ * yet.
  */
 function sortScore(
 	metric: InterestMetric,
@@ -138,7 +141,7 @@ function sortScore(
 	favorites: FavoriteSort | undefined
 ): number | null {
 	const base = metricScore(metric, game, ratings);
-	if (base === null || favorites?.handling !== 'boost') return base;
+	if (base === null || metric !== 'matchup' || favorites?.handling !== 'boost') return base;
 	return isFavoriteGame(game, favorites.teamIds) ? base + favorites.boostAmount : base;
 }
 
@@ -156,29 +159,39 @@ export interface CurrentScoreWeights {
 }
 
 /**
+ * The `matchupScore` component used when blending scores, boosted for
+ * favorite teams before it's weighted in — so the boost affects only the
+ * matchup share of a blend, not `surpriseScore`/`situationScore`. A TBD side
+ * (`null` score) can't be boosted — there's no team to be a favorite of yet.
+ */
+function boostedMatchupScore(
+	game: Game,
+	ratings: RatingMap,
+	favorites: FavoriteSort | undefined
+): number | null {
+	const matchup = matchupScore(game, ratings);
+	if (matchup === null || favorites?.handling !== 'boost') return matchup;
+	return isFavoriteGame(game, favorites.teamIds) ? matchup + favorites.boostAmount : matchup;
+}
+
+/**
  * `weights.matchup * matchupScore + weights.surprise * surpriseScore`. A null
  * component (a TBD side, or no odds data to compute a surprise score) counts
  * as `0` rather than dropping the game, so a game missing just one score
  * still sorts by whichever it has. `null` only when both are null — nothing
- * at all to rank the game on.
+ * at all to rank the game on. `favorites` boosts only the `matchup` term, not
+ * `surprise` — see `boostedMatchupScore`.
  */
-function combinedScore(game: Game, ratings: RatingMap, weights: ScoreWeights): number | null {
-	const matchup = matchupScore(game, ratings);
-	const surprise = surpriseScore(game);
-	if (matchup === null && surprise === null) return null;
-	return weights.matchup * (matchup ?? 0) + weights.surprise * (surprise ?? 0);
-}
-
-/** `combinedScore`, boosted for favorite teams — mirrors `sortScore`. */
-function combinedSortScore(
+function combinedScore(
 	game: Game,
 	ratings: RatingMap,
 	weights: ScoreWeights,
-	favorites: FavoriteSort | undefined
+	favorites?: FavoriteSort
 ): number | null {
-	const base = combinedScore(game, ratings, weights);
-	if (base === null || favorites?.handling !== 'boost') return base;
-	return isFavoriteGame(game, favorites.teamIds) ? base + favorites.boostAmount : base;
+	const matchup = boostedMatchupScore(game, ratings, favorites);
+	const surprise = surpriseScore(game);
+	if (matchup === null && surprise === null) return null;
+	return weights.matchup * (matchup ?? 0) + weights.surprise * (surprise ?? 0);
 }
 
 /**
@@ -188,14 +201,17 @@ function combinedSortScore(
  * a normalized split, but that's fine: only their size relative to each
  * other affects sort order. A null component (no live win-probability data
  * yet, a TBD side, no odds to compute a surprise score) counts as `0` rather
- * than dropping the game. `null` only when all three are null.
+ * than dropping the game. `null` only when all three are null. `favorites`
+ * boosts only the `matchup` term, not `situation`/`surprise` — see
+ * `boostedMatchupScore`.
  */
 function combinedCurrentScore(
 	game: Game,
 	ratings: RatingMap,
-	weights: CurrentScoreWeights
+	weights: CurrentScoreWeights,
+	favorites?: FavoriteSort
 ): number | null {
-	const matchup = matchupScore(game, ratings);
+	const matchup = boostedMatchupScore(game, ratings, favorites);
 	const situation = situationScore(game);
 	const surprise = surpriseScore(game) ?? liveSurpriseScore(game);
 	if (matchup === null && situation === null && surprise === null) return null;
@@ -204,18 +220,6 @@ function combinedCurrentScore(
 		weights.situation * (situation ?? 0) +
 		weights.surprise * (surprise ?? 0)
 	);
-}
-
-/** `combinedCurrentScore`, boosted for favorite teams — mirrors `sortScore`. */
-function combinedCurrentSortScore(
-	game: Game,
-	ratings: RatingMap,
-	weights: CurrentScoreWeights,
-	favorites: FavoriteSort | undefined
-): number | null {
-	const base = combinedCurrentScore(game, ratings, weights);
-	if (base === null || favorites?.handling !== 'boost') return base;
-	return isFavoriteGame(game, favorites.teamIds) ? base + favorites.boostAmount : base;
 }
 
 /**
@@ -288,8 +292,8 @@ export function sortByCombinedScore(
 			if (favA !== favB) return favA ? -1 : 1;
 		}
 
-		const scoreA = combinedSortScore(a, ratings, weights, favorites);
-		const scoreB = combinedSortScore(b, ratings, weights, favorites);
+		const scoreA = combinedScore(a, ratings, weights, favorites);
+		const scoreB = combinedScore(b, ratings, weights, favorites);
 		if (scoreA !== scoreB) {
 			if (scoreA === null) return 1;
 			if (scoreB === null) return -1;
@@ -318,8 +322,8 @@ export function sortByCombinedCurrentScore(
 			if (favA !== favB) return favA ? -1 : 1;
 		}
 
-		const scoreA = combinedCurrentSortScore(a, ratings, weights, favorites);
-		const scoreB = combinedCurrentSortScore(b, ratings, weights, favorites);
+		const scoreA = combinedCurrentScore(a, ratings, weights, favorites);
+		const scoreB = combinedCurrentScore(b, ratings, weights, favorites);
 		if (scoreA !== scoreB) {
 			if (scoreA === null) return 1;
 			if (scoreB === null) return -1;

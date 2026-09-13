@@ -49,6 +49,13 @@ export interface SettingsState {
 	 * since only their relative size affects the sort order.
 	 */
 	currentSortWeights: CurrentScoreWeights;
+	/**
+	 * When true, hides the Custom-mode sliders (Completed's mix slider and
+	 * Current's three weight sliders) instead of rendering them, so they
+	 * can't be bumped by an accidental touch while scrolling on mobile.
+	 * The underlying weights are unaffected — this only toggles visibility.
+	 */
+	lockCustomSliders: boolean;
 }
 
 const STORAGE_KEY = 'cfb:settings';
@@ -65,7 +72,8 @@ const DEFAULTS: SettingsState = {
 	customSortMix: 50,
 	upcomingSortMode: 'matchup',
 	currentSortMode: 'situation',
-	currentSortWeights: { matchup: 50, situation: 50, surprise: 50 }
+	currentSortWeights: { matchup: 50, situation: 50, surprise: 50 },
+	lockCustomSliders: false
 };
 
 /**

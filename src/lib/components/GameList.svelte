@@ -242,13 +242,23 @@
 						name="currentSortMode"
 						value="custom"
 						checked={settings.currentSortMode === 'custom'}
-						onchange={() => updateSettings({ currentSortMode: 'custom' })}
+						onchange={() =>
+							updateSettings({ currentSortMode: 'custom', lockCustomSliders: false })}
 					/>
 					Custom
 				</label>
+				{#if settings.currentSortMode === 'custom'}
+					<button
+						type="button"
+						class="sliderLockToggle"
+						onclick={() => updateSettings({ lockCustomSliders: !settings.lockCustomSliders })}
+					>
+						{settings.lockCustomSliders ? 'Edit' : 'Hide sliders'}
+					</button>
+				{/if}
 			</div>
 
-			{#if settings.currentSortMode === 'custom'}
+			{#if settings.currentSortMode === 'custom' && !settings.lockCustomSliders}
 				<div class="weightSliders">
 					<div class="weightRow">
 						<span class="weightLabel">
@@ -357,13 +367,23 @@
 						name="completedSortMode"
 						value="custom"
 						checked={settings.completedSortMode === 'custom'}
-						onchange={() => updateSettings({ completedSortMode: 'custom' })}
+						onchange={() =>
+							updateSettings({ completedSortMode: 'custom', lockCustomSliders: false })}
 					/>
 					Custom
 				</label>
+				{#if settings.completedSortMode === 'custom'}
+					<button
+						type="button"
+						class="sliderLockToggle"
+						onclick={() => updateSettings({ lockCustomSliders: !settings.lockCustomSliders })}
+					>
+						{settings.lockCustomSliders ? 'Edit' : 'Hide sliders'}
+					</button>
+				{/if}
 			</div>
 
-			{#if settings.completedSortMode === 'custom'}
+			{#if settings.completedSortMode === 'custom' && !settings.lockCustomSliders}
 				<div class="mixRow">
 					<span class="mixLabel">
 						<img class="scoreIcon" src={matchupIcon} alt="" />
@@ -461,6 +481,17 @@
 		margin-bottom: var(--space-3);
 		color: var(--color-text-muted);
 		font-size: var(--text-sm);
+		cursor: pointer;
+	}
+
+	.sliderLockToggle {
+		margin: 0;
+		padding: 0;
+		border: none;
+		background: none;
+		color: var(--color-accent);
+		font-size: var(--text-sm);
+		text-decoration: underline;
 		cursor: pointer;
 	}
 

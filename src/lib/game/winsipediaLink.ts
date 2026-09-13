@@ -6,10 +6,7 @@ import type { Game } from './types';
  * `connecticut`, both Miamis are disambiguated as `miami-fl`/`miami-oh`), so
  * this has to be a hand-built table rather than a slugify of `location`.
  * Covers FBS (winsipedia.com/team) and FCS (winsipedia.com/team?division=fcs)
- * as of 2026-08. Two ESPN-listed FCS teams have no Winsipedia page yet and
- * are simply missing from this table rather than in `EXCLUDED_TEAM_IDS`:
- * Chicago State and West Florida, both new to Division I this season — a
- * real gap Winsipedia should close once it catches up, not a permanent one.
+ * as of 2026-09.
  *
  * Exported so `scripts/check-winsipedia-slugs.ts` can diff this table against
  * the current `teams.json` and flag drift (promotions, relegations, program
@@ -197,6 +194,7 @@ export const SLUGS: Record<string, string> = {
 	'331': 'eastern-washington',
 	'399': 'albany',
 	'2000': 'abilene-christian',
+	'2130': 'chicago-state',
 	'2010': 'alabama-am',
 	'2011': 'alabama-state',
 	'2016': 'alcorn-state',
@@ -282,7 +280,8 @@ export const SLUGS: Record<string, string> = {
 	'2837': 'texas-am-commerce',
 	'2900': 'saint-thomas',
 	'2916': 'incarnate-word',
-	'3101': 'utah-tech'
+	'3101': 'utah-tech',
+	'110242': 'west-florida'
 };
 
 /**
