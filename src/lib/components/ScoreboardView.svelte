@@ -97,7 +97,7 @@
 {:then [board, currentWeek]}
 	{@const filteredGames = filterByBroadcastAccess(
 		filterByTeamCategory(
-			filterByMinScore(filterByTeam(board.games, search), ratings, settings.minMatchupScore),
+			filterByMinScore(filterByTeam(board.games, search, conferences), ratings, settings.minMatchupScore),
 			settings.teamFilter
 		),
 		settings.accessibleBroadcasts,
@@ -115,8 +115,8 @@
 		<input
 			class="search"
 			type="search"
-			placeholder="Search teams or events…"
-			aria-label="Search teams or events"
+			placeholder="Search teams, conferences, or events…"
+			aria-label="Search teams, conferences, or events"
 			bind:value={search}
 		/>
 	</div>

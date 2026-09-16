@@ -1,4 +1,4 @@
-import { isPower4Team } from './conferences';
+import { isPower4Team, type ConferenceMap } from './conferences';
 import { matchupScore, type RatingMap } from './ratings';
 import type { TeamFilter } from './settings.svelte';
 import type { Game, GameTeam } from './types';
@@ -9,6 +9,18 @@ function teamMatches(team: GameTeam, query: string): boolean {
 		team.displayName.toLowerCase().includes(query) ||
 		team.abbreviation.toLowerCase().includes(query) ||
 		(team.name?.toLowerCase().includes(query) ?? false)
+	);
+}
+
+/** Matches a team's conference by name, short name, or abbreviation (e.g. "SEC", "Big Ten"). */
+function conferenceMatches(team: GameTeam, query: string, conferences: ConferenceMap): boolean {
+	if (!team.conferenceId) return false;
+	const conference = conferences.get(team.conferenceId);
+	if (!conference) return false;
+	return (
+		conference.name.toLowerCase().includes(query) ||
+		conference.shortName.toLowerCase().includes(query) ||
+		conference.abbreviation.toLowerCase().includes(query)
 	);
 }
 
@@ -26,14 +38,19 @@ function eventMatches(eventName: string | undefined, query: string): boolean {
 }
 
 /**
- * Games matching `query` (case-insensitive substring) against either team or the
- * event name (e.g. "Rose Bowl", "CFP"). Blank query passes everything through.
+ * Games matching `query` (case-insensitive substring) against a team, its
+ * conference (e.g. "SEC", "Big Ten"), or the event name (e.g. "Rose Bowl",
+ * "CFP"). Blank query passes everything through. `conferences` is optional
+ * since not every caller has it loaded; omitting it just skips conference
+ * matching.
  */
-export function filterByTeam(games: readonly Game[], query: string): Game[] {
+export function filterByTeam(games: readonly Game[], query: string, conferences: ConferenceMap = new Map()): Game[] {
 	const trimmed = query.trim().toLowerCase();
 	if (!trimmed) return [...games];
 	return games.filter(
-		(game) => game.teams.some((team) => teamMatches(team, trimmed)) || eventMatches(game.eventName, trimmed)
+		(game) =>
+			game.teams.some((team) => teamMatches(team, trimmed) || conferenceMatches(team, trimmed, conferences)) ||
+			eventMatches(game.eventName, trimmed)
 	);
 }
 
