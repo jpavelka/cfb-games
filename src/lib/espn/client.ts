@@ -81,9 +81,16 @@ export async function fetchScoreboard(
 	}
 
 	if (!response.ok) {
-		throw new EspnFetchError(`ESPN returned HTTP ${response.status}.`, {
-			status: response.status
-		});
+		// Best-effort — a WAF block page's opening text (or an absent body) is useful
+		// evidence for *why* ESPN is refusing this, which a bare status code isn't.
+		const bodySnippet = await response.text().then(
+			(text) => text.slice(0, 300),
+			() => undefined
+		);
+		throw new EspnFetchError(
+			`ESPN returned HTTP ${response.status}.${bodySnippet ? ` Body: ${bodySnippet}` : ''}`,
+			{ status: response.status }
+		);
 	}
 
 	try {

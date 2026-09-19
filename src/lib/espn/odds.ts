@@ -60,9 +60,14 @@ export async function fetchEventOdds(
 
 	if (!response.ok) {
 		if (response.status === 404) return null;
-		throw new EspnFetchError(`ESPN core API odds returned HTTP ${response.status}.`, {
-			status: response.status
-		});
+		const bodySnippet = await response.text().then(
+			(text) => text.slice(0, 300),
+			() => undefined
+		);
+		throw new EspnFetchError(
+			`ESPN core API odds returned HTTP ${response.status}.${bodySnippet ? ` Body: ${bodySnippet}` : ''}`,
+			{ status: response.status }
+		);
 	}
 
 	const data = (await response.json()) as EspnCoreOddsResponse;
