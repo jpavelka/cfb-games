@@ -32,6 +32,8 @@ export interface GameStatus {
 	/** ESPN reports these as `post` with a telltale description; decoded here. */
 	canceled: boolean;
 	postponed: boolean;
+	/** e.g. a weather delay — game is `in` but not actually being played right now. */
+	delayed: boolean;
 }
 
 export interface GameTeam {

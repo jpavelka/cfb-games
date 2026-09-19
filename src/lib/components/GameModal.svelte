@@ -142,6 +142,9 @@
 			<p class="conferenceGame">{conferenceContext}</p>
 
 			<p class="status" class:live={isLive}>{statusLine}</p>
+			{#if isLive && game.status.delayed}
+				<p class="delayedNotice">Delayed</p>
+			{/if}
 
 			<div class="teams">
 				{#each game.teams as team, i (team.homeAway)}
@@ -508,6 +511,17 @@
 
 	.status.live {
 		color: var(--color-live);
+	}
+
+	.delayedNotice {
+		margin: 0 0 var(--space-3);
+		padding-inline: 2.5rem;
+		color: var(--color-warning-text);
+		font-size: var(--text-sm);
+		font-weight: 600;
+		text-align: center;
+		text-transform: uppercase;
+		letter-spacing: 0.03em;
 	}
 
 	.teams {

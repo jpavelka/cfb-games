@@ -85,7 +85,11 @@ function toStatus(status: EspnStatus | undefined): GameStatus {
 		// ESPN folds cancellations and postponements into `post` and only distinguishes
 		// them in the human-readable description.
 		canceled: state === 'post' && /^cancel/i.test(description),
-		postponed: state === 'post' && /^postpon/i.test(description)
+		postponed: state === 'post' && /^postpon/i.test(description),
+		// Unlike cancellations/postponements, ESPN gives delays their own stable
+		// status name (`STATUS_DELAYED`) rather than folding them into an existing
+		// state, so this doesn't need a description regex.
+		delayed: type?.name === 'STATUS_DELAYED'
 	};
 }
 

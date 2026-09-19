@@ -15,7 +15,13 @@
 		type RatingMap,
 		type ScoreWeights
 	} from '$lib/game/ratings';
-	import { isDarkMode, settings, updateSettings } from '$lib/game/settings.svelte';
+	import {
+		isDarkMode,
+		settings,
+		updateSettings,
+		type CompletedSortMode,
+		type CurrentSortMode
+	} from '$lib/game/settings.svelte';
 	import { groupByDay as buildDays, groupByStatus, localDayKey, sortGames } from '$lib/game/sort';
 	import type { Game } from '$lib/game/types';
 
@@ -102,6 +108,73 @@
 				...settings.currentSortWeights,
 				[metric]: Math.min(100, Math.max(0, parsed))
 			}
+		});
+	}
+
+	// The sliders auto-expand (forcing `lockCustomSliders` off) so new users
+	// can find them, but re-expanding every time someone briefly flips to
+	// another mode and back is annoying. So they only pop back open if it's
+	// been at least this long since custom sort was last used; a quicker
+	// round trip just pulses the Edit button instead, since the sliders'
+	// hidden/shown state was probably a deliberate choice moments ago.
+	const CUSTOM_SORT_REEXPAND_MS = 10 * 60 * 1000;
+	let pulseCurrentEdit = $state(false);
+	let pulseCompletedEdit = $state(false);
+
+	function pulseEditButton(which: 'current' | 'completed'): void {
+		if (which === 'current') {
+			pulseCurrentEdit = true;
+			setTimeout(() => (pulseCurrentEdit = false), 900);
+		} else {
+			pulseCompletedEdit = true;
+			setTimeout(() => (pulseCompletedEdit = false), 900);
+		}
+	}
+
+	function wasCustomSortRecentlyUsed(): boolean {
+		const lastUsed = settings.customSortLastUsedAt;
+		return lastUsed !== null && Date.now() - lastUsed < CUSTOM_SORT_REEXPAND_MS;
+	}
+
+	function switchCurrentSortMode(mode: CurrentSortMode): void {
+		if (mode === 'custom') {
+			if (wasCustomSortRecentlyUsed()) {
+				updateSettings({ currentSortMode: 'custom' });
+				if (settings.lockCustomSliders) pulseEditButton('current');
+			} else {
+				updateSettings({
+					currentSortMode: 'custom',
+					lockCustomSliders: false,
+					customSortLastUsedAt: Date.now()
+				});
+			}
+			return;
+		}
+		const leavingCustom = settings.currentSortMode === 'custom';
+		updateSettings({
+			currentSortMode: mode,
+			...(leavingCustom ? { customSortLastUsedAt: Date.now() } : {})
+		});
+	}
+
+	function switchCompletedSortMode(mode: CompletedSortMode): void {
+		if (mode === 'custom') {
+			if (wasCustomSortRecentlyUsed()) {
+				updateSettings({ completedSortMode: 'custom' });
+				if (settings.lockCustomSliders) pulseEditButton('completed');
+			} else {
+				updateSettings({
+					completedSortMode: 'custom',
+					lockCustomSliders: false,
+					customSortLastUsedAt: Date.now()
+				});
+			}
+			return;
+		}
+		const leavingCustom = settings.completedSortMode === 'custom';
+		updateSettings({
+			completedSortMode: mode,
+			...(leavingCustom ? { customSortLastUsedAt: Date.now() } : {})
 		});
 	}
 
@@ -212,7 +285,7 @@
 						name="currentSortMode"
 						value="matchup"
 						checked={settings.currentSortMode === 'matchup'}
-						onchange={() => updateSettings({ currentSortMode: 'matchup' })}
+						onchange={() => switchCurrentSortMode('matchup')}
 					/>
 					Matchup
 				</label>
@@ -222,7 +295,7 @@
 						name="currentSortMode"
 						value="situation"
 						checked={settings.currentSortMode === 'situation'}
-						onchange={() => updateSettings({ currentSortMode: 'situation' })}
+						onchange={() => switchCurrentSortMode('situation')}
 					/>
 					Situation
 				</label>
@@ -232,7 +305,7 @@
 						name="currentSortMode"
 						value="surprise"
 						checked={settings.currentSortMode === 'surprise'}
-						onchange={() => updateSettings({ currentSortMode: 'surprise' })}
+						onchange={() => switchCurrentSortMode('surprise')}
 					/>
 					Surprise
 				</label>
@@ -242,8 +315,7 @@
 						name="currentSortMode"
 						value="custom"
 						checked={settings.currentSortMode === 'custom'}
-						onchange={() =>
-							updateSettings({ currentSortMode: 'custom', lockCustomSliders: false })}
+						onchange={() => switchCurrentSortMode('custom')}
 					/>
 					Custom
 				</label>
@@ -251,6 +323,7 @@
 					<button
 						type="button"
 						class="sliderLockToggle"
+						class:pulse={pulseCurrentEdit}
 						onclick={() => updateSettings({ lockCustomSliders: !settings.lockCustomSliders })}
 					>
 						{settings.lockCustomSliders ? 'Edit' : 'Hide sliders'}
@@ -347,7 +420,7 @@
 						name="completedSortMode"
 						value="matchup"
 						checked={settings.completedSortMode === 'matchup'}
-						onchange={() => updateSettings({ completedSortMode: 'matchup' })}
+						onchange={() => switchCompletedSortMode('matchup')}
 					/>
 					Matchup
 				</label>
@@ -357,7 +430,7 @@
 						name="completedSortMode"
 						value="surprise"
 						checked={settings.completedSortMode === 'surprise'}
-						onchange={() => updateSettings({ completedSortMode: 'surprise' })}
+						onchange={() => switchCompletedSortMode('surprise')}
 					/>
 					Surprise
 				</label>
@@ -367,8 +440,7 @@
 						name="completedSortMode"
 						value="custom"
 						checked={settings.completedSortMode === 'custom'}
-						onchange={() =>
-							updateSettings({ completedSortMode: 'custom', lockCustomSliders: false })}
+						onchange={() => switchCompletedSortMode('custom')}
 					/>
 					Custom
 				</label>
@@ -376,6 +448,7 @@
 					<button
 						type="button"
 						class="sliderLockToggle"
+						class:pulse={pulseCompletedEdit}
 						onclick={() => updateSettings({ lockCustomSliders: !settings.lockCustomSliders })}
 					>
 						{settings.lockCustomSliders ? 'Edit' : 'Hide sliders'}
@@ -493,6 +566,20 @@
 		font-size: var(--text-sm);
 		text-decoration: underline;
 		cursor: pointer;
+	}
+
+	.sliderLockToggle.pulse {
+		animation: sliderLockTogglePulse 0.9s ease-in-out 1;
+	}
+
+	@keyframes sliderLockTogglePulse {
+		0%,
+		100% {
+			transform: scale(1);
+		}
+		50% {
+			transform: scale(1.12);
+		}
 	}
 
 	.timeToggle {

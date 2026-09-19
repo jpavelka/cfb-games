@@ -110,7 +110,9 @@
 			<span class="date">{formatGameDate(game)}</span>
 		{/if}
 		<span class="kickoff">{showScore ? statusLine : formatKickoffTime(game)}</span>
-		{#if fieldPosition}
+		{#if isLive && game.status.delayed}
+			<p class="downDistance delayed">Delayed</p>
+		{:else if fieldPosition}
 			<p class="downDistance">
 				{#if downOrdinal}
 					{downOrdinal.number}<sup class="ordinal">{downOrdinal.suffix}</sup>{downOrdinal.rest}
@@ -511,6 +513,12 @@
 		margin: 0;
 		font-size: var(--text-xs);
 		font-weight: 600;
+	}
+
+	.downDistance.delayed {
+		color: var(--color-warning-text);
+		text-transform: uppercase;
+		letter-spacing: 0.03em;
 	}
 
 	.ordinal {

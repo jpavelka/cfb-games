@@ -56,6 +56,15 @@ export interface SettingsState {
 	 * The underlying weights are unaffected — this only toggles visibility.
 	 */
 	lockCustomSliders: boolean;
+	/**
+	 * Epoch ms of the last time either section's sort mode was `'custom'`
+	 * (set on entering custom mode, and refreshed on leaving it so a brief
+	 * round trip through another mode still counts as recent use). `null`
+	 * means custom sort has never been used. Switching into custom mode
+	 * only force-shows the sliders (resetting `lockCustomSliders`) when this
+	 * is `null` or more than ten minutes old — see `GameList.svelte`.
+	 */
+	customSortLastUsedAt: number | null;
 }
 
 const STORAGE_KEY = 'cfb:settings';
@@ -73,7 +82,8 @@ const DEFAULTS: SettingsState = {
 	upcomingSortMode: 'matchup',
 	currentSortMode: 'situation',
 	currentSortWeights: { matchup: 50, situation: 50, surprise: 50 },
-	lockCustomSliders: false
+	lockCustomSliders: false,
+	customSortLastUsedAt: null
 };
 
 /**

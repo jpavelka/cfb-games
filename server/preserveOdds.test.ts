@@ -24,6 +24,7 @@ function makeStatus(overrides: Partial<GameStatus> = {}): GameStatus {
 		shortDetail: '',
 		canceled: false,
 		postponed: false,
+		delayed: false,
 		...overrides
 	};
 }
@@ -61,7 +62,8 @@ function makeStoredGame(overrides: Partial<StoredGame> = {}): StoredGame {
 			description: '',
 			shortDetail: '',
 			canceled: false,
-			postponed: false
+			postponed: false,
+			delayed: false
 		},
 		away: { id: 'away', homeAway: 'away' },
 		home: { id: 'home', homeAway: 'home' },

@@ -41,6 +41,7 @@ export interface StoredGameStatus {
 	displayClock?: string;
 	canceled: boolean;
 	postponed: boolean;
+	delayed: boolean;
 }
 
 export interface StoredTeamFallback {
@@ -177,7 +178,8 @@ function toStoredGame(game: Game, knownTeamIds: Set<string>): StoredGame {
 			period: game.status.period,
 			displayClock: game.status.displayClock,
 			canceled: game.status.canceled,
-			postponed: game.status.postponed
+			postponed: game.status.postponed,
+			delayed: game.status.delayed
 		},
 		away,
 		home,

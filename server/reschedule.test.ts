@@ -26,6 +26,7 @@ function makeStatus(overrides: Partial<GameStatus>): GameStatus {
 		shortDetail: '',
 		canceled: false,
 		postponed: false,
+		delayed: false,
 		...overrides
 	};
 }
