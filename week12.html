@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" href="./favicon.jpg" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="text-scale" content="scale" />
+		<script>
+			(function () {
+				try {
+					var raw = localStorage.getItem('cfb:settings');
+					var theme = raw ? JSON.parse(raw).theme : null;
+					if (theme === 'light' || theme === 'dark') {
+						document.documentElement.setAttribute('data-theme', theme);
+					}
+				} catch (e) {}
+			})();
+		</script>
+		<link href="./_app/immutable/entry/start.DBDd2lBu.js" rel="modulepreload">
+		<link href="./_app/immutable/chunks/Al5b_KjD.js" rel="modulepreload">
+		<link href="./_app/immutable/chunks/D7ZCh2jm.js" rel="modulepreload">
+		<link href="./_app/immutable/entry/app.BaZWE1vF.js" rel="modulepreload">
+		<link href="./_app/immutable/chunks/Czm9rQs8.js" rel="modulepreload">
+		<link href="./_app/immutable/chunks/xihTtKlq.js" rel="modulepreload">
+		<link href="./_app/immutable/nodes/0.DJ2i9BFk.js" rel="modulepreload">
+		<link href="./_app/immutable/chunks/B8d0fxve.js" rel="modulepreload">
+		<link href="./_app/immutable/chunks/BPIE_4oI.js" rel="modulepreload">
+		<link href="./_app/immutable/chunks/BAh7ZQRD.js" rel="modulepreload">
+		<link href="./_app/immutable/nodes/2.Cq4OUeAA.js" rel="modulepreload">
+		<link href="./_app/immutable/chunks/D7AYyb-u.js" rel="modulepreload">
+		<link href="./_app/immutable/nodes/4.CH7GLZZN.js" rel="modulepreload">
+		<link href="./_app/immutable/chunks/EJ7-fjsN.js" rel="modulepreload">
+		<link href="./_app/immutable/chunks/CZmNDMdB.js" rel="modulepreload">
+		<link href="./_app/immutable/chunks/XrvoyR3Y.js" rel="modulepreload">
+		
+		<link href="./_app/immutable/assets/0.D636smk_.css" rel="stylesheet">
+		<link href="./_app/immutable/assets/ScoreboardView.C05UMdne.css" rel="stylesheet">
+	</head>
+	<body data-sveltekit-preload-data="hover">
+		<div style="display: contents">
+			<script>
+				{
+					__sveltekit_1htm8za = {
+						base: new URL(".", location).pathname.slice(0, -1),
+						assets: "/cfb-games"
+					};
+
+					const element = document.currentScript.parentElement;
+
+					Promise.all([
+						import("./_app/immutable/entry/start.DBDd2lBu.js"),
+						import("./_app/immutable/entry/app.BaZWE1vF.js")
+					]).then(([kit, app]) => {
+						kit.start(app, element);
+					});
+				}
+			</script>
+		</div>
+	</body>
+</html>
