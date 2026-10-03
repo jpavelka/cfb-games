@@ -1,0 +1,1 @@
+import{d as e}from"./3MT0rgt2.js";function t(t,n){throw new e(t,n)}export{t};
