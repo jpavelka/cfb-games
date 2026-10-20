@@ -1,10 +1,14 @@
+import { PLAYOFF_FILTER_THRESHOLDS } from './playoffOdds';
 import type { SettingsState, TeamFilter } from './settings.svelte';
 
 const TEAM_FILTER_LABELS: Record<Exclude<TeamFilter, 'all'>, string> = {
 	fbs: 'FBS only',
 	fcs: 'FCS only',
 	power4: 'Power 4 only',
-	ranked: 'Ranked teams only'
+	ranked: 'Ranked teams only',
+	playoff: `Playoff odds ${PLAYOFF_FILTER_THRESHOLDS.playoff}%+ only`,
+	playoff25: `Playoff odds ${PLAYOFF_FILTER_THRESHOLDS.playoff25}%+ only`,
+	playoff50: `Playoff odds ${PLAYOFF_FILTER_THRESHOLDS.playoff50}%+ only`
 };
 
 /**

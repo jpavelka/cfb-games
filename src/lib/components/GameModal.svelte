@@ -19,6 +19,7 @@
 		formatWinProbability
 	} from '$lib/format';
 	import type { ConferenceMap } from '$lib/game/conferences';
+	import { formatPlayoffOdds, type PlayoffOddsMap } from '$lib/game/playoffOdds';
 	import { matchupScore, matchupScoreColor, teamStrength, type RatingMap } from '$lib/game/ratings';
 	import { isDarkMode } from '$lib/game/settings.svelte';
 	import { situationScore, situationScoreColor } from '$lib/game/situationScore';
@@ -31,9 +32,15 @@
 		game,
 		onClose,
 		conferences,
-		ratings
-	}: { game: Game | null; onClose: () => void; conferences: ConferenceMap; ratings: RatingMap } =
-		$props();
+		ratings,
+		playoffOdds
+	}: {
+		game: Game | null;
+		onClose: () => void;
+		conferences: ConferenceMap;
+		ratings: RatingMap;
+		playoffOdds: PlayoffOddsMap;
+	} = $props();
 
 	let dialogEl: HTMLDialogElement | undefined = $state();
 
@@ -168,6 +175,11 @@
 								<span class="conference missing fallback-short">Conf not found</span>
 							{/if}
 							<span class="strength">Strength {teamStrength(team, ratings)}</span>
+							{#if playoffOdds.has(team.id)}
+								<span class="strength" title="Chance to make the College Football Playoff (ESPN FPI)">
+									Playoff {formatPlayoffOdds(playoffOdds.get(team.id)!)}
+								</span>
+							{/if}
 						</div>
 					</div>
 					{#if i === 0 && showScore}

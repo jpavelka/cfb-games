@@ -1,5 +1,6 @@
 <script lang="ts">
 	import GameCard from './GameCard.svelte';
+	import type { PlayoffOddsMap } from '$lib/game/playoffOdds';
 	import GameModal from './GameModal.svelte';
 	import matchupIcon from '$lib/assets/matchup.svg';
 	import scoreboardIcon from '$lib/assets/scoreboard.svg';
@@ -28,11 +29,13 @@
 	let {
 		games,
 		conferences,
-		ratings
+		ratings,
+		playoffOdds
 	}: {
 		games: Game[];
 		conferences: ConferenceMap;
 		ratings: RatingMap;
+		playoffOdds: PlayoffOddsMap;
 	} = $props();
 
 	const favorites: FavoriteSort = $derived({
@@ -261,7 +264,7 @@
 {#snippet gamesList(list: Game[], showDate: boolean)}
 	<div class="games">
 		{#each list as game (game.id)}
-			<GameCard {game} {ratings} {showDate} onSelect={(selected) => (selectedGame = selected)} />
+			<GameCard {game} {ratings} {playoffOdds} {showDate} onSelect={(selected) => (selectedGame = selected)} />
 		{/each}
 	</div>
 {/snippet}
@@ -544,7 +547,7 @@
 	</details>
 {/each}
 
-<GameModal game={selectedGame} onClose={() => (selectedGame = null)} {conferences} {ratings} />
+<GameModal game={selectedGame} onClose={() => (selectedGame = null)} {conferences} {ratings} {playoffOdds} />
 
 <style>
 	.toggle {

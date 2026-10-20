@@ -14,6 +14,7 @@
 	} from '$lib/game/filter';
 	import { setDataStatus } from '$lib/game/dataStatus.svelte';
 	import { describeActiveFilters } from '$lib/game/filterSummary';
+	import type { PlayoffOddsMap } from '$lib/game/playoffOdds';
 	import type { RatingMap } from '$lib/game/ratings';
 	import { settings } from '$lib/game/settings.svelte';
 	import { openSettingsModal } from '$lib/game/settingsModal.svelte';
@@ -26,7 +27,8 @@
 		requested = null,
 		isCurrentWeek,
 		conferences,
-		ratings
+		ratings,
+		playoffOdds
 	}: {
 		scoreboard: Promise<Scoreboard>;
 		/**
@@ -49,6 +51,7 @@
 		isCurrentWeek: Promise<boolean>;
 		conferences: ConferenceMap;
 		ratings: RatingMap;
+		playoffOdds: PlayoffOddsMap;
 	} = $props();
 
 	let search = $state('');
@@ -98,7 +101,8 @@
 	{@const filteredGames = filterByBroadcastAccess(
 		filterByTeamCategory(
 			filterByMinScore(filterByTeam(board.games, search, conferences), ratings, settings.minMatchupScore),
-			settings.teamFilter
+			settings.teamFilter,
+			playoffOdds
 		),
 		settings.accessibleBroadcasts,
 		settings.filterByAccessibleBroadcasts
@@ -163,7 +167,7 @@
 			{/if}
 		</p>
 	{:else}
-		<GameList games={filteredGames} {conferences} {ratings} />
+		<GameList games={filteredGames} {conferences} {ratings} {playoffOdds} />
 	{/if}
 {:catch error}
 	<div class="week">

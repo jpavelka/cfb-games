@@ -20,6 +20,7 @@
 	isCurrentWeek={data.isCurrentWeek}
 	conferences={data.conferences}
 	ratings={data.ratings}
+	playoffOdds={data.playoffOdds}
 />
 
 <style>

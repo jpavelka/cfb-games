@@ -1,4 +1,5 @@
 import { isPower4Team, type ConferenceMap } from './conferences';
+import { isPlayoffContender, PLAYOFF_FILTER_THRESHOLDS, type PlayoffOddsMap } from './playoffOdds';
 import { matchupScore, type RatingMap } from './ratings';
 import type { TeamFilter } from './settings.svelte';
 import type { Game, GameTeam } from './types';
@@ -82,7 +83,11 @@ export function filterByBroadcastAccess(
 }
 
 /** Games matching the selected team category. `'all'` passes everything through. */
-export function filterByTeamCategory(games: readonly Game[], category: TeamFilter): Game[] {
+export function filterByTeamCategory(
+	games: readonly Game[],
+	category: TeamFilter,
+	playoffOdds: PlayoffOddsMap = new Map()
+): Game[] {
 	switch (category) {
 		case 'all':
 			return [...games];
@@ -94,5 +99,13 @@ export function filterByTeamCategory(games: readonly Game[], category: TeamFilte
 			return games.filter((game) => game.teams.some((team) => isPower4Team(team)));
 		case 'ranked':
 			return games.filter((game) => game.teams.some((team) => team.rank !== undefined));
+		case 'playoff':
+		case 'playoff25':
+		case 'playoff50': {
+			const threshold = PLAYOFF_FILTER_THRESHOLDS[category];
+			return games.filter((game) =>
+				game.teams.some((team) => isPlayoffContender(team.id, playoffOdds, threshold))
+			);
+		}
 	}
 }

@@ -32,6 +32,11 @@ jobs:
           mkdir -p static/data
           git fetch origin gh-pages && git checkout origin/gh-pages -- data/sagarin.json && mv data/sagarin.json static/data/ || true
 
+      - name: Fetch existing playoff odds
+        run: |
+          mkdir -p static/data
+          git fetch origin gh-pages && git checkout origin/gh-pages -- data/playoff-odds.json && mv data/playoff-odds.json static/data/ || true
+
       - name: Fetch existing week schedule
         run: |
           mkdir -p static/data

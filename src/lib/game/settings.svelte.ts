@@ -1,7 +1,7 @@
 import { browser } from '$app/environment';
 import type { CurrentScoreWeights } from './ratings';
 
-export type TeamFilter = 'all' | 'fbs' | 'fcs' | 'power4' | 'ranked';
+export type TeamFilter = 'all' | 'fbs' | 'fcs' | 'power4' | 'ranked' | 'playoff' | 'playoff25' | 'playoff50';
 
 /** How favorite teams affect sort order: pin their games first, boost their matchup score, or leave sorting alone. */
 export type FavoriteHandling = 'top' | 'boost' | 'none';

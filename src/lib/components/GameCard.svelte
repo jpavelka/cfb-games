@@ -1,6 +1,7 @@
 <script lang="ts">
 	import TeamRow from './TeamRow.svelte';
 	import matchupIcon from '$lib/assets/matchup.svg';
+	import cfpIcon from '$lib/assets/cfp.svg';
 	import scoreboardIcon from '$lib/assets/scoreboard.svg';
 	import surpriseIcon from '$lib/assets/surprised.svg';
 	import {
@@ -15,6 +16,7 @@
 		formatVenue,
 		formatWinProbability
 	} from '$lib/format';
+	import { formatPlayoffOdds, playoffContenders, type PlayoffOddsMap } from '$lib/game/playoffOdds';
 	import { matchupScore, matchupScoreColor, type RatingMap } from '$lib/game/ratings';
 	import { isDarkMode, settings } from '$lib/game/settings.svelte';
 	import { situationScore, situationScoreColor } from '$lib/game/situationScore';
@@ -25,10 +27,16 @@
 	let {
 		game,
 		ratings,
+		playoffOdds,
 		showDate = false,
 		onSelect
-	}: { game: Game; ratings: RatingMap; showDate?: boolean; onSelect: (game: Game) => void } =
-		$props();
+	}: {
+		game: Game;
+		ratings: RatingMap;
+		playoffOdds: PlayoffOddsMap;
+		showDate?: boolean;
+		onSelect: (game: Game) => void;
+	} = $props();
 
 	// Scores only exist once a game has started, and are meaningless for games
 	// that never finished.
@@ -44,6 +52,11 @@
 
 	const meta = $derived([broadcasts, spread].filter((part): part is string => Boolean(part)));
 	const matchup = $derived(matchupScore(game, ratings));
+	const playoffTitle = $derived.by(() => {
+		const contenders = playoffContenders(game, playoffOdds);
+		if (contenders.length === 0) return undefined;
+		return `Playoff implications: ${contenders.map((c) => `${c.location} ${formatPlayoffOdds(c.pct)}`).join(', ')}`;
+	});
 	// `surpriseScore` only returns non-null once a game is final, `liveSurpriseScore`
 	// only while one is in progress — never both, so this always reflects the
 	// game's current state without needing to branch on it here.
@@ -170,8 +183,14 @@
 				/>
 			{/each}
 
-			{#if meta.length}
+			{#if meta.length || playoffTitle}
 				<p class="meta">
+					{#if playoffTitle}<img
+							class="playoffIcon"
+							src={cfpIcon}
+							alt="Playoff implications"
+							title={playoffTitle}
+						/>{/if}
 					{#each meta as part, index (part)}
 						{#if index > 0}<span class="dot">·</span>{/if}{part}
 					{/each}
@@ -384,6 +403,16 @@
 
 	.dot {
 		margin: 0 var(--space-1);
+	}
+
+	/* Sized to the meta line's text, so it adds no height to the card. The global
+	   `img { display: block }` reset (app.css) would otherwise drop it onto its own line. */
+	.playoffIcon {
+		display: inline-block;
+		width: 1em;
+		height: 1em;
+		margin-right: var(--space-1);
+		vertical-align: -0.15em;
 	}
 
 	/*

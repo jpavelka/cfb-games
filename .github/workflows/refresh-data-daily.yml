@@ -1,5 +1,6 @@
 name: Refresh Data (Daily)
-# Regenerates static/data/sagarin.json (see scripts/fetch-sagarin-ratings.ts) and
+# Regenerates static/data/sagarin.json (see scripts/fetch-sagarin-ratings.ts),
+# static/data/playoff-odds.json (see scripts/fetch-playoff-odds.ts), and
 # static/data/weeks.json (see scripts/fetch-weeks.ts) — the files that actually
 # change often enough to be worth a daily refetch — then deploys the full site,
 # since this is a fully static, adapter-static build. Sagarin re-publishes
@@ -59,6 +60,9 @@ jobs:
 
       - name: Refresh week schedule
         run: npm run fetch:weeks
+
+      - name: Refresh playoff odds
+        run: npm run fetch:playoff-odds
 
       - name: Build
         env:

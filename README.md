@@ -25,6 +25,7 @@ npm run dev
 | `npm run fetch:conferences` | Refresh `static/data/conferences.json` from ESPN |
 | `npm run fetch:sagarin` | Refresh `static/data/sagarin.json` (team ratings) |
 | `npm run fetch:weeks` | Refresh `static/data/weeks.json` (week picker + current week) |
+| `npm run fetch:playoff-odds` | Refresh `static/data/playoff-odds.json` (ESPN FPI playoff/title odds) |
 | `npm run fetch:broadcasters` | Refresh `static/data/broadcasters.json` (channel list) |
 | `npm run fetch:dev-snapshot` | Capture a local-only scoreboard snapshot for dev testing — see [Dev-only scoreboard snapshots](#dev-only-scoreboard-snapshots) |
 | `npm run deploy:server` | Deploy/update the `server/` refresh service on Cloud Run |

@@ -1,5 +1,6 @@
 import { loadBroadcasterList } from '$lib/game/broadcasters';
 import { buildConferenceMap, loadConferenceData } from '$lib/game/conferences';
+import { loadPlayoffOddsMap } from '$lib/game/playoffOdds';
 import { loadRatingMap, loadSagarinAsOf } from '$lib/game/ratings';
 import { loadTeamMap } from '$lib/game/teams';
 import { loadOpeningWeekCutoff, loadWeekOptions } from '$lib/game/weekOptions';
@@ -37,6 +38,7 @@ export const load: LayoutLoad = async ({ fetch }) => {
 		teams: await teams,
 		conferences: buildConferenceMap(await teams, await conferenceData),
 		ratings: await loadRatingMap(fetch),
+		playoffOdds: await loadPlayoffOddsMap(fetch),
 		sagarinAsOf: await loadSagarinAsOf(fetch),
 		broadcasters: await loadBroadcasterList(fetch)
 	};

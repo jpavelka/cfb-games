@@ -6,6 +6,7 @@
 		type ConferenceTeam
 	} from '$lib/game/conferences';
 	import { describeActiveFilters } from '$lib/game/filterSummary';
+	import { PLAYOFF_FILTER_THRESHOLDS } from '$lib/game/playoffOdds';
 	import {
 		settings,
 		toggleAccessibleBroadcast,
@@ -58,7 +59,10 @@
 		{ value: 'fbs', label: 'FBS' },
 		{ value: 'fcs', label: 'FCS' },
 		{ value: 'power4', label: 'Power 4' },
-		{ value: 'ranked', label: 'Ranked' }
+		{ value: 'ranked', label: 'Ranked' },
+		{ value: 'playoff', label: `Playoff odds ${PLAYOFF_FILTER_THRESHOLDS.playoff}%+` },
+		{ value: 'playoff25', label: `Playoff odds ${PLAYOFF_FILTER_THRESHOLDS.playoff25}%+` },
+		{ value: 'playoff50', label: `Playoff odds ${PLAYOFF_FILTER_THRESHOLDS.playoff50}%+` }
 	];
 
 	let pickerOpen = $state(false);
@@ -208,7 +212,7 @@
 					</label>
 				{/each}
 			</div>
-			<p class="hint">Show only games involving a team from the selected category.</p>
+			<p class="hint">Show only games involving a team from the selected category. “Playoff odds N%+” means a team has at least that chance to make the playoff (FBS only, per ESPN FPI).</p>
 		</details>
 
 		<details class="section">
@@ -568,6 +572,12 @@
 		gap: var(--space-1);
 		font-size: var(--text-sm);
 		cursor: pointer;
+	}
+
+	/* Browsers give radios an uneven default margin (extra on top), which sinks the
+	   button below the label text even with align-items: center. */
+	.radio input {
+		margin: 0;
 	}
 
 	.hint {
