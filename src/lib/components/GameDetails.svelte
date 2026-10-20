@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { lockBodyScroll } from '$lib/bodyScrollLock';
 	import TeamLogo from './TeamLogo.svelte';
 	import matchupIcon from '$lib/assets/matchup.svg';
 	import scoreboardIcon from '$lib/assets/scoreboard.svg';
@@ -30,30 +29,18 @@
 
 	let {
 		game,
-		onClose,
 		conferences,
 		ratings,
-		playoffOdds
+		playoffOdds,
+		onClose
 	}: {
-		game: Game | null;
-		onClose: () => void;
+		game: Game;
+		/** When given, renders a "Less info" collapse strip at the top. */
+		onClose?: () => void;
 		conferences: ConferenceMap;
 		ratings: RatingMap;
 		playoffOdds: PlayoffOddsMap;
 	} = $props();
-
-	let dialogEl: HTMLDialogElement | undefined = $state();
-
-	// The dialog element outlives any one game — only open/close in response to
-	// `game` changing, never re-render its guts out from under an open modal.
-	$effect(() => {
-		if (game) {
-			dialogEl?.showModal();
-			return lockBodyScroll();
-		} else {
-			dialogEl?.close();
-		}
-	});
 
 	function possessionTitle(hasPossession: boolean, reason: 'after-score' | 'timeout' | undefined) {
 		if (!hasPossession) return undefined;
@@ -118,384 +105,335 @@
 	);
 </script>
 
-<dialog
-	bind:this={dialogEl}
-	class="modal"
-	onclose={onClose}
-	onclick={(event) => {
-		// The dialog's box shrink-wraps .content exactly, so a click that lands on
-		// the dialog itself (rather than bubbling up from a descendant) can only be
-		// a click on the ::backdrop — the standard native-<dialog> light-dismiss check.
-		if (event.target === dialogEl) onClose();
-	}}
->
-	{#if game}
-		<div class="content">
-			<button class="close" type="button" aria-label="Close" onclick={onClose}>
-				<svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
-					<path
-						d="M2 2l12 12M14 2L2 14"
-						stroke="currentColor"
-						stroke-width="1.5"
-						stroke-linecap="round"
-					/>
-				</svg>
-			</button>
+{#if onClose}
+	<button class="collapse" type="button" onclick={onClose}>Less info <span aria-hidden="true">▲</span></button>
+{/if}
 
-			{#if game.eventName}
-				<p class="event">{game.eventName}</p>
-			{/if}
+	{#if game.eventName}
+		<p class="event">{game.eventName}</p>
+	{/if}
 
-			<p class="conferenceGame">{conferenceContext}</p>
+	<p class="conferenceGame">{conferenceContext}</p>
 
-			<p class="status" class:live={isLive}>{statusLine}</p>
-			{#if isLive && game.status.delayed}
-				<p class="delayedNotice">Delayed</p>
-			{/if}
+	<p class="status" class:live={isLive}>{statusLine}</p>
+	{#if isLive && game.status.delayed}
+		<p class="delayedNotice">Delayed</p>
+	{/if}
 
-			<div class="teams">
-				{#each game.teams as team, i (team.homeAway)}
-					<div class="team" class:winner={team.isWinner === true}>
-						<TeamLogo {team} size={56} />
-						<span class="name">
-							{#if team.rank}<span class="rank">{team.rank}</span>{/if}
-							{team.location}
+	<div class="teams">
+		{#each game.teams as team, i (team.homeAway)}
+			<div class="team" class:winner={team.isWinner === true}>
+				<TeamLogo {team} size={56} />
+				<span class="name">
+					{#if team.rank}<span class="rank">{team.rank}</span>{/if}
+					{team.location}
+				</span>
+				<div class="meta">
+					{#if formatRecord(team)}
+						<span class="record">{formatRecord(team)}</span>
+					{:else}
+						<span class="record missing fallback-full">Record not available</span>
+						<span class="record missing fallback-short">Record not found</span>
+					{/if}
+					{#if formatConferenceName(team, conferences)}
+						<span class="conference">{formatConferenceName(team, conferences)}</span>
+					{:else}
+						<span class="conference missing fallback-full">Conference not available</span>
+						<span class="conference missing fallback-short">Conf not found</span>
+					{/if}
+					<span class="strength">Strength {teamStrength(team, ratings)}</span>
+					{#if playoffOdds.has(team.id)}
+						<span class="strength" title="Chance to make the College Football Playoff (ESPN FPI)">
+							Playoff {formatPlayoffOdds(playoffOdds.get(team.id)!)}
 						</span>
-						<div class="meta">
-							{#if formatRecord(team)}
-								<span class="record">{formatRecord(team)}</span>
-							{:else}
-								<span class="record missing fallback-full">Record not available</span>
-								<span class="record missing fallback-short">Record not found</span>
-							{/if}
-							{#if formatConferenceName(team, conferences)}
-								<span class="conference">{formatConferenceName(team, conferences)}</span>
-							{:else}
-								<span class="conference missing fallback-full">Conference not available</span>
-								<span class="conference missing fallback-short">Conf not found</span>
-							{/if}
-							<span class="strength">Strength {teamStrength(team, ratings)}</span>
-							{#if playoffOdds.has(team.id)}
-								<span class="strength" title="Chance to make the College Football Playoff (ESPN FPI)">
-									Playoff {formatPlayoffOdds(playoffOdds.get(team.id)!)}
-								</span>
-							{/if}
-						</div>
-					</div>
-					{#if i === 0 && showScore}
-						<div class="scoreCenter">
-							{#if isLive}
-								<span
-									class="possessionIcon"
-									class:after-score={game.teams[0].id === game.situation?.possessionTeamId &&
-										game.situation?.possessionInferredReason === 'after-score'}
-									title={possessionTitle(
-										game.teams[0].id === game.situation?.possessionTeamId,
-										game.situation?.possessionInferredReason
-									)}
-								>
-									{game.teams[0].id === game.situation?.possessionTeamId ? '🏈' : ''}
-								</span>
-							{/if}
-							<span class="score" class:winner={game.teams[0].isWinner === true}>
-								{game.teams[0].score ?? '–'}
-							</span>
-							<span class="scoreDash">–</span>
-							<span class="score" class:winner={game.teams[1].isWinner === true}>
-								{game.teams[1].score ?? '–'}
-							</span>
-							{#if isLive}
-								<span
-									class="possessionIcon"
-									class:after-score={game.teams[1].id === game.situation?.possessionTeamId &&
-										game.situation?.possessionInferredReason === 'after-score'}
-									title={possessionTitle(
-										game.teams[1].id === game.situation?.possessionTeamId,
-										game.situation?.possessionInferredReason
-									)}
-								>
-									{game.teams[1].id === game.situation?.possessionTeamId ? '🏈' : ''}
-								</span>
-							{/if}
-						</div>
 					{/if}
-				{/each}
+				</div>
 			</div>
-
-			{#if isLive && game.situation}
-				<div class="situation">
-					{#if game.situation.downDistance || game.situation.possessionText}
-						<p class="downDistance">
-							{[game.situation.downDistance, game.situation.possessionText]
-								.filter(Boolean)
-								.join(' at ')}
-						</p>
-					{/if}
-					{#if game.situation.lastPlay}
-						<p class="lastPlay"><strong>Last play:</strong> {game.situation.lastPlay}</p>
-					{/if}
-				</div>
-			{/if}
-
-			{#if pregameWinProb && winProbColors}
-				<div class="winProbBar" title="Pregame win probability">
-					<div class="winProbHeader">
-						<span class="winPct">{formatWinProbability(pregameWinProb.away)} to win</span>
-						<span class="winProbTag">Pregame projection</span>
-						<span class="winPct">{formatWinProbability(pregameWinProb.home)} to win</span>
-					</div>
-					<div class="bar">
+			{#if i === 0 && showScore}
+				<div class="scoreCenter">
+					{#if isLive}
 						<span
-							class="segment"
-							style:width="{pregameWinProb.away}%"
-							style:background={winProbColors.away}
-						></span>
-						<span
-							class="segment"
-							style:width="{pregameWinProb.home}%"
-							style:background={winProbColors.home}
-						></span>
-					</div>
-				</div>
-			{/if}
-
-			{#if liveWinProb && winProbColors}
-				<div class="winProbBar" title="Live win probability">
-					<div class="winProbHeader">
-						<span class="winPct">{formatWinProbability(liveWinProb.away)} to win</span>
-						<span class="winProbTag live">Live</span>
-						<span class="winPct">{formatWinProbability(liveWinProb.home)} to win</span>
-					</div>
-					<div class="bar">
-						<span
-							class="segment"
-							style:width="{liveWinProb.away}%"
-							style:background={winProbColors.away}
-						></span>
-						<span
-							class="segment"
-							style:width="{liveWinProb.home}%"
-							style:background={winProbColors.home}
-						></span>
-					</div>
-				</div>
-			{/if}
-
-			{#if periodScores && periodLabels}
-				<div class="linescoreScroll">
-					<table class="linescore" title="Score by quarter">
-						<thead>
-							<tr>
-								<th class="teamCol"></th>
-								{#each periodLabels as label (label)}
-									<th>{label}</th>
-								{/each}
-								<th class="totalCol">T</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr>
-								<th class="teamCol" scope="row">{game.away.abbreviation || game.away.location}</th>
-								{#each periodLabels as _, index (index)}
-									<td>{periodScores.away[index] ?? '–'}</td>
-								{/each}
-								<td class="totalCol">{game.away.score}</td>
-							</tr>
-							<tr>
-								<th class="teamCol" scope="row">{game.home.abbreviation || game.home.location}</th>
-								{#each periodLabels as _, index (index)}
-									<td>{periodScores.home[index] ?? '–'}</td>
-								{/each}
-								<td class="totalCol">{game.home.score}</td>
-							</tr>
-						</tbody>
-					</table>
-				</div>
-			{/if}
-
-			<dl class="details">
-				{#if matchup !== null}
-					<div>
-						<dt>Matchup score</dt>
-						<dd>
-							<span class="scoreBadge">
-								<img class="scoreIcon" src={matchupIcon} alt="" />
-								<span class="matchupScore" style:background={matchupScoreColor(matchup)}>{matchup}</span>
-							</span>
-						</dd>
-					</div>
-				{/if}
-				{#if isLive}
-					<div>
-						<dt>Situation score</dt>
-						<dd>
-							<span class="scoreBadge">
-								<img
-									class="scoreIcon"
-									class:inverted={isDarkMode()}
-									src={scoreboardIcon}
-									alt=""
-								/>
-								<span class="matchupScore" style:background={situationScoreColor(situation ?? 0)}
-									>{situation ?? '–'}</span
-								>
-							</span>
-						</dd>
-					</div>
-				{/if}
-				{#if showScore}
-					<div>
-						<dt>{'Surprise score'}</dt>
-						<dd>
-							<span class="scoreBadge">
-								<img class="scoreIcon" src={surpriseIcon} alt="" />
-								<span class="matchupScore" style:background={surpriseScoreColor(surprise ?? 0)}
-									>{surprise ?? '–'}</span
-								>
-							</span>
-						</dd>
-					</div>
-				{/if}
-				<div>
-					<dt>Kickoff</dt>
-					<dd>{formatKickoffDate(game.kickoff)} · {formatKickoffTime(game)}</dd>
-				</div>
-				{#if game.broadcasts.length}
-					<div>
-						<dt>Broadcast</dt>
-						<dd>
-							{#each game.broadcasts as name, i (name)}
-								{#if i > 0}<span class="dot">·</span>{/if}
-								{@const link = broadcastLink(name, game)}
-								{#if link}
-									<a href={link} target="_blank" rel="noopener noreferrer">{name}</a>
-								{:else}
-									{name}
-								{/if}
-							{/each}
-						</dd>
-					</div>
-				{/if}
-				{#if venue}
-					<div>
-						<dt>Location</dt>
-						<dd>{game.neutralSite ? `Neutral site · ${venue}` : venue}</dd>
-					</div>
-				{/if}
-				<div>
-					<dt>Spread</dt>
-					<dd>
-						{#if spreadText}
-							{spreadText}
-						{:else}
-							<span class="muted">Not available</span>
-						{/if}
-					</dd>
-				</div>
-				<div>
-					<dt>O/U</dt>
-					<dd>
-						{#if game.odds?.overUnder !== undefined}
-							{game.odds.overUnder}
-						{:else}
-							<span class="muted">Not available</span>
-						{/if}
-					</dd>
-				</div>
-				{#if moneylineText}
-					<div>
-						<dt>Moneyline</dt>
-						<dd>{moneylineText}</dd>
-					</div>
-				{/if}
-			</dl>
-
-			<p class="linksHeading">ESPN links</p>
-			<div class="links">
-				<a href={game.espnUrl} target="_blank" rel="noopener noreferrer">Gamecast</a>
-				{#if game.status.state !== 'pre'}
-					<a
-						href={`https://www.espn.com/college-football/boxscore/_/gameId/${game.id}`}
-						target="_blank"
-						rel="noopener noreferrer"
-					>
-						Box Score
-					</a>
-				{/if}
-				{#each game.teams as team (team.homeAway)}
-					{#if team.location !== 'TBD'}
-						<a
-							href={`https://www.espn.com/college-football/team/_/id/${team.id}`}
-							target="_blank"
-							rel="noopener noreferrer"
+							class="possessionIcon"
+							class:after-score={game.teams[0].id === game.situation?.possessionTeamId &&
+								game.situation?.possessionInferredReason === 'after-score'}
+							title={possessionTitle(
+								game.teams[0].id === game.situation?.possessionTeamId,
+								game.situation?.possessionInferredReason
+							)}
 						>
-							{team.location}
-						</a>
+							{game.teams[0].id === game.situation?.possessionTeamId ? '🏈' : ''}
+						</span>
 					{/if}
-				{/each}
-			</div>
-
-			{#if winsipedia}
-				<p class="linksHeading">History</p>
-				<div class="links">
-					<a href={winsipedia} target="_blank" rel="noopener noreferrer">
-						Winsipedia: all-time series
-					</a>
+					<span class="score" class:winner={game.teams[0].isWinner === true}>
+						{game.teams[0].score ?? '–'}
+					</span>
+					<span class="scoreDash">–</span>
+					<span class="score" class:winner={game.teams[1].isWinner === true}>
+						{game.teams[1].score ?? '–'}
+					</span>
+					{#if isLive}
+						<span
+							class="possessionIcon"
+							class:after-score={game.teams[1].id === game.situation?.possessionTeamId &&
+								game.situation?.possessionInferredReason === 'after-score'}
+							title={possessionTitle(
+								game.teams[1].id === game.situation?.possessionTeamId,
+								game.situation?.possessionInferredReason
+							)}
+						>
+							{game.teams[1].id === game.situation?.possessionTeamId ? '🏈' : ''}
+						</span>
+					{/if}
 				</div>
+			{/if}
+		{/each}
+	</div>
+
+	{#if isLive && game.situation}
+		<div class="situation">
+			{#if game.situation.downDistance || game.situation.possessionText}
+				<p class="downDistance">
+					{[game.situation.downDistance, game.situation.possessionText]
+						.filter(Boolean)
+						.join(' at ')}
+				</p>
+			{/if}
+			{#if game.situation.lastPlay}
+				<p class="lastPlay"><strong>Last play:</strong> {game.situation.lastPlay}</p>
 			{/if}
 		</div>
 	{/if}
-</dialog>
+
+	{#if pregameWinProb && winProbColors}
+		<div class="winProbBar" title="Pregame win probability">
+			<div class="winProbHeader">
+				<span class="winPct">{formatWinProbability(pregameWinProb.away)} to win</span>
+				<span class="winProbTag">Pregame projection</span>
+				<span class="winPct">{formatWinProbability(pregameWinProb.home)} to win</span>
+			</div>
+			<div class="bar">
+				<span
+					class="segment"
+					style:width="{pregameWinProb.away}%"
+					style:background={winProbColors.away}
+				></span>
+				<span
+					class="segment"
+					style:width="{pregameWinProb.home}%"
+					style:background={winProbColors.home}
+				></span>
+			</div>
+		</div>
+	{/if}
+
+	{#if liveWinProb && winProbColors}
+		<div class="winProbBar" title="Live win probability">
+			<div class="winProbHeader">
+				<span class="winPct">{formatWinProbability(liveWinProb.away)} to win</span>
+				<span class="winProbTag live">Live</span>
+				<span class="winPct">{formatWinProbability(liveWinProb.home)} to win</span>
+			</div>
+			<div class="bar">
+				<span
+					class="segment"
+					style:width="{liveWinProb.away}%"
+					style:background={winProbColors.away}
+				></span>
+				<span
+					class="segment"
+					style:width="{liveWinProb.home}%"
+					style:background={winProbColors.home}
+				></span>
+			</div>
+		</div>
+	{/if}
+
+	{#if periodScores && periodLabels}
+		<div class="linescoreScroll">
+			<table class="linescore" title="Score by quarter">
+				<thead>
+					<tr>
+						<th class="teamCol"></th>
+						{#each periodLabels as label (label)}
+							<th>{label}</th>
+						{/each}
+						<th class="totalCol">T</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<th class="teamCol" scope="row">{game.away.abbreviation || game.away.location}</th>
+						{#each periodLabels as _, index (index)}
+							<td>{periodScores.away[index] ?? '–'}</td>
+						{/each}
+						<td class="totalCol">{game.away.score}</td>
+					</tr>
+					<tr>
+						<th class="teamCol" scope="row">{game.home.abbreviation || game.home.location}</th>
+						{#each periodLabels as _, index (index)}
+							<td>{periodScores.home[index] ?? '–'}</td>
+						{/each}
+						<td class="totalCol">{game.home.score}</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	{/if}
+
+	<dl class="details">
+		{#if matchup !== null}
+			<div>
+				<dt>Matchup score</dt>
+				<dd>
+					<span class="scoreBadge">
+						<img class="scoreIcon" src={matchupIcon} alt="" />
+						<span class="matchupScore" style:background={matchupScoreColor(matchup)}>{matchup}</span>
+					</span>
+				</dd>
+			</div>
+		{/if}
+		{#if isLive}
+			<div>
+				<dt>Situation score</dt>
+				<dd>
+					<span class="scoreBadge">
+						<img
+							class="scoreIcon"
+							class:inverted={isDarkMode()}
+							src={scoreboardIcon}
+							alt=""
+						/>
+						<span class="matchupScore" style:background={situationScoreColor(situation ?? 0)}
+							>{situation ?? '–'}</span
+						>
+					</span>
+				</dd>
+			</div>
+		{/if}
+		{#if showScore}
+			<div>
+				<dt>{'Surprise score'}</dt>
+				<dd>
+					<span class="scoreBadge">
+						<img class="scoreIcon" src={surpriseIcon} alt="" />
+						<span class="matchupScore" style:background={surpriseScoreColor(surprise ?? 0)}
+							>{surprise ?? '–'}</span
+						>
+					</span>
+				</dd>
+			</div>
+		{/if}
+		<div>
+			<dt>Kickoff</dt>
+			<dd>{formatKickoffDate(game.kickoff)} · {formatKickoffTime(game)}</dd>
+		</div>
+		{#if game.broadcasts.length}
+			<div>
+				<dt>Broadcast</dt>
+				<dd>
+					{#each game.broadcasts as name, i (name)}
+						{#if i > 0}<span class="dot">·</span>{/if}
+						{@const link = broadcastLink(name, game)}
+						{#if link}
+							<a href={link} target="_blank" rel="noopener noreferrer">{name}</a>
+						{:else}
+							{name}
+						{/if}
+					{/each}
+				</dd>
+			</div>
+		{/if}
+		{#if venue}
+			<div>
+				<dt>Location</dt>
+				<dd>{game.neutralSite ? `Neutral site · ${venue}` : venue}</dd>
+			</div>
+		{/if}
+		<div>
+			<dt>Spread</dt>
+			<dd>
+				{#if spreadText}
+					{spreadText}
+				{:else}
+					<span class="muted">Not available</span>
+				{/if}
+			</dd>
+		</div>
+		<div>
+			<dt>O/U</dt>
+			<dd>
+				{#if game.odds?.overUnder !== undefined}
+					{game.odds.overUnder}
+				{:else}
+					<span class="muted">Not available</span>
+				{/if}
+			</dd>
+		</div>
+		{#if moneylineText}
+			<div>
+				<dt>Moneyline</dt>
+				<dd>{moneylineText}</dd>
+			</div>
+		{/if}
+	</dl>
+
+	<p class="linksHeading">ESPN links</p>
+	<div class="links">
+		<a href={game.espnUrl} target="_blank" rel="noopener noreferrer">Gamecast</a>
+		{#if game.status.state !== 'pre'}
+			<a
+				href={`https://www.espn.com/college-football/boxscore/_/gameId/${game.id}`}
+				target="_blank"
+				rel="noopener noreferrer"
+			>
+				Box Score
+			</a>
+		{/if}
+		{#each game.teams as team (team.homeAway)}
+			{#if team.location !== 'TBD'}
+				<a
+					href={`https://www.espn.com/college-football/team/_/id/${team.id}`}
+					target="_blank"
+					rel="noopener noreferrer"
+				>
+					{team.location}
+				</a>
+			{/if}
+		{/each}
+	</div>
+
+	{#if winsipedia}
+		<p class="linksHeading">History</p>
+		<div class="links">
+			<a href={winsipedia} target="_blank" rel="noopener noreferrer">
+				Winsipedia: all-time series
+			</a>
+		</div>
+	{/if}
 
 <style>
-	.modal {
-		width: min(28rem, calc(100vw - 2rem));
-		max-height: calc(100vh - 2rem);
-		padding: 0;
+	/* A full-width, easy-to-hit strip at the top of the expanded card. */
+	.collapse {
+		display: block;
+		width: 100%;
+		margin: 0 0 var(--space-3);
+		padding: var(--space-1) 0 var(--space-2);
 		border: none;
-		border-radius: var(--radius-lg);
-		background: transparent;
-		color: inherit;
-		overflow: visible;
-	}
-
-	.modal::backdrop {
-		background: rgb(0 0 0 / 0.5);
-	}
-
-	.content {
-		position: relative;
-		max-height: calc(100vh - 2rem);
-		overflow-y: auto;
-		padding: var(--space-5);
-		border: 1px solid var(--color-border);
-		border-radius: var(--radius-lg);
-		background: var(--color-surface);
-	}
-
-	.close {
-		position: absolute;
-		top: var(--space-5);
-		right: var(--space-5);
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		width: 2rem;
-		height: 2rem;
-		border: none;
-		border-radius: var(--radius-full);
-		background: var(--color-surface-alt);
+		border-bottom: 1px solid var(--color-border);
+		background: none;
 		color: var(--color-text-muted);
+		font: inherit;
+		font-size: var(--text-xs);
+		text-align: center;
 		cursor: pointer;
 	}
 
-	.close:hover {
+	.collapse:hover {
 		color: var(--color-text);
 	}
 
 	.event {
 		margin: 0 0 var(--space-2);
-		padding-inline: 2.5rem;
 		color: var(--color-accent);
 		font-size: var(--text-sm);
 		font-weight: 600;
@@ -504,7 +442,6 @@
 
 	.conferenceGame {
 		margin: 0 0 var(--space-2);
-		padding-inline: 2.5rem;
 		color: var(--color-text-muted);
 		font-size: var(--text-sm);
 		text-align: center;
@@ -512,7 +449,6 @@
 
 	.status {
 		margin: 0 0 var(--space-3);
-		padding-inline: 2.5rem;
 		color: var(--color-text-muted);
 		font-size: var(--text-sm);
 		font-weight: 600;
@@ -527,7 +463,6 @@
 
 	.delayedNotice {
 		margin: 0 0 var(--space-3);
-		padding-inline: 2.5rem;
 		color: var(--color-warning-text);
 		font-size: var(--text-sm);
 		font-weight: 600;
@@ -766,7 +701,7 @@
 
 	/* The situation icon is a solid black silhouette (unlike the full-color
 	   matchup/surprise icons), so it disappears against a dark background
-	   without this — see `isDarkMode()` in GameModal's script. */
+	   without this — see `isDarkMode()` in GameDetails' script. */
 	.scoreIcon.inverted {
 		filter: invert(1);
 	}

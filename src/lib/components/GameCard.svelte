@@ -1,4 +1,5 @@
 <script lang="ts">
+	import GameDetails from './GameDetails.svelte';
 	import TeamRow from './TeamRow.svelte';
 	import matchupIcon from '$lib/assets/matchup.svg';
 	import cfpIcon from '$lib/assets/cfp.svg';
@@ -16,6 +17,7 @@
 		formatVenue,
 		formatWinProbability
 	} from '$lib/format';
+	import type { ConferenceMap } from '$lib/game/conferences';
 	import { formatPlayoffOdds, playoffContenders, type PlayoffOddsMap } from '$lib/game/playoffOdds';
 	import { matchupScore, matchupScoreColor, type RatingMap } from '$lib/game/ratings';
 	import { isDarkMode, settings } from '$lib/game/settings.svelte';
@@ -26,17 +28,20 @@
 
 	let {
 		game,
+		conferences,
 		ratings,
 		playoffOdds,
-		showDate = false,
-		onSelect
+		showDate = false
 	}: {
 		game: Game;
+		conferences: ConferenceMap;
 		ratings: RatingMap;
 		playoffOdds: PlayoffOddsMap;
 		showDate?: boolean;
-		onSelect: (game: Game) => void;
 	} = $props();
+
+	// Local to this card; GameList keys cards by game id, so it survives re-sorts and refreshes.
+	let expanded = $state(false);
 
 	// Scores only exist once a game has started, and are meaningless for games
 	// that never finished.
@@ -90,7 +95,7 @@
 	// Pregame-only and live-only — the card only ever has room for one win-prob
 	// bar at a time, and a game is never both, so these two never compete for
 	// the same slot. (The modal, which has room for both at once, keeps them
-	// fully independent instead — see GameModal.svelte.)
+	// fully independent instead — see GameDetails.svelte.)
 	const pregameWinProb = $derived(
 		game.status.state === 'pre' && game.odds?.homeWinPct !== undefined && game.odds?.awayWinPct !== undefined
 			? { home: game.odds.homeWinPct, away: game.odds.awayWinPct }
@@ -117,7 +122,9 @@
 	);
 </script>
 
-<button type="button" class="card" class:favorite={hasFavorite} onclick={() => onSelect(game)}>
+<div class="card" class:favorite={hasFavorite} class:expanded>
+{#if !expanded}
+<button type="button" class="summary" aria-expanded={expanded} onclick={() => (expanded = !expanded)}>
 	<div class="time" class:live={isLive} class:tbd={game.kickoffTbd}>
 		{#if showDate && !isLive}
 			<span class="date">{formatGameDate(game)}</span>
@@ -279,25 +286,42 @@
 		</div>
 	</div>
 </button>
+{:else}
+	<div class="expandedDetails">
+		<GameDetails {game} {conferences} {ratings} {playoffOdds} onClose={() => (expanded = false)} />
+	</div>
+{/if}
+</div>
 
 <style>
 	.card {
+		width: 100%;
+		border: 1px solid var(--color-border);
+		border-left: 3px solid var(--color-border);
+		border-radius: var(--radius-md);
+		background: var(--color-surface);
+		transition:
+			border-color var(--transition),
+			box-shadow var(--transition);
+	}
+
+	.summary {
 		display: grid;
 		grid-template-columns: 4.5rem 1fr;
 		gap: var(--space-3);
 		width: 100%;
 		padding: var(--space-3);
-		border: 1px solid var(--color-border);
-		border-left: 3px solid var(--color-border);
-		border-radius: var(--radius-md);
-		background: var(--color-surface);
+		border: none;
+		background: none;
 		color: inherit;
 		font: inherit;
 		text-align: left;
 		cursor: pointer;
-		transition:
-			border-color var(--transition),
-			box-shadow var(--transition);
+	}
+
+	/* Replaces the summary while expanded. */
+	.expandedDetails {
+		padding: var(--space-2) var(--space-4) var(--space-4);
 	}
 
 	.card.favorite {

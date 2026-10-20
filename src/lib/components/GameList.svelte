@@ -1,7 +1,6 @@
 <script lang="ts">
 	import GameCard from './GameCard.svelte';
 	import type { PlayoffOddsMap } from '$lib/game/playoffOdds';
-	import GameModal from './GameModal.svelte';
 	import matchupIcon from '$lib/assets/matchup.svg';
 	import scoreboardIcon from '$lib/assets/scoreboard.svg';
 	import surpriseIcon from '$lib/assets/surprised.svg';
@@ -258,13 +257,12 @@
 		});
 	}
 
-	let selectedGame: Game | null = $state(null);
 </script>
 
 {#snippet gamesList(list: Game[], showDate: boolean)}
 	<div class="games">
 		{#each list as game (game.id)}
-			<GameCard {game} {ratings} {playoffOdds} {showDate} onSelect={(selected) => (selectedGame = selected)} />
+			<GameCard {game} {conferences} {ratings} {playoffOdds} {showDate} />
 		{/each}
 	</div>
 {/snippet}
@@ -547,7 +545,6 @@
 	</details>
 {/each}
 
-<GameModal game={selectedGame} onClose={() => (selectedGame = null)} {conferences} {ratings} {playoffOdds} />
 
 <style>
 	.toggle {
