@@ -135,6 +135,17 @@
 	let broadcastPickerOpen = $state(false);
 
 	const activeFilters = $derived(describeActiveFilters(settings));
+
+	// Mirrors the conditions in describeActiveFilters so a section's dot lights up
+	// exactly when it contributes to the "Current customizations" readout.
+	const teamsActive = $derived(settings.teamFilter !== 'all');
+	const scoreActive = $derived(settings.minMatchupScore > 0);
+	const favoritesActive = $derived(
+		settings.favoriteTeamIds.length > 0 && settings.favoriteHandling !== 'none'
+	);
+	const broadcastsActive = $derived(
+		settings.filterByAccessibleBroadcasts && settings.accessibleBroadcasts.length > 0
+	);
 </script>
 
 {#snippet teamList(teams: ConferenceTeam[])}
@@ -190,14 +201,23 @@
 		<h2>Settings</h2>
 
 		{#if activeFilters.length > 0}
-			<p class="currentFilters">
-				<strong>Current customizations:</strong>
-				{activeFilters.join(' · ')}
-			</p>
+			<div class="currentFilters">
+				<p>
+					<strong>Current customizations:</strong>
+					{activeFilters.join(' · ')}
+				</p>
+				<p class="dotNote">
+					<span class="activeDot" aria-hidden="true"></span>
+					Marks sections with a customization applied.
+				</p>
+			</div>
 		{/if}
 
 		<details class="section">
-			<summary class="field">Teams filter</summary>
+			<summary class="field">
+				Teams filter
+				{#if teamsActive}<span class="activeDot" role="img" aria-label="Filter active"></span>{/if}
+			</summary>
 			<div class="radioGroup">
 				{#each teamFilters as option (option.value)}
 					<label class="radio">
@@ -216,7 +236,10 @@
 		</details>
 
 		<details class="section">
-			<summary class="field">Matchup score filter</summary>
+			<summary class="field">
+				Matchup score filter
+				{#if scoreActive}<span class="activeDot" role="img" aria-label="Filter active"></span>{/if}
+			</summary>
 			<div class="scoreRow">
 				<input
 					id="minMatchupScore"
@@ -242,7 +265,10 @@
 		</details>
 
 		<details class="section">
-			<summary class="field">Favorite teams</summary>
+			<summary class="field">
+				Favorite teams
+				{#if favoritesActive}<span class="activeDot" role="img" aria-label="Filter active"></span>{/if}
+			</summary>
 			<div class="pickerHeader">
 				<button
 					class="pickerToggle"
@@ -358,7 +384,10 @@
 		</details>
 
 		<details class="section">
-			<summary class="field">Broadcasts filter</summary>
+			<summary class="field">
+				Broadcasts filter
+				{#if broadcastsActive}<span class="activeDot" role="img" aria-label="Filter active"></span>{/if}
+			</summary>
 			<div class="pickerHeader">
 				<button
 					class="pickerToggle"
@@ -480,6 +509,19 @@
 		font-size: var(--text-sm);
 	}
 
+	.currentFilters p {
+		margin: 0;
+	}
+
+	.dotNote {
+		display: flex;
+		align-items: center;
+		gap: var(--space-2);
+		margin-top: var(--space-1);
+		color: var(--color-text-faint);
+		font-size: var(--text-xs);
+	}
+
 	.currentFilters strong {
 		color: inherit;
 		font-weight: 600;
@@ -500,13 +542,22 @@
 
 	.field {
 		display: flex;
-		align-items: baseline;
+		align-items: center;
 		gap: var(--space-2);
 		margin-bottom: 0;
 		font-size: var(--text-sm);
 		font-weight: 600;
 		list-style: none;
 		cursor: pointer;
+	}
+
+	.activeDot {
+		display: block;
+		flex: none;
+		width: 0.5rem;
+		height: 0.5rem;
+		border-radius: var(--radius-full);
+		background: color-mix(in srgb, var(--color-accent) 65%, transparent);
 	}
 
 	.field::-webkit-details-marker {

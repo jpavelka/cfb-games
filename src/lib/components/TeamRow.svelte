@@ -1,6 +1,8 @@
 <script lang="ts">
 	import TeamLogo from './TeamLogo.svelte';
+	import cfpIcon from '$lib/assets/cfp.svg';
 	import { formatRecord, formatTeamSpread } from '$lib/format';
+	import { formatPlayoffOdds } from '$lib/game/playoffOdds';
 	import { settings } from '$lib/game/settings.svelte';
 	import type { GameOdds, GameTeam } from '$lib/game/types';
 
@@ -9,13 +11,16 @@
 		odds,
 		showScore = false,
 		hasPossession = false,
-		possessionInferredReason
+		possessionInferredReason,
+		playoffOdds
 	}: {
 		team: GameTeam;
 		odds?: GameOdds;
 		showScore?: boolean;
 		hasPossession?: boolean;
 		possessionInferredReason?: 'after-score' | 'timeout';
+		/** Chance (0-100) to make the playoff; only passed for probable playoff teams. */
+		playoffOdds?: number;
 	} = $props();
 
 	const possessionTitle = $derived(
@@ -53,6 +58,14 @@
 				>
 					🏈
 				</span>
+			{/if}
+			{#if playoffOdds !== undefined}
+				<img
+					class="playoffIcon"
+					src={cfpIcon}
+					alt="Playoff implications"
+					title="Playoff odds: {formatPlayoffOdds(playoffOdds)}"
+				/>
 			{/if}
 			{#if isFavorite}
 				<span class="favorite" title="Favorite team">★</span>
@@ -101,6 +114,21 @@
 		flex: none;
 		color: var(--color-favorite);
 		font-size: var(--text-xs);
+	}
+
+	/* Sized to the team name's text, so it adds no height to the row. */
+	.playoffIcon {
+		flex: none;
+		width: 0.8em;
+		height: 0.8em;
+		align-self: center;
+		position: relative;
+		top: 0.05em;
+	}
+
+	/* Tuck the star in next to the icon: replaces the row's gap with a smaller one. */
+	.playoffIcon + .favorite {
+		margin-left: calc(var(--space-1) - var(--space-2));
 	}
 
 	.possession {
