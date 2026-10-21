@@ -321,7 +321,9 @@
 
 	/* Replaces the summary while expanded. */
 	.expandedDetails {
-		padding: var(--space-2) var(--space-4) var(--space-4);
+		max-width: 32rem;
+		margin: 0 auto;
+		padding: var(--space-2) var(--space-4);
 	}
 
 	.card.favorite {

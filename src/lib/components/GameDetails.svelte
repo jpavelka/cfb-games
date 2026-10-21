@@ -106,7 +106,7 @@
 </script>
 
 {#if onClose}
-	<button class="collapse" type="button" onclick={onClose}>Less info <span aria-hidden="true">▲</span></button>
+	<button class="collapse top" type="button" onclick={onClose}>Less info <span aria-hidden="true">▲</span></button>
 {/if}
 
 	{#if game.eventName}
@@ -411,21 +411,35 @@
 		</div>
 	{/if}
 
+{#if onClose}
+	<button class="collapse bottom" type="button" onclick={onClose}>Less info <span aria-hidden="true">▲</span></button>
+{/if}
+
 <style>
 	/* A full-width, easy-to-hit strip at the top of the expanded card. */
 	.collapse {
 		display: block;
 		width: 100%;
-		margin: 0 0 var(--space-3);
-		padding: var(--space-1) 0 var(--space-2);
 		border: none;
-		border-bottom: 1px solid var(--color-border);
 		background: none;
 		color: var(--color-text-muted);
 		font: inherit;
 		font-size: var(--text-xs);
 		text-align: center;
 		cursor: pointer;
+	}
+
+	/* Same strip mirrored at the bottom, so a long card can be collapsed without scrolling back up. */
+	.collapse.top {
+		margin: 0 0 var(--space-3);
+		padding: var(--space-1) 0 var(--space-2);
+		border-bottom: 1px solid var(--color-border);
+	}
+
+	.collapse.bottom {
+		margin: var(--space-3) 0 0;
+		padding: var(--space-2) 0 var(--space-1);
+		border-top: 1px solid var(--color-border);
 	}
 
 	.collapse:hover {
