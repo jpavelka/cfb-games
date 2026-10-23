@@ -12,7 +12,8 @@
 		showScore = false,
 		hasPossession = false,
 		possessionInferredReason,
-		playoffOdds
+		playoffOdds,
+		conferenceOdds
 	}: {
 		team: GameTeam;
 		odds?: GameOdds;
@@ -21,6 +22,8 @@
 		possessionInferredReason?: 'after-score' | 'timeout';
 		/** Chance (0-100) to make the playoff; only passed for probable playoff teams. */
 		playoffOdds?: number;
+		/** Chance (0-100) to win the conference; only passed for probable conference champions. */
+		conferenceOdds?: number;
 	} = $props();
 
 	const possessionTitle = $derived(
@@ -59,20 +62,32 @@
 					🏈
 				</span>
 			{/if}
-			{#if playoffOdds !== undefined}
-				<img
-					class="playoffIcon"
-					src={cfpIcon}
-					alt="Playoff implications"
-					title="Playoff odds: {formatPlayoffOdds(playoffOdds)}"
-				/>
-			{/if}
 			{#if isFavorite}
 				<span class="favorite" title="Favorite team">★</span>
 			{/if}
 		</span>
-		{#if record}
-			<span class="record">{record}</span>
+		{#if record || playoffOdds !== undefined || conferenceOdds !== undefined}
+			<span class="details">
+				{#if record}
+					<span class="record">{record}</span>
+				{/if}
+				{#if conferenceOdds !== undefined}
+					<span
+						class="conferenceIcon"
+						title="Conference title odds: {formatPlayoffOdds(conferenceOdds)}"
+					>
+						🏆
+					</span>
+				{/if}
+				{#if playoffOdds !== undefined}
+					<img
+						class="playoffIcon"
+						src={cfpIcon}
+						alt="Playoff implications"
+						title="Playoff odds: {formatPlayoffOdds(playoffOdds)}"
+					/>
+				{/if}
+			</span>
 		{/if}
 	</span>
 
@@ -116,19 +131,24 @@
 		font-size: var(--text-xs);
 	}
 
-	/* Sized to the team name's text, so it adds no height to the row. */
-	.playoffIcon {
-		flex: none;
-		width: 0.8em;
-		height: 0.8em;
-		align-self: center;
-		position: relative;
-		top: 0.05em;
+	.details {
+		display: flex;
+		align-items: center;
+		gap: var(--space-1);
+		min-width: 0;
 	}
 
-	/* Tuck the star in next to the icon: replaces the row's gap with a smaller one. */
-	.playoffIcon + .favorite {
-		margin-left: calc(var(--space-1) - var(--space-2));
+	/* Sized to the record's text, so it adds no height to the row. */
+	.playoffIcon {
+		flex: none;
+		width: var(--text-xs);
+		height: var(--text-xs);
+	}
+
+	.conferenceIcon {
+		flex: none;
+		font-size: var(--text-xs);
+		line-height: 1;
 	}
 
 	.possession {

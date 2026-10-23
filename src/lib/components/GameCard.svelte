@@ -17,7 +17,12 @@
 		formatWinProbability
 	} from '$lib/format';
 	import type { ConferenceMap } from '$lib/game/conferences';
-	import { isPlayoffContender, type PlayoffOddsMap } from '$lib/game/playoffOdds';
+	import {
+		isConferenceContender,
+		isPlayoffContender,
+		type ConferenceOddsMap,
+		type PlayoffOddsMap
+	} from '$lib/game/playoffOdds';
 	import { matchupScore, matchupScoreColor, type RatingMap } from '$lib/game/ratings';
 	import { isDarkMode, settings } from '$lib/game/settings.svelte';
 	import { situationScore, situationScoreColor } from '$lib/game/situationScore';
@@ -30,12 +35,14 @@
 		conferences,
 		ratings,
 		playoffOdds,
+		conferenceOdds,
 		showDate = false
 	}: {
 		game: Game;
 		conferences: ConferenceMap;
 		ratings: RatingMap;
 		playoffOdds: PlayoffOddsMap;
+		conferenceOdds: ConferenceOddsMap;
 		showDate?: boolean;
 	} = $props();
 
@@ -72,8 +79,15 @@
 	// Only shown once there's room to the right of the (now width-capped)
 	// matchup column — see `.side` below.
 	const venueText = $derived(formatVenue(game));
+	// Name the conference on plain conference games, e.g. "Conference game (Big 12)".
+	const conferenceContext = $derived.by(() => {
+		const label = formatConferenceContext(game);
+		if (label !== 'Conference game') return label;
+		const name = conferences.get(game.home.conferenceId ?? '')?.shortName;
+		return name ? `${label} (${name})` : label;
+	});
 	const context = $derived(
-		[formatConferenceContext(game), game.neutralSite ? 'Neutral site' : undefined]
+		[conferenceContext, game.neutralSite ? 'Neutral site' : undefined]
 			.filter((part): part is string => Boolean(part))
 			.join(' · ')
 	);
@@ -182,6 +196,9 @@
 					hasPossession={isLive && team.id === game.situation?.possessionTeamId}
 					possessionInferredReason={game.situation?.possessionInferredReason}
 					playoffOdds={isPlayoffContender(team.id, playoffOdds) ? playoffOdds.get(team.id) : undefined}
+					conferenceOdds={isConferenceContender(team.id, conferenceOdds)
+						? conferenceOdds.get(team.id)
+						: undefined}
 				/>
 			{/each}
 
@@ -277,7 +294,7 @@
 </button>
 {:else}
 	<div class="expandedDetails">
-		<GameDetails {game} {conferences} {ratings} {playoffOdds} onClose={() => (expanded = false)} />
+		<GameDetails {game} {conferences} {ratings} {playoffOdds} {conferenceOdds} onClose={() => (expanded = false)} />
 	</div>
 {/if}
 </div>

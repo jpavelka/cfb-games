@@ -21,6 +21,7 @@
 	conferences={data.conferences}
 	ratings={data.ratings}
 	playoffOdds={data.playoffOdds}
+	conferenceOdds={data.conferenceOdds}
 />
 
 <style>

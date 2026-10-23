@@ -1,6 +1,6 @@
 <script lang="ts">
 	import GameCard from './GameCard.svelte';
-	import type { PlayoffOddsMap } from '$lib/game/playoffOdds';
+	import type { ConferenceOddsMap, PlayoffOddsMap } from '$lib/game/playoffOdds';
 	import matchupIcon from '$lib/assets/matchup.svg';
 	import scoreboardIcon from '$lib/assets/scoreboard.svg';
 	import surpriseIcon from '$lib/assets/surprised.svg';
@@ -29,12 +29,14 @@
 		games,
 		conferences,
 		ratings,
-		playoffOdds
+		playoffOdds,
+		conferenceOdds
 	}: {
 		games: Game[];
 		conferences: ConferenceMap;
 		ratings: RatingMap;
 		playoffOdds: PlayoffOddsMap;
+		conferenceOdds: ConferenceOddsMap;
 	} = $props();
 
 	const favorites: FavoriteSort = $derived({
@@ -262,7 +264,7 @@
 {#snippet gamesList(list: Game[], showDate: boolean)}
 	<div class="games">
 		{#each list as game (game.id)}
-			<GameCard {game} {conferences} {ratings} {playoffOdds} {showDate} />
+			<GameCard {game} {conferences} {ratings} {playoffOdds} {conferenceOdds} {showDate} />
 		{/each}
 	</div>
 {/snippet}

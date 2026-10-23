@@ -18,7 +18,7 @@
 		formatWinProbability
 	} from '$lib/format';
 	import type { ConferenceMap } from '$lib/game/conferences';
-	import { formatPlayoffOdds, type PlayoffOddsMap } from '$lib/game/playoffOdds';
+import { formatPlayoffOdds, type ConferenceOddsMap, type PlayoffOddsMap } from '$lib/game/playoffOdds';
 	import { matchupScore, matchupScoreColor, teamStrength, type RatingMap } from '$lib/game/ratings';
 	import { isDarkMode } from '$lib/game/settings.svelte';
 	import { situationScore, situationScoreColor } from '$lib/game/situationScore';
@@ -32,6 +32,7 @@
 		conferences,
 		ratings,
 		playoffOdds,
+		conferenceOdds,
 		onClose
 	}: {
 		game: Game;
@@ -40,6 +41,7 @@
 		conferences: ConferenceMap;
 		ratings: RatingMap;
 		playoffOdds: PlayoffOddsMap;
+		conferenceOdds: ConferenceOddsMap;
 	} = $props();
 
 	function possessionTitle(hasPossession: boolean, reason: 'after-score' | 'timeout' | undefined) {
@@ -145,6 +147,11 @@
 					{#if playoffOdds.has(team.id)}
 						<span class="strength" title="Chance to make the College Football Playoff (ESPN FPI)">
 							Playoff {formatPlayoffOdds(playoffOdds.get(team.id)!)}
+						</span>
+					{/if}
+					{#if conferenceOdds.has(team.id)}
+						<span class="strength" title="Chance to win the conference (ESPN FPI)">
+							Win conf. {formatPlayoffOdds(conferenceOdds.get(team.id)!)}
 						</span>
 					{/if}
 				</div>

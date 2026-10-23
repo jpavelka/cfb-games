@@ -1,11 +1,14 @@
 import { base } from '$app/paths';
 
 interface PlayoffOddsFile {
-	teams: Record<string, { makePlayoff: number | null }>;
+	teams: Record<string, { makePlayoff: number | null; winConference?: number | null }>;
 }
 
 /** ESPN team id -> chance (0-100) to make the CFB Playoff. FBS teams only; others are absent. */
 export type PlayoffOddsMap = Map<string, number>;
+
+/** ESPN team id -> chance (0-100) to win its conference. FBS teams only; others are absent. */
+export type ConferenceOddsMap = Map<string, number>;
 
 /**
  * Loaded from `static/data/playoff-odds.json` (see `scripts/fetch-playoff-odds.ts`),
@@ -14,13 +17,28 @@ export type PlayoffOddsMap = Map<string, number>;
  * than failing the page (mirrors `loadRatingMap`).
  */
 export async function loadPlayoffOddsMap(fetchImpl: typeof fetch = fetch): Promise<PlayoffOddsMap> {
+	return loadOddsMap(fetchImpl, (team) => team.makePlayoff);
+}
+
+/** Conference-title odds from the same file as `loadPlayoffOddsMap`, with the same failure handling. */
+export async function loadConferenceOddsMap(
+	fetchImpl: typeof fetch = fetch
+): Promise<ConferenceOddsMap> {
+	return loadOddsMap(fetchImpl, (team) => team.winConference);
+}
+
+async function loadOddsMap(
+	fetchImpl: typeof fetch,
+	pick: (team: PlayoffOddsFile['teams'][string]) => number | null | undefined
+): Promise<Map<string, number>> {
 	try {
 		const response = await fetchImpl(`${base}/data/playoff-odds.json`);
 		if (!response.ok) return new Map();
 		const data = (await response.json()) as PlayoffOddsFile;
 		const entries: [string, number][] = [];
 		for (const [id, team] of Object.entries(data.teams)) {
-			if (team.makePlayoff !== null) entries.push([id, team.makePlayoff]);
+			const value = pick(team);
+			if (value !== null && value !== undefined) entries.push([id, value]);
 		}
 		return new Map(entries);
 	} catch (error) {
@@ -47,6 +65,17 @@ export function isPlayoffContender(
 	teamId: string,
 	odds: PlayoffOddsMap,
 	threshold: number = PLAYOFF_CONTENDER_THRESHOLD
+): boolean {
+	return (odds.get(teamId) ?? 0) >= threshold;
+}
+
+/** A team at or above this chance (%) to win its conference gets the trophy badge. */
+export const CONFERENCE_CONTENDER_THRESHOLD = 10;
+
+export function isConferenceContender(
+	teamId: string,
+	odds: ConferenceOddsMap,
+	threshold: number = CONFERENCE_CONTENDER_THRESHOLD
 ): boolean {
 	return (odds.get(teamId) ?? 0) >= threshold;
 }

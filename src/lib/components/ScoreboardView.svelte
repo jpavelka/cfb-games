@@ -14,7 +14,7 @@
 	} from '$lib/game/filter';
 	import { setDataStatus } from '$lib/game/dataStatus.svelte';
 	import { describeActiveFilters } from '$lib/game/filterSummary';
-	import type { PlayoffOddsMap } from '$lib/game/playoffOdds';
+	import type { ConferenceOddsMap, PlayoffOddsMap } from '$lib/game/playoffOdds';
 	import type { RatingMap } from '$lib/game/ratings';
 	import { settings } from '$lib/game/settings.svelte';
 	import { openSettingsModal } from '$lib/game/settingsModal.svelte';
@@ -28,7 +28,8 @@
 		isCurrentWeek,
 		conferences,
 		ratings,
-		playoffOdds
+		playoffOdds,
+		conferenceOdds
 	}: {
 		scoreboard: Promise<Scoreboard>;
 		/**
@@ -52,6 +53,7 @@
 		conferences: ConferenceMap;
 		ratings: RatingMap;
 		playoffOdds: PlayoffOddsMap;
+		conferenceOdds: ConferenceOddsMap;
 	} = $props();
 
 	let search = $state('');
@@ -167,7 +169,7 @@
 			{/if}
 		</p>
 	{:else}
-		<GameList games={filteredGames} {conferences} {ratings} {playoffOdds} />
+		<GameList games={filteredGames} {conferences} {ratings} {playoffOdds} {conferenceOdds} />
 	{/if}
 {:catch error}
 	<div class="week">
