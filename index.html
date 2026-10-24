@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="text-scale" content="scale" />
+		<script>
+			(function () {
+				try {
+					var raw = localStorage.getItem('cfb:settings');
+					var theme = raw ? JSON.parse(raw).theme : null;
+					if (theme === 'light' || theme === 'dark') {
+						document.documentElement.setAttribute('data-theme', theme);
+					}
+				} catch (e) {}
+			})();
+		</script>
+		<link href="./_app/immutable/entry/start.Be9QvBIb.js" rel="modulepreload">
+		<link href="./_app/immutable/chunks/CxFYExKx.js" rel="modulepreload">
+		<link href="./_app/immutable/chunks/Cfp-6Wxv.js" rel="modulepreload">
+		<link href="./_app/immutable/entry/app.B3wvXw9d.js" rel="modulepreload">
+		<link href="./_app/immutable/chunks/Czm9rQs8.js" rel="modulepreload">
+		<link href="./_app/immutable/chunks/xihTtKlq.js" rel="modulepreload">
+		<link href="./_app/immutable/nodes/0.DQGO5yxb.js" rel="modulepreload">
+		<link href="./_app/immutable/chunks/C89ohKwM.js" rel="modulepreload">
+		<link href="./_app/immutable/chunks/CJ5pU_Rp.js" rel="modulepreload">
+		<link href="./_app/immutable/chunks/CZ0O49-8.js" rel="modulepreload">
+		<link href="./_app/immutable/nodes/3.MV8kBOI1.js" rel="modulepreload">
+		<link href="./_app/immutable/chunks/MB0TFUr_.js" rel="modulepreload">
+		<link href="./_app/immutable/chunks/DIxd01j2.js" rel="modulepreload">
+		<link href="./_app/immutable/chunks/DCxLQIba.js" rel="modulepreload">
+		<link href="./_app/immutable/chunks/Cqs5R6ai.js" rel="modulepreload">
+		
+		<link href="./_app/immutable/assets/0.Be4x-6-H.css" rel="stylesheet">
+		<link href="./_app/immutable/assets/ScoreboardView.BGIGcCqF.css" rel="stylesheet">
+	</head>
+	<body data-sveltekit-preload-data="hover">
+		<div style="display: contents">
+			<script>
+				{
+					__sveltekit_myoxco = {
+						base: new URL(".", location).pathname.slice(0, -1),
+						assets: "/cfb-games"
+					};
+
+					const element = document.currentScript.parentElement;
+
+					Promise.all([
+						import("./_app/immutable/entry/start.Be9QvBIb.js"),
+						import("./_app/immutable/entry/app.B3wvXw9d.js")
+					]).then(([kit, app]) => {
+						kit.start(app, element);
+					});
+				}
+			</script>
+		</div>
+	</body>
+</html>
