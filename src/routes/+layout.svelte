@@ -1,6 +1,5 @@
 <script lang="ts">
 	import '../app.css';
-	import favicon from '$lib/assets/favicon.jpg';
 	import AboutModal from '$lib/components/AboutModal.svelte';
 	import DataStatus from '$lib/components/DataStatus.svelte';
 	import { formatTimeZoneAbbreviation, formatUtcOffset } from '$lib/format';
@@ -55,7 +54,6 @@
 </script>
 
 <svelte:head>
-	<link rel="icon" href={favicon} />
 	<title>College Football Games</title>
 </svelte:head>
 
