@@ -1,5 +1,6 @@
 <script lang="ts">
 	import TeamLogo from './TeamLogo.svelte';
+	import cfpIcon from '$lib/assets/cfp.svg';
 	import matchupIcon from '$lib/assets/matchup.svg';
 	import scoreboardIcon from '$lib/assets/scoreboard.svg';
 	import surpriseIcon from '$lib/assets/surprised.svg';
@@ -146,11 +147,13 @@ import { formatPlayoffOdds, type ConferenceOddsMap, type PlayoffOddsMap } from '
 					<span class="strength">Strength {teamStrength(team, ratings)}</span>
 					{#if playoffOdds.has(team.id)}
 						<span class="strength" title="Chance to make the College Football Playoff (ESPN FPI)">
+							<img class="statIcon" src={cfpIcon} alt="" />
 							Playoff {formatPlayoffOdds(playoffOdds.get(team.id)!)}
 						</span>
 					{/if}
 					{#if conferenceOdds.has(team.id)}
 						<span class="strength" title="Chance to win the conference (ESPN FPI)">
+							<span class="statIcon" aria-hidden="true">🏆</span>
 							Win conf. {formatPlayoffOdds(conferenceOdds.get(team.id)!)}
 						</span>
 					{/if}
@@ -677,6 +680,15 @@ import { formatPlayoffOdds, type ConferenceOddsMap, type PlayoffOddsMap } from '
 	.strength {
 		color: var(--color-text-faint);
 		font-size: var(--text-xs);
+	}
+
+	.statIcon {
+		display: inline-block;
+		width: 1em;
+		height: 1em;
+		line-height: 1;
+		text-align: center;
+		vertical-align: -0.1em;
 	}
 
 	.missing {
