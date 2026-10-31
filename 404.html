@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" href="/cfb-games/favicon.svg" type="image/svg+xml" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="text-scale" content="scale" />
+		<script>
+			(function () {
+				try {
+					var raw = localStorage.getItem('cfb:settings');
+					var theme = raw ? JSON.parse(raw).theme : null;
+					if (theme === 'light' || theme === 'dark') {
+						document.documentElement.setAttribute('data-theme', theme);
+					}
+				} catch (e) {}
+			})();
+		</script>
+		<link href="/cfb-games/_app/immutable/entry/start.DemCmHq0.js" rel="modulepreload">
+		<link href="/cfb-games/_app/immutable/chunks/ahyLbIwt.js" rel="modulepreload">
+		<link href="/cfb-games/_app/immutable/chunks/Cfp-6Wxv.js" rel="modulepreload">
+		<link href="/cfb-games/_app/immutable/entry/app.RA-nJnEF.js" rel="modulepreload">
+		<link href="/cfb-games/_app/immutable/chunks/Czm9rQs8.js" rel="modulepreload">
+		<link href="/cfb-games/_app/immutable/chunks/xihTtKlq.js" rel="modulepreload">
+		<link href="/cfb-games/_app/immutable/nodes/0.Dszm5Ftz.js" rel="modulepreload">
+		<link href="/cfb-games/_app/immutable/chunks/CLDSTY77.js" rel="modulepreload">
+		<link href="/cfb-games/_app/immutable/chunks/D4vRLwOO.js" rel="modulepreload">
+		<link href="/cfb-games/_app/immutable/chunks/CZ0O49-8.js" rel="modulepreload">
+		
+		<link href="/cfb-games/_app/immutable/assets/0.Be4x-6-H.css" rel="stylesheet">
+	</head>
+	<body data-sveltekit-preload-data="hover">
+		<div style="display: contents">
+			<script>
+				{
+					__sveltekit_18mrdlq = {
+						base: "/cfb-games",
+						assets: "/cfb-games"
+					};
+
+					const element = document.currentScript.parentElement;
+
+					Promise.all([
+						import("/cfb-games/_app/immutable/entry/start.DemCmHq0.js"),
+						import("/cfb-games/_app/immutable/entry/app.RA-nJnEF.js")
+					]).then(([kit, app]) => {
+						kit.start(app, element);
+					});
+				}
+			</script>
+		</div>
+	</body>
+</html>
