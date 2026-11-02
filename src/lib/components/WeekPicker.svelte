@@ -30,8 +30,20 @@
 	// the off season. Without a placeholder the browser would silently display the
 	// first option, which would claim the user is somewhere they aren't.
 	const known = $derived(weeks.some((week) => week.slug === selected));
+
+	const index = $derived(weeks.findIndex((week) => week.slug === selected));
+	const prev = $derived(index > 0 ? weeks[index - 1] : null);
+	const next = $derived(index >= 0 && index < weeks.length - 1 ? weeks[index + 1] : null);
 </script>
 
+<div class="picker">
+	<a
+		class="step"
+		class:disabled={!prev}
+		aria-label="Previous week"
+		aria-disabled={!prev}
+		href={prev ? resolve('/[week=week]', { week: prev.slug }) : undefined}>&lt;&lt;</a
+	>
 <select
 	aria-label="Choose a week"
 	value={known ? selected : ''}
@@ -50,8 +62,39 @@
 		</optgroup>
 	{/each}
 </select>
+	<a
+		class="step"
+		class:disabled={!next}
+		aria-label="Next week"
+		aria-disabled={!next}
+		href={next ? resolve('/[week=week]', { week: next.slug }) : undefined}>&gt;&gt;</a
+	>
+</div>
 
 <style>
+	.picker {
+		display: inline-flex;
+		align-items: center;
+		gap: var(--space-2);
+		max-width: 100%;
+	}
+
+	.step {
+		color: inherit;
+		font-size: var(--text-sm);
+		text-decoration: none;
+		user-select: none;
+	}
+
+	.step:hover {
+		color: var(--color-accent);
+	}
+
+	.step.disabled {
+		opacity: 0.35;
+		pointer-events: none;
+	}
+
 	select {
 		max-width: 100%;
 		padding: var(--space-1) var(--space-2);

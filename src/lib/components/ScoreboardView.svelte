@@ -199,7 +199,13 @@
 		font-size: var(--text-lg);
 	}
 
-	.week :global(select) {
+	@media (max-width: 480px) {
+		.season {
+			display: none;
+		}
+	}
+
+	.week :global(.picker) {
 		margin-left: auto;
 	}
 
