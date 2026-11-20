@@ -1,0 +1,1250 @@
+{
+	"season": {
+		"year": 2026
+	},
+	"lastUpdated": "2026-11-20T09:00Z",
+	"teams": {
+		"2": {
+			"makePlayoff": 0.1,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0,
+			"winOut": 11.5,
+			"fpi": 10.029,
+			"fpiRank": 35
+		},
+		"5": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0.3,
+			"winOut": 2.5,
+			"fpi": -11.577,
+			"fpiRank": 111
+		},
+		"6": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0,
+			"winOut": 39.300000000000004,
+			"fpi": -9.407,
+			"fpiRank": 102
+		},
+		"8": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0,
+			"winOut": 0.8999999999999999,
+			"fpi": 3.779,
+			"fpiRank": 51
+		},
+		"9": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0,
+			"winOut": 6.6000000000000005,
+			"fpi": 3.306,
+			"fpiRank": 53
+		},
+		"12": {
+			"makePlayoff": 0.1,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0.1,
+			"winOut": 59.599999999999994,
+			"fpi": 13.091,
+			"fpiRank": 22
+		},
+		"16": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0,
+			"winOut": 6.1,
+			"fpi": -29.329,
+			"fpiRank": 138
+		},
+		"21": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 2.1999999999999997,
+			"winOut": 0.1,
+			"fpi": -7.84,
+			"fpiRank": 96
+		},
+		"23": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0,
+			"winOut": 6.6000000000000005,
+			"fpi": -13.07,
+			"fpiRank": 116
+		},
+		"24": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0,
+			"winOut": 8.7,
+			"fpi": -6.896,
+			"fpiRank": 94
+		},
+		"25": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0,
+			"winOut": 11.4,
+			"fpi": -8.009,
+			"fpiRank": 97
+		},
+		"26": {
+			"makePlayoff": 68,
+			"makeTitleGame": 2.8000000000000003,
+			"winTitle": 0.7000000000000001,
+			"winConference": 20.599999999999998,
+			"winOut": 6.7,
+			"fpi": 12.72,
+			"fpiRank": 25
+		},
+		"30": {
+			"makePlayoff": 8.9,
+			"makeTitleGame": 0.2,
+			"winTitle": 0.1,
+			"winConference": 0,
+			"winOut": 45.300000000000004,
+			"fpi": 14.141,
+			"fpiRank": 19
+		},
+		"36": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0,
+			"winOut": 0.8999999999999999,
+			"fpi": -16.35,
+			"fpiRank": 126
+		},
+		"38": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0,
+			"winOut": 20.8,
+			"fpi": 0.518,
+			"fpiRank": 70
+		},
+		"41": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0,
+			"winOut": 49.5,
+			"fpi": -3.962,
+			"fpiRank": 86
+		},
+		"48": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0.5,
+			"winOut": 25.7,
+			"fpi": -8.956,
+			"fpiRank": 100
+		},
+		"52": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0,
+			"winOut": 33.7,
+			"fpi": 7.882,
+			"fpiRank": 40
+		},
+		"55": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 24.3,
+			"winOut": 11.1,
+			"fpi": -5.669,
+			"fpiRank": 91
+		},
+		"57": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0,
+			"winOut": 49,
+			"fpi": 12.699,
+			"fpiRank": 26
+		},
+		"58": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0,
+			"winOut": 42.9,
+			"fpi": -3.306,
+			"fpiRank": 83
+		},
+		"59": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0,
+			"winOut": 0.2,
+			"fpi": -2.279,
+			"fpiRank": 78
+		},
+		"61": {
+			"makePlayoff": 99.2,
+			"makeTitleGame": 39.5,
+			"winTitle": 23.599999999999998,
+			"winConference": 62.1,
+			"winOut": 53.1,
+			"fpi": 28.044,
+			"fpiRank": 1
+		},
+		"62": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0,
+			"winOut": 30.7,
+			"fpi": -9.888,
+			"fpiRank": 104
+		},
+		"66": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0,
+			"winOut": 32.1,
+			"fpi": 4.595,
+			"fpiRank": 48
+		},
+		"68": {
+			"makePlayoff": 90.7,
+			"makeTitleGame": 1.3,
+			"winTitle": 0.3,
+			"winConference": 78,
+			"winOut": 62.8,
+			"fpi": 11.522,
+			"fpiRank": 31
+		},
+		"77": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0,
+			"winOut": 54.7,
+			"fpi": 12.853,
+			"fpiRank": 24
+		},
+		"84": {
+			"makePlayoff": 87.9,
+			"makeTitleGame": 14.399999999999999,
+			"winTitle": 6.3,
+			"winConference": 55.800000000000004,
+			"winOut": 52.5,
+			"fpi": 21.702,
+			"fpiRank": 8
+		},
+		"87": {
+			"makePlayoff": 96,
+			"makeTitleGame": 30.099999999999998,
+			"winTitle": 17.5,
+			"winConference": 0,
+			"winOut": 87.9,
+			"fpi": 27.327,
+			"fpiRank": 2
+		},
+		"96": {
+			"makePlayoff": 10.6,
+			"makeTitleGame": 0.2,
+			"winTitle": 0,
+			"winConference": 0,
+			"winOut": 16.900000000000002,
+			"fpi": 10.343,
+			"fpiRank": 34
+		},
+		"97": {
+			"makePlayoff": 0.5,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0.4,
+			"winOut": 43.9,
+			"fpi": 15.171,
+			"fpiRank": 16
+		},
+		"98": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0,
+			"winOut": 4,
+			"fpi": -14.294,
+			"fpiRank": 118
+		},
+		"99": {
+			"makePlayoff": 0.1,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0,
+			"winOut": 43.8,
+			"fpi": 22.001,
+			"fpiRank": 7
+		},
+		"103": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0,
+			"winOut": 0.6,
+			"fpi": -4.539,
+			"fpiRank": 88
+		},
+		"113": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0,
+			"winOut": 44.9,
+			"fpi": -16.941,
+			"fpiRank": 127
+		},
+		"120": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0,
+			"winOut": 1.2,
+			"fpi": -2.555,
+			"fpiRank": 79
+		},
+		"127": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0,
+			"winOut": 9.9,
+			"fpi": 1.798,
+			"fpiRank": 63
+		},
+		"130": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0,
+			"winOut": 4.7,
+			"fpi": 7.965,
+			"fpiRank": 39
+		},
+		"135": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0,
+			"winOut": 5.8999999999999995,
+			"fpi": 0.388,
+			"fpiRank": 73
+		},
+		"142": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0,
+			"winOut": 31.1,
+			"fpi": 11.865,
+			"fpiRank": 28
+		},
+		"145": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0,
+			"winOut": 86.6,
+			"fpi": 17.637,
+			"fpiRank": 13
+		},
+		"150": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0,
+			"winOut": 21.099999999999998,
+			"fpi": 13.323,
+			"fpiRank": 21
+		},
+		"151": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0,
+			"winOut": 23.599999999999998,
+			"fpi": -4.672,
+			"fpiRank": 89
+		},
+		"152": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0,
+			"winOut": 3.8,
+			"fpi": -0.918,
+			"fpiRank": 74
+		},
+		"153": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0,
+			"winOut": 48.3,
+			"fpi": 9.219,
+			"fpiRank": 36
+		},
+		"154": {
+			"makePlayoff": 73.3,
+			"makeTitleGame": 7.000000000000001,
+			"winTitle": 2.9000000000000004,
+			"winConference": 33.5,
+			"winOut": 23.200000000000003,
+			"fpi": 20.16,
+			"fpiRank": 10
+		},
+		"158": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0,
+			"winOut": 11.899999999999999,
+			"fpi": 14.147,
+			"fpiRank": 18
+		},
+		"164": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0,
+			"winOut": 2.3,
+			"fpi": -6.589,
+			"fpiRank": 93
+		},
+		"166": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0,
+			"winOut": 16.6,
+			"fpi": -15.48,
+			"fpiRank": 122
+		},
+		"167": {
+			"makePlayoff": 0.3,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 52.1,
+			"winOut": 48.8,
+			"fpi": 6.237,
+			"fpiRank": 45
+		},
+		"183": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0,
+			"winOut": 3.6999999999999997,
+			"fpi": 1.955,
+			"fpiRank": 61
+		},
+		"189": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0,
+			"winOut": 6.800000000000001,
+			"fpi": -17.483,
+			"fpiRank": 128
+		},
+		"193": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0.8999999999999999,
+			"winOut": 28.999999999999996,
+			"fpi": -8.567,
+			"fpiRank": 99
+		},
+		"194": {
+			"makePlayoff": 41.3,
+			"makeTitleGame": 6.1,
+			"winTitle": 3,
+			"winConference": 9.4,
+			"winOut": 60.199999999999996,
+			"fpi": 24.144,
+			"fpiRank": 5
+		},
+		"195": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 7.000000000000001,
+			"winOut": 27.500000000000004,
+			"fpi": -10.08,
+			"fpiRank": 106
+		},
+		"197": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0,
+			"winOut": 49.5,
+			"fpi": 12.083,
+			"fpiRank": 27
+		},
+		"201": {
+			"makePlayoff": 0.1,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0,
+			"winOut": 30.599999999999998,
+			"fpi": 13.644,
+			"fpiRank": 20
+		},
+		"202": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0,
+			"winOut": 47.199999999999996,
+			"fpi": 0.484,
+			"fpiRank": 72
+		},
+		"204": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0,
+			"winOut": 51.800000000000004,
+			"fpi": 2.303,
+			"fpiRank": 56
+		},
+		"213": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0,
+			"winOut": 78.3,
+			"fpi": 13.056,
+			"fpiRank": 23
+		},
+		"218": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0,
+			"winOut": 8.799999999999999,
+			"fpi": -12.986,
+			"fpiRank": 115
+		},
+		"221": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0,
+			"winOut": 18.7,
+			"fpi": 7.18,
+			"fpiRank": 44
+		},
+		"228": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0,
+			"winOut": 8.200000000000001,
+			"fpi": 4.635,
+			"fpiRank": 47
+		},
+		"235": {
+			"makePlayoff": 0.5,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 43.2,
+			"winOut": 35.3,
+			"fpi": 3.63,
+			"fpiRank": 52
+		},
+		"238": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0,
+			"winOut": 1.9,
+			"fpi": 1.252,
+			"fpiRank": 65
+		},
+		"239": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0,
+			"winOut": 17.1,
+			"fpi": 10.862,
+			"fpiRank": 32
+		},
+		"242": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0,
+			"winOut": 27.400000000000002,
+			"fpi": -14.396,
+			"fpiRank": 119
+		},
+		"245": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0,
+			"winOut": 8.799999999999999,
+			"fpi": 11.808,
+			"fpiRank": 29
+		},
+		"248": {
+			"makePlayoff": 0.1,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0.1,
+			"winOut": 41.8,
+			"fpi": 11.663,
+			"fpiRank": 30
+		},
+		"249": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 29.5,
+			"winOut": 41.699999999999996,
+			"fpi": 2.201,
+			"fpiRank": 57
+		},
+		"251": {
+			"makePlayoff": 92.30000000000001,
+			"makeTitleGame": 19.8,
+			"winTitle": 9.5,
+			"winConference": 19.6,
+			"winOut": 42.199999999999996,
+			"fpi": 23.967,
+			"fpiRank": 6
+		},
+		"252": {
+			"makePlayoff": 59.9,
+			"makeTitleGame": 2.7,
+			"winTitle": 0.7000000000000001,
+			"winConference": 15.299999999999999,
+			"winOut": 44.800000000000004,
+			"fpi": 15.979,
+			"fpiRank": 15
+		},
+		"254": {
+			"makePlayoff": 97.3,
+			"makeTitleGame": 13.3,
+			"winTitle": 4.8,
+			"winConference": 56.2,
+			"winOut": 38.6,
+			"fpi": 18.865,
+			"fpiRank": 12
+		},
+		"256": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 30.599999999999998,
+			"winOut": 63.3,
+			"fpi": 2.128,
+			"fpiRank": 58
+		},
+		"258": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0,
+			"winOut": 21.099999999999998,
+			"fpi": 4.205,
+			"fpiRank": 49
+		},
+		"259": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0,
+			"winOut": 1.7999999999999998,
+			"fpi": 1.938,
+			"fpiRank": 62
+		},
+		"264": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0,
+			"winOut": 3,
+			"fpi": 7.34,
+			"fpiRank": 43
+		},
+		"265": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0,
+			"winOut": 7.199999999999999,
+			"fpi": -4.888,
+			"fpiRank": 90
+		},
+		"275": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0,
+			"winOut": 50.4,
+			"fpi": 8.086,
+			"fpiRank": 38
+		},
+		"276": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0,
+			"winOut": 23.9,
+			"fpi": -15.95,
+			"fpiRank": 123
+		},
+		"277": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0,
+			"winOut": 1.9,
+			"fpi": 0.898,
+			"fpiRank": 67
+		},
+		"278": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0,
+			"winOut": 70.8,
+			"fpi": 0.492,
+			"fpiRank": 71
+		},
+		"290": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 19.2,
+			"winOut": 16.8,
+			"fpi": -1.616,
+			"fpiRank": 75
+		},
+		"295": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0,
+			"winOut": 11.200000000000001,
+			"fpi": -15.342,
+			"fpiRank": 121
+		},
+		"309": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0,
+			"winOut": 48.5,
+			"fpi": -3.306,
+			"fpiRank": 82
+		},
+		"324": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0,
+			"winOut": 2.1,
+			"fpi": -11.928,
+			"fpiRank": 112
+		},
+		"326": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 19.8,
+			"winOut": 21.9,
+			"fpi": 2.982,
+			"fpiRank": 55
+		},
+		"328": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0,
+			"winOut": 3,
+			"fpi": -5.677,
+			"fpiRank": 92
+		},
+		"333": {
+			"makePlayoff": 96.6,
+			"makeTitleGame": 24.099999999999998,
+			"winTitle": 12.1,
+			"winConference": 14.000000000000002,
+			"winOut": 68.8,
+			"fpi": 24.794,
+			"fpiRank": 4
+		},
+		"338": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0.1,
+			"winOut": 33.4,
+			"fpi": -11.063,
+			"fpiRank": 109
+		},
+		"344": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0,
+			"winOut": 12.3,
+			"fpi": 3.985,
+			"fpiRank": 50
+		},
+		"349": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 4.8,
+			"winOut": 19.6,
+			"fpi": -2.774,
+			"fpiRank": 80
+		},
+		"356": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0,
+			"winOut": 10.6,
+			"fpi": 7.865,
+			"fpiRank": 41
+		},
+		"2005": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 5.7,
+			"winOut": 14.799999999999999,
+			"fpi": -1.899,
+			"fpiRank": 77
+		},
+		"2006": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0,
+			"winOut": 20.9,
+			"fpi": -23.117,
+			"fpiRank": 134
+		},
+		"2026": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0,
+			"winOut": 34.1,
+			"fpi": -10.571,
+			"fpiRank": 107
+		},
+		"2032": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0,
+			"winOut": 9.8,
+			"fpi": -10.984,
+			"fpiRank": 108
+		},
+		"2050": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0,
+			"winOut": 34.1,
+			"fpi": -21.022,
+			"fpiRank": 131
+		},
+		"2084": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 21.2,
+			"winOut": 38.1,
+			"fpi": -10.03,
+			"fpiRank": 105
+		},
+		"2116": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0,
+			"winOut": 23,
+			"fpi": 2.054,
+			"fpiRank": 60
+		},
+		"2117": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0,
+			"winOut": 65.9,
+			"fpi": -13.246,
+			"fpiRank": 117
+		},
+		"2132": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0,
+			"winOut": 6.9,
+			"fpi": 2.126,
+			"fpiRank": 59
+		},
+		"2199": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0,
+			"winOut": 74.3,
+			"fpi": -17.716,
+			"fpiRank": 129
+		},
+		"2226": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0,
+			"winOut": 14.099999999999998,
+			"fpi": -7.753,
+			"fpiRank": 95
+		},
+		"2229": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0,
+			"winOut": 30.099999999999998,
+			"fpi": -12.917,
+			"fpiRank": 114
+		},
+		"2247": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0,
+			"winOut": 25.900000000000002,
+			"fpi": -8.964,
+			"fpiRank": 101
+		},
+		"2294": {
+			"makePlayoff": 24.5,
+			"makeTitleGame": 0.8999999999999999,
+			"winTitle": 0.3,
+			"winConference": 1.4000000000000001,
+			"winOut": 36.8,
+			"fpi": 15.158,
+			"fpiRank": 17
+		},
+		"2305": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0,
+			"winOut": 8.1,
+			"fpi": 5.966,
+			"fpiRank": 46
+		},
+		"2306": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0,
+			"winOut": 9.3,
+			"fpi": 1.546,
+			"fpiRank": 64
+		},
+		"2309": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0,
+			"winOut": 25.7,
+			"fpi": -24.506,
+			"fpiRank": 136
+		},
+		"2335": {
+			"makePlayoff": 3.8,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 75,
+			"winOut": 60.5,
+			"fpi": 3.174,
+			"fpiRank": 54
+		},
+		"2348": {
+			"makePlayoff": 2.8000000000000003,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 50.2,
+			"winOut": 20.8,
+			"fpi": 0.898,
+			"fpiRank": 68
+		},
+		"2390": {
+			"makePlayoff": 98.3,
+			"makeTitleGame": 26.3,
+			"winTitle": 14.000000000000002,
+			"winConference": 66.2,
+			"winOut": 62.7,
+			"fpi": 25.703,
+			"fpiRank": 3
+		},
+		"2393": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0.1,
+			"winOut": 38.3,
+			"fpi": -15.103,
+			"fpiRank": 120
+		},
+		"2426": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0,
+			"winOut": 14.299999999999999,
+			"fpi": -4.274,
+			"fpiRank": 87
+		},
+		"2429": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0,
+			"winOut": 0.7000000000000001,
+			"fpi": -20.907,
+			"fpiRank": 130
+		},
+		"2433": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0,
+			"winOut": 4.7,
+			"fpi": -24.118,
+			"fpiRank": 135
+		},
+		"2439": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 1,
+			"winOut": 48.8,
+			"fpi": -3.656,
+			"fpiRank": 85
+		},
+		"2440": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0,
+			"winOut": 20.7,
+			"fpi": -8.474,
+			"fpiRank": 98
+		},
+		"2449": {
+			"makePlayoff": 0.1,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 34.9,
+			"winOut": 34.9,
+			"fpi": 0.85,
+			"fpiRank": 69
+		},
+		"2459": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0,
+			"winOut": 2.7,
+			"fpi": -22.202,
+			"fpiRank": 133
+		},
+		"2483": {
+			"makePlayoff": 34.4,
+			"makeTitleGame": 2.9000000000000004,
+			"winTitle": 1.3,
+			"winConference": 12.8,
+			"winOut": 66,
+			"fpi": 20.604,
+			"fpiRank": 9
+		},
+		"2509": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0,
+			"winOut": 2.1,
+			"fpi": 1.038,
+			"fpiRank": 66
+		},
+		"2534": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0,
+			"winOut": 7.1,
+			"fpi": -22.079,
+			"fpiRank": 132
+		},
+		"2567": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0,
+			"winOut": 5.7,
+			"fpi": 8.597,
+			"fpiRank": 37
+		},
+		"2572": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0,
+			"winOut": 14.099999999999998,
+			"fpi": -16.223,
+			"fpiRank": 125
+		},
+		"2579": {
+			"makePlayoff": 0.1,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0,
+			"winOut": 8.4,
+			"fpi": 10.786,
+			"fpiRank": 33
+		},
+		"2623": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0,
+			"winOut": 1.9,
+			"fpi": -16.038,
+			"fpiRank": 124
+		},
+		"2628": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0,
+			"winOut": 6,
+			"fpi": 7.813,
+			"fpiRank": 42
+		},
+		"2633": {
+			"makePlayoff": 57.099999999999994,
+			"makeTitleGame": 5.5,
+			"winTitle": 2.1,
+			"winConference": 4.3,
+			"winOut": 32,
+			"fpi": 19.567,
+			"fpiRank": 11
+		},
+		"2636": {
+			"makePlayoff": 1.7999999999999998,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 22.3,
+			"winOut": 13.4,
+			"fpi": -1.771,
+			"fpiRank": 76
+		},
+		"2638": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0,
+			"winOut": 1.7999999999999998,
+			"fpi": -24.507,
+			"fpiRank": 137
+		},
+		"2641": {
+			"makePlayoff": 53.2,
+			"makeTitleGame": 2.9000000000000004,
+			"winTitle": 1,
+			"winConference": 28.4,
+			"winOut": 21.099999999999998,
+			"fpi": 16.744,
+			"fpiRank": 14
+		},
+		"2649": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 23.799999999999997,
+			"winOut": 36.7,
+			"fpi": -3.205,
+			"fpiRank": 81
+		},
+		"2653": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0,
+			"winOut": 10.4,
+			"fpi": -12.35,
+			"fpiRank": 113
+		},
+		"2655": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 0,
+			"winOut": 6.7,
+			"fpi": -9.639,
+			"fpiRank": 103
+		},
+		"2711": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 47.099999999999994,
+			"winOut": 43.8,
+			"fpi": -3.377,
+			"fpiRank": 84
+		},
+		"2751": {
+			"makePlayoff": 0,
+			"makeTitleGame": 0,
+			"winTitle": 0,
+			"winConference": 6.4,
+			"winOut": 1.0999999999999999,
+			"fpi": -11.198,
+			"fpiRank": 110
+		}
+	}
+}
